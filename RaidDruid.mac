@@ -64,7 +64,6 @@
 #Event WornOff        "#*#Your #1# spell has worn off of #2#."
 
 Sub Main
-/echo Sub Main
 /echo AutoBot Transforming, hold onto your seatbelt!!!111ONE
 /declare AlertTimer      timer  outer
 /declare StayOnHealTimer timer  outer
