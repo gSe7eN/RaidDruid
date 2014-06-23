@@ -182,6 +182,7 @@ Sub Cast(spellName,spellType,giveUpValue,mySub,int ResistTotal)
 
 Sub SpellCast(spellType,spellName,mySub,int spellID,giveUpValue)
 :cast_spell
+/if (${Spell[${spellName}].Level}>70) /varset spellName ${Spell[${spellName}].RankName}
 /if (!${Me.Gem[${spellName}]}) {
   /if (${Cursor.ID}) /call ClearCursor
   /if (${spellType.Left[3].Equal[gem]}) {
