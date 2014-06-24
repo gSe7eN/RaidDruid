@@ -121,12 +121,13 @@ Sub Cast(spellName,spellType,giveUpValue,mySub,int ResistTotal)
 /varset castReturn X
 /if (${Me.Invis} && ${noInvis}) /return
 /if (${spellType.Equal[item]}) {
-  /if (!${FindItem[${spellName}].InvSlot}) /return CAST_UNKNOWNSPELL
+  /if (!${FindItem[${spellName}].ID}) /return CAST_UNKNOWNSPELL
   /varset castTime ${FindItem[${spellName}].CastTime}
 } else /if (${spellType.Equal[alt]}) {
   /if (!${Me.AltAbilityReady[${spellName}]}) /return CAST_NOTREADY
   /varset castTime ${Me.AltAbility[${spellName}].Spell.MyCastTime}
 } else {
+  /if (${Spell[${spellName}].Level}>70) /varset spellName ${Spell[${spellName}].RankName}
   /if (!${Me.Book[${spellName}]}) /return CAST_UNKNOWNSPELL
   /declare spellID int local ${Me.Book[${Me.Book[${spellName}]}].ID}
   /varset castTime ${Spell[${spellName}].MyCastTime}
@@ -252,7 +253,7 @@ Sub ItemCast(spellName,mySub)
 /declare slotName string local
 /declare swapItemBack bool local false
 :cast_item
-/itemnotify ${FindItem[${spellName}].InvSlot} rightmouseup
+/useitem "${FindItem[${spellName}]}
 /if (${itemRefreshTime}>${MacroQuest.Running}) /goto :wait_item_loop
 /varset itemRefreshTime ${Math.Calc[${MacroQuest.Running}+000]}
 /varset charges ${FindItem[${spellName}].Charges}
