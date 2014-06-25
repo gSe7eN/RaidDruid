@@ -235,8 +235,8 @@ Sub Main
 	/call PetBegBuff
 	/if (${DoRestStuff} && !${Me.CombatState.Equal[COMBAT]} && !${RestStuffTimer}) {
 		/call DoStuff Rest
-		/call SummonStuff
 	}
+	/if (!${RDpause} && !${Me.Moving}) /call SummonStuff
 	/if (${Debuff}) /call MeBegCure
 	/if (${UseRods}) /call ClickRods
 	/if (!${CheckGroupTimer}) /call CheckGroup
@@ -1230,9 +1230,9 @@ Sub SummonStuff
 	/autoinv
    }
 }
-/if (${UseAmmoClicky}==TRUE && !${RDPause} && !${Me.Invis}) {
-	/if (!${FindItem[${AmmoItem}].ID} && ${FindItem[${AmmoItem}].TimerReady} && ${Me.FreeInventory}>=1) {
-		/call Cast ${AmmoClicky} ${AmmoGem} 7s Check4Pad
+/if (${UseAmmoClicky} && !${RDPause} && !${Me.Invis}) {
+        /if (!${FindItem[${AmmoItem}].ID} && ${FindItem[${AmmoClicky}].TimerReady}==0 && ${Me.FreeInventory}>1) {
+		/call Cast "${AmmoClicky}" ${AmmoGem} 7s Check4Pad
 		/delay 3s
 		/autoinv
 	}
