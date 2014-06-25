@@ -41,7 +41,7 @@
 | If you want to use a special purchase section other than AAtoBuy in your ini. For instance to define AA
 | you want to purchase when in a shroud change "/call AAInit" to "/call AAInit yoursectionnamehere"
 
-#event AAEarned "#*#You have gained an ability point!#*#"
+#event AAEarned "#*#You have gained #1# ability point#*#"
 | Change this to change which channel you send your notifications to.
 | Ex: /bc , /echo , /mqlog
 #define def_channel_ /echo
