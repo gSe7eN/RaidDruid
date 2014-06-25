@@ -81,7 +81,7 @@ Sub Main
 /declare SpamFlag        bool   outer
 /declare castReturn      string outer
 /declare LastCast        string outer
-/declare RDVersion       string outer 4.2
+/declare RDVersion       string outer 4.21
 /declare Parse           string outer
 /declare NPCRadChk       int    outer 50
 /declare ZoneName        string outer
@@ -131,6 +131,7 @@ Sub Main
 	/squelch /alias /domelee          /echo ToggleVar Auto Melee,DoMelee,MeleeStuff,DoMelee,
 	/squelch /alias /dopettoys	  /echo ToggleVar Auto Summoning pettoys,DoPetToys,SummonStuff,DoPetToys,
 	/squelch /alias /dorest           /echo ToggleVar Rest Scripts,DoRestStuff,RestStuff,DoRestStuff,	
+	/squelch /alias /doshrink	  /echo ToggleVar DoShrink,DoShrink,Settings,DoShrink,
 	/squelch /alias /dot              /echo ToggleVar Auto DoTing,DoDoTs,DebuffStuff,DoDoTs,
 	/squelch /alias /doyaulp          /echo ToggleVar Auto Yaulping in combat,DoYaulp,GeneralStuff,DoYaulp,	
 	/squelch /alias /engagehps        /echo ToggleString Engage Hitpoints,EngageHPs,GeneralStuff,EngageHPs,
@@ -240,6 +241,7 @@ Sub Main
 	/if (${Debuff}) /call MeBegCure
 	/if (${UseRods}) /call ClickRods
 	/if (!${CheckGroupTimer}) /call CheckGroup
+	/if (${DoShrink} && !${RDPause} && !${Me.Moving} && !${Me.Invis} && !${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]}) /call ShrinkStuff
 	/if (!${RDPause} && ${QueueCount} && !${Me.Moving} && ${DoBuffs} && (${BattleBuffFlag} || !${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]}) && ${Me.PctMana}>=${DoBuffLowest}) /call DoBuffEvents
 	/if (!${RDPause} && !${DoBuffTimer} && !${Me.Invis} && !${Me.Moving} && !${Melee.Combat} && !${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]} && (!${Me.Casting.ID} || ${Me.Class.ShortName.Equal[BRD]})) {
 		/if (${SelfBuffs} && !${SelfBuffTimer}) /call CheckBuffs
@@ -1280,7 +1282,7 @@ Sub PortUs(Line)
         /if (${Line.Equal[grounds]}) /varset PortSpell Circle of the Grounds
         /if (${Line.Equal[domain]}) /varset PortSpell Circle of the Domain
         /if (${Line.Equal[alra]}) /varset PortSpell Circle of Alra
-        /if (${Line.Equal[landing]}) /varset PortSpell Circle of the Landing
+        /if (${Line.Equal[shards]}) /varset PortSpell Circle of the Landing
     } else /if (${Me.Class.ShortName.Equal[WIZ]}) {
         /if (${Line.Equal[wkarana]}) /varset PortSpell West Portal
         /if (${Line.Equal[nro]}) /varset PortSpell Ro Portal
@@ -1319,7 +1321,7 @@ Sub PortUs(Line)
         /if (${Line.Equal[grounds]}) /varset PortSpell Grounds Portal
         /if (${Line.Equal[sarith]}) /varset PortSpell Sarith Portal
         /if (${Line.Equal[alra]}) /varset PortSpell Alra Portal
-        /if (${Line.Equal[shard]}) /varset PortSpell Shard's Landing Portal
+        /if (${Line.Equal[shards]}) /varset PortSpell Shard's Landing Portal
     }
     /if (${Me.Book[${PortSpell}]}) {
         /docommand /${ChatChannel} Porting with ${PortSpell}
@@ -1770,11 +1772,16 @@ Sub XPCommon
 /call MoveStuff
 /return
 
-|=============================================================================
-|
-|START of Maskoi's Shit
-|
-|=============================================================================
+Sub ShrinkStuff
+/declare i	int	local
+/for i 0 to ${Math.Calc[${Group.GroupSize}-1]}
+     /if (${Group.Member[${i}].Height}>2 && ${Group.Member[${i}].Distance}<50) {
+          /target ${Group.Member[${i}]}
+	  /call Cast "${ShrinkSpell}" ${ShrinkGem} 1s Check4Pad
+	  /call Cast "${ShrinkSpell}" ${ShrinkGem} 1s Check4Pad
+     }
+/next i
+/return
 
 | ----------------------------------------------------------------------------
 | SUB: Check PetToys - Based on code from el_nene's autobot. Used with permission.
@@ -2613,6 +2620,16 @@ Sub LoadIni(MyIni,Function)
 /call LoadVar Settings IRCAddress "IRC Server URL" IRCAddress "${MyIni}" ${Function} string
 /call LoadVar Settings IRCPort "6667" IRCPort "${MyIni}" ${Function} int
 /call LoadVar Settings IRCChannel "#Name of Chat with Pound sign" IRCChannel "${MyIni}" ${Function} string
+/call LoadVar Settings AutoSit FALSE AutoSit "${MyIni}" ${Function} bool
+/call LoadVar Settings ASRadius 20 ASRaidus "${MyIni}" ${Function} int
+/call LoadVar Settings ASZRadius 50 AZRadius "${MyIni}" ${Function} int
+/call LoadVar Settings SitDelay 3s SitDelay "${MyIni}" ${Function} string
+/call LoadVar Settings EndMedPct 80 EndMedPct "${MyIni}" ${Function} int
+/call LoadVar Settings UseMount FALSE UseMount "${MyIni}" ${Function} bool
+/call LoadVar Settings MountItem "Put the name of your mount summoning item here" MountItem "${MyIni}" ${Function} string
+/call LoadVar Settings DoShrink FALSE DoShrink "${MyIni}" ${Function} bool
+/call LoadVar Settings ShrinkSpell "Put the name of your shrink spell or item here" ShrinkSpell "${MyIni}" ${Function} string
+/call LoadVar Settings ShrinkGem "item or gemNumber or alt" ShrinkGem "${MyIni}" ${Function} string
 
 /call LoadVar GeneralStuff ChatChannel echo ChatChannel "${MyIni}" ${Function} string
 /call LoadVar Settings MasterList "Put your list of master bots here" MasterList "RDCommon.ini" ${Function} string
@@ -2850,13 +2867,7 @@ Sub LoadIni(MyIni,Function)
 	/if (!${Defined[DebuffArray]}) /declare DebuffArray[${MaxMobs},${DebuffTotal}] int outer
 	/if (!${Defined[MobList]})     /declare MobList[${MaxMobs}]                    int outer
 }
-/call LoadVar Settings AutoSit FALSE AutoSit "${MyIni}" ${Function} bool
-/call LoadVar Settings ASRadius 20 ASRaidus "${MyIni}" ${Function} int
-/call LoadVar Settings ASZRadius 50 AZRadius "${MyIni}" ${Function} int
-/call LoadVar Settings SitDelay 3s SitDelay "${MyIni}" ${Function} string
-/call LoadVar Settings EndMedPct 80 EndMedPct "${MyIni}" ${Function} int
-/call LoadVar Settings UseMount FALSE UseMount "${MyIni}" ${Function} bool
-/call LoadVar Settings MountItem "Put the name of your mount summoning item here" MountItem "${MyIni}" ${Function} string
+
 /if (!${Select[${Me.Class.ShortName},MNK,WAR,BER,ROG]}) {
 	/if (!${Defined[ReportFM]})   /declare ReportFM bool outer
 	/call LoadVar DoBuffStuff BuffGem "Buff Gem you would like to cast /buff requests from" BuffGem "${MyIni}" ${Function} string
