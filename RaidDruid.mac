@@ -509,7 +509,10 @@ Sub CheckHP
 /return
 
 Sub DoDivArb
-/if ((!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID})) {
+/if (${Me.SpellReady[${FranticHeal}]}) {
+	/call Cast "${FranticHeal}" ${FranticGem} 2s
+	/if (${ReportHeals}) /${HealChannel} I've cast ${FranticHeal} on ${MA1}.
+} else /if ((!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID})) {
 	/if (${Me.Casting.ID}) /call DoInterrupt
 	/if (${FindItem[Harmony of the Soul].ID}) /call Cast "Harmony of the Soul" item 5s
 	/if (${FindItem[Aegis of Superior Divinity].ID}) /call Cast "Aegis of Superior Divinity" item 5s
@@ -664,18 +667,14 @@ Sub CureMe
 /return
 
 Sub DoHeal(int HealGuy,HealType)
-|/declare HTCSafe int local
-|/varset HTCSafe 0
-/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Me.Casting.ID}!=${GroupHealID}) {
+|/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Me.Casting.ID}!=${GroupHealID}) {
 |	/call DoInterrupt
-	/delay 2s !${Me.Casting.ID}
-}
-|/if ( ${Me.Book[${HTCSpell}]} && (${Me.SpellReady[${HTCSpell}]} || !${Me.Gem[${HTCSpell}]}) && ((${Target.ID}==${MATarget} && ${Target.PctHPs}<100 ) || (${Me.TargetOfTarget.ID}==${MATarget} && ${Me.TargetOfTarget.PctHPs}<100)) )  /varset HTCSafe 1
+|	/delay 2s !${Me.Casting.ID}
+|}
 /if (${Target.ID}!=${HealGuy}) /target targetable id ${HealGuy}
 /delay 1s ${Target.ID}==${HealGuy}
 /if (${HealType.Equal[Fast]}) /varset StartHPs ${Target.PctHPs}
 /if (${Target.ID}==${HealGuy} && ${Spawn[${HealGuy}].Type.NotEqual[corpse]}) {
-	|/if ( ${HTCSafe} && !${Me.Song[${HTCIcon}].ID} && (${Spawn[${HealGuy}].PctHPs} > ${HTCMinTgtHPPct}) ) /call Cast "${HTCSpell}" ${HTCGem} 1s
 	/call Cast "${${HealType}Heal}" ${${HealType}HealGem} 5s CheckHP
 }
 /if (${HealType.Equal[Fast]} && ${Target.ID}==${HealGuy} && ${Target.PctHPs}<${StartHPs}+5 && ${Target.PctHPs}>=${StartHPs}) {
@@ -1775,7 +1774,7 @@ Sub XPCommon
 Sub ShrinkStuff
 /declare i	int	local
 /for i 0 to ${Math.Calc[${Group.GroupSize}-1]}
-     /if (${Group.Member[${i}].Height}>2 && ${Group.Member[${i}].Distance}<50) {
+     /if (${Group.Member[${i}].Height}>1.6 && ${Group.Member[${i}].Distance}<50) {
           /target ${Group.Member[${i}]}
 	  /call Cast "${ShrinkSpell}" ${ShrinkGem} 1s Check4Pad
 	  /call Cast "${ShrinkSpell}" ${ShrinkGem} 1s Check4Pad
