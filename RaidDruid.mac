@@ -70,7 +70,7 @@ Sub Main
 /declare AssistTimer     timer  outer
 /declare CheckGroupTimer timer  outer
 /declare SitTimer        timer  outer
-/declare FranticSpamTimer timer outer
+|/declare FranticSpamTimer timer outer
 /declare IRCConnect      timer  outer
 /declare FollowGuy       int    outer
 /declare MATarget        int    outer 999999
@@ -230,7 +230,6 @@ Sub Main
 /if (${UseGroupMA}==TRUE  && ${Group.MainAssist.ID}!=${Spawn[${MA1}].ID}) /varset MA1 ${Group.MainAssist}
 /if (!${RDPause} && (!${Me.Invis} || ${Me.Class.ShortName.Equal[ROG]})) {
 	/if (${Me.Class.ShortName.Equal[BRD]} && !${TwistTimer}) /call SingSongs
-	/if (${Me.PctHPs}<=${BegFranticPct} && ${BegFrantic}) /call BegFrantic
 	/call MeBegBuff
 	/call MeBegItem
 	/call PetBegBuff
@@ -1131,7 +1130,7 @@ Sub Nukeit
 		/delay 1s ${Target.ID}==${MATarget}
 	}
 	/call EvaluateCondition "${NukeCondition${i}}"
-	/if (!${RDPause} && ${Macro.Return} && (${NukeSpellSet${i}}==${WhichNuke} || !${NukeSpellSet${i}}) && ((${Me.SpellReady[${Nuke${i}}]} || (!${Me.Gem[${Nuke${i}}]} && ${Spell[${Nuke${i}}].RankName})) || ${Me.AltAbilityReady[${Nuke${i}}]} || ${NukeGem${i}.Equal[item]}) && ${Target.PctHPs}>${NukeStopHPs${i}} && ${Target.PctHPs}<${NukeStartHPs${i}} && ${Me.PctMana}<=${NukeMaxMana${i}} && ${Me.PctMana}>=${NukeMinMana${i}} && (!${SitTimer} || ${Me.Gem[${Nuke${i}}]} || ${Me.Mount.ID}) && ${Target.ID}==${MATarget} && ${Target.LineOfSight} && ${Target.Distance}<${Int[${Spell[${NukeID[${i}]}].MyRange}]} && ${Target.Type.Equal[NPC]}) {
+	/if (!${RDPause} && ${Macro.Return} && (${NukeSpellSet${i}}==${WhichNuke} || !${NukeSpellSet${i}}) && ((${Me.SpellReady[${Nuke${i}}]} || (!${Me.Gem[${Nuke${i}}]} && ${Spell[${Nuke${i}}].RankName.ID})) || ${Me.AltAbilityReady[${Nuke${i}}]} || ${NukeGem${i}.Equal[item]}) && ${Target.PctHPs}>${NukeStopHPs${i}} && ${Target.PctHPs}<${NukeStartHPs${i}} && ${Me.PctMana}<=${NukeMaxMana${i}} && ${Me.PctMana}>=${NukeMinMana${i}} && (!${SitTimer} || ${Me.Gem[${Nuke${i}}]} || ${Me.Mount.ID}) && ${Target.ID}==${MATarget} && ${Target.LineOfSight} && ${Target.Distance}<${Int[${Spell[${NukeID[${i}]}].MyRange}]} && ${Target.Type.Equal[NPC]}) {
 		/call Cast "${Nuke${i}}" ${NukeGem${i}} 5s Check4Pad
 		/if (${castReturn.Equal[CAST_SUCCESS]} && ${DoConcussion} && ((!${SitTimer} || ${Me.Gem[${ConcussionSpell}]} || ${Me.Mount.ID}) || ${Select[${ConcussionGem},item,alt]})) /call Cast "${ConcussionSpell}" ${ConcussionGem} 5s Check4Pad
 		/varset NukeTimer ${NukeDelay}
