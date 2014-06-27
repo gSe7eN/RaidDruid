@@ -1445,12 +1445,15 @@ Sub DoBuffEvents
 /doevents WornOff
 /for a 1 to 25
 	/if (${DoBuffQueue[${a},2]}<${TempVar} && ${Spawn[${DoBuffQueue[${a},1]}].ID} && !(${Spawn[${DoBuffQueue[${a},1]}].Type.Equal[corpse]} ^^ ${RezBuff${DoBuffQueue[${a},2]}}) && ( ${Spell[${DoBuffID[${DoBuffQueue[${a},2]}]}].Name.Find[Illusion:]} || ${Spawn[${DoBuffQueue[${a},1]}].Distance}<${Int[${Spell[${DoBuffID[${DoBuffQueue[${a},2]}]}].MyRange}]} || ${Spawn[${DoBuffQueue[${a},1]}].Distance}<${Spell[${DoBuffID[${DoBuffQueue[${a},2]}]}].AERange})) {
+		/echo /varset TempGuy ${DoBuffQueue[${a},1]}
 		/varset TempGuy ${DoBuffQueue[${a},1]}
+		/echo /varset TempVar ${DoBuffQueue[${a},2]}
 		/varset TempVar ${DoBuffQueue[${a},2]}
 	}
 /next a
 /if (!${CheckGroupTimer}) /call CheckGroup
 /if ((${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]} && ${BattleBuff${TempVar}}==1) || (${BattleBuff${TempVar}}==2 && ${Me.CombatState.Equal[COMBAT]}) || ${Select[${DoBuffGem${TempVar}},item,alt]} || (${Me.Gem[${DoBuff${TempVar}}]} && ${BattleBuff${TempVar}}!=2) || (!${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]} && ${BattleBuff${TempVar}}!=2)) {
+	/echo /if (${TempGuy}) /if (((${Me.SpellReady[${DoBuff${TempVar}}]} || !${Me.Gem[${DoBuff${TempVar}}]} || ${Spell[${DoBuffID[${TempVar}]}].RecastTime}<30) && ${Me.CurrentMana}>${Spell[${DoBuffID[${TempVar}]}].Mana} && ${Me.PctMana}>=${DoBuffMana${TempVar}}) && (!${Select[${DoBuffGem${TempVar}},item,alt]} || (${DoBuffGem${TempVar}.Equal[item]} && ${FindItem[${DoBuff${TempVar}}].TimerReady}<30) || (${DoBuffGem${TempVar}.Equal[alt]} && ${Me.AltAbilityReady[${DoBuff${TempVar}}]}))) {
 	/if (${TempGuy}) /if (((${Me.SpellReady[${DoBuff${TempVar}}]} || !${Me.Gem[${DoBuff${TempVar}}]} || ${Spell[${DoBuffID[${TempVar}]}].RecastTime}<30) && ${Me.CurrentMana}>${Spell[${DoBuffID[${TempVar}]}].Mana} && ${Me.PctMana}>=${DoBuffMana${TempVar}}) && (!${Select[${DoBuffGem${TempVar}},item,alt]} || (${DoBuffGem${TempVar}.Equal[item]} && ${FindItem[${DoBuff${TempVar}}].TimerReady}<30) || (${DoBuffGem${TempVar}.Equal[alt]} && ${Me.AltAbilityReady[${DoBuff${TempVar}}]}))) {
 		/squelch /target targetable id ${TempGuy}
 		/delay 1s ${Target.ID}==${TempGuy}
@@ -2787,7 +2790,7 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar DoBuffStuff RezBuff${i} FALSE RezBuff${i} "${MyIni}" ${Function} bool
 		/if (${Me.AltAbility[${DoBuff${i}}].Spell.ID}) /varset DoBuffID[${i}] ${Me.AltAbility[${DoBuff${i}}].Spell.ID}
 		/if (${FindItem[${DoBuff${i}}].ID}) /varset DoBuffID[${i}] ${FindItem[${DoBuff${i}}].Spell.ID}
-		/if (${$Spell[${DoBuff${i}}].RankName}) /varset DoBuffID[${i}] ${Me.Book[${Me.Book[${Spell[${DoBuff${i}}].RankName}]}].ID}
+		/if (${Spell[${DoBuff${i}}].RankName.ID}) /varset DoBuffID[${i}] ${Spell[${DoBuff${i}}].RankName.ID}
 		/if (${Ini[${RDIni},DoBuffStuff,DoBuffIcon${i},NOTFOUND].NotEqual[NOTFOUND]}) /varset DoBuffID[${i}] ${Spell[${Ini[${RDIni},DoBuffStuff,DoBuffIcon${i},NOTFOUND]}].ID}
 		/if (${BattleBuff${i}} && !${Defined[BattleBuffFlag]}) /declare BattleBuffFlag bool outer TRUE
 		/if (${DoBuffLowest}>${DoBuffMana${i}}) /varset DoBuffLowest ${DoBuffMana${i}}
@@ -2835,8 +2838,7 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar DebuffStuff SpellType${i} 0 SpellType${i} "${MyIni}" ${Function} int
 		/if (${Me.AltAbility[${DebuffSpell${i}}].Spell.ID}) /varset DebuffID[${i}] ${Me.AltAbility[${DebuffSpell${i}}].Spell.ID}
 		/if (${FindItem[${DebuffSpell${i}}].ID}) /varset DebuffID[${i}] ${FindItem[${DebuffSpell${i}}].Spell.ID}
-		/bc [+y+] /if (${Spell[${DebuffSpell${i}}].RankName.ID}) /varset DebuffID[${i}] ${Spell[${DebuffSpell${i}}].RankName.ID}
-		          /if (${Spell[${DebuffSpell${i}}].RankName.ID}) /varset DebuffID[${i}] ${Spell[${DebuffSpell${i}}].RankName.ID}
+		/if (${Spell[${DebuffSpell${i}}].RankName.ID}) /varset DebuffID[${i}] ${Spell[${DebuffSpell${i}}].RankName.ID}
 		/if (${DebuffLowest}>${DebuffMana${i}}) /varset DebuffLowest ${DebuffMana${i}}
 		/call LoadVar ImmuneList_${Zone.ShortName} ${DebuffID[${i}]}Immune | ${DebuffID[${i}]}Immune RDCommon.ini ${Function} string
 	/next i
@@ -2878,8 +2880,7 @@ Sub LoadIni(MyIni,Function)
 		 	/call LoadVar NukeStuff NukeCondition${i} TRUE NukeCondition${i} "${MyIni}" ${Function} string
 		 	/if (${Me.AltAbility[${Nuke${i}}].Spell.ID}) /varset NukeID[${i}] ${Me.AltAbility[${Nuke${i}}].Spell.ID}
 		 	/if (${FindItem[${Nuke${i}}].ID}) /varset NukeID[${i}] ${FindItem[${Nuke${i}}].Spell.ID}
-			/bc [+r+] /if (${Spell[${Nuke${i}}].RankName.ID}) /varset NukeID[${i}] ${Me.Book[${Me.Book[${Spell[${Nuke${i}}].RankName}]}].ID}
-		 	/if (${Spell[${Nuke${i}}].RankName.ID}) /varset NukeID[${i}] ${Me.Book[${Me.Book[${Spell[${Nuke${i}}].RankName}]}].ID}
+			/if (${Spell[${Nuke${i}}].RankName.ID}) /varset NukeID[${i}] ${Me.Book[${Me.Book[${Spell[${Nuke${i}}].RankName}]}].ID}
 		 	/if (${NukeMinMana${i}}<${NukeLowest}) /varset NukeLowest ${NukeMinMana${i}}
 		/next i
 	}
