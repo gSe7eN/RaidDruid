@@ -372,7 +372,7 @@ Sub MoveStuff
 	/squelch /stick hold uw
 }
 /if (${Stick.Status.Equal[ON]} && ${FollowOn} && ${TravelMode} && !${Me.Invis} && !${Me.CombatState.Equal[COMBAT]}) {
-	/if ((${FindItem[${InvisibilitySpell}].ID} && ${InvisibilityGem.Equal[item]}) || (${InvisibilityGem.Equal[alt]} && ${Me.AltAbilityReady[${InvisibilitySpell}]})|| ${Me.Book[${InvisibilitySpell}]}) {
+	/if ((${FindItem[${InvisibilitySpell}].ID} && ${InvisibilityGem.Equal[item]}) || (${InvisibilityGem.Equal[alt]} && ${Me.AltAbilityReady[${InvisibilitySpell}]}) || ${Spell[${InvisibilitySpell}].RankName}) {
 		/squelch /target targetable id ${Me.ID}
 		/delay 1s ${Target.ID}==${Me.ID}
 		/call Cast "${InvisibilitySpell}" ${InvisibilityGem} 5s Check4Pad
@@ -511,7 +511,7 @@ Sub CheckHP
 Sub DoDivArb
 /if (${Me.SpellReady[${FranticHeal}]}) {
 	/call Cast "${FranticHeal}" ${FranticGem} 2s
-	/if (${ReportHeals}) /${HealChannel} I've cast ${FranticHeal} on ${MA1}.
+	/if (${ReportHeals}) /${HealChannel} I've cast ${Spell[${FranticHeal}].RankName} on ${MA1}.
 } else /if ((!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID})) {
 	/if (${Me.Casting.ID}) /call DoInterrupt
 	/if (${FindItem[Harmony of the Soul].ID}) /call Cast "Harmony of the Soul" item 5s
@@ -520,7 +520,7 @@ Sub DoDivArb
 	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID}) /call DoInterrupt
 	/call Cast "${DivArbSpell}" ${DivArbGem} 5s
 }
-/if (!${Select[${DivArbGem},alt,item]} && ${Me.Book[${DivArbSpell}]}) /varset DivArbTimer ${Spell[${DivArbSpell}].RecastTime}
+/if (!${Select[${DivArbGem},alt,item]} && ${Spell[${DivArbSpell}].RankName}) /varset DivArbTimer ${Spell[${DivArbSpell}].RecastTime}
 /varset StayOnHealTimer ${StayOnHeal}
 /return
 
@@ -657,7 +657,7 @@ Sub CheckGroup
 Sub CureMe
 /declare i int local
 /for i 1 to ${CureTotal}
-	/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${CureSpell${i}}]} || (!${Me.Gem[${CureSpell${i}}]} && ${Me.Book[${CureSpell${i}}]})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
+	/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${CureSpell${i}}]} || (!${Me.Gem[${CureSpell${i}}]} && ${Spell[${CureSpell${i}}].RankName})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
 		/target targetable id ${Me.ID}
 		/delay 1s ${Target.ID}==${Me.ID}
 		/if (${ReportCures}) /${HealChannel} Curing myself with ${CureSpell${i}}
@@ -709,25 +709,6 @@ Sub DoSotW
 	/call Cast "${SotWAA}" alt 1s
 }
 /varset GroupTotalHPs 0
-/return
-
-Sub FranticHeal
-/target targetable id ${Spawn[$MA1]}.ID}
-/if (${Me.SpellReady[${FranticHeal}]}) {
-	/call Cast "${FranticHeal}" ${FranticGem} 2s
-	/if (${ReportHeals}) /${HealChannel} I've cast ${FranticHeal} on ${MA1}.
-} else {
-	/if (${ReportHeals}) /${HealChannel} ${FranticHeal} NOT cast because it is not ready!
-}
-/return
-
-Sub BegFrantic
-/if (${FranticSpamTimer}>0) {
-	/return
-} else {
-	/i say Frantic Heal Now!
-	/varset FranticSpamTimer 10s
-}
 /return
 
 Sub DoSotWNet
@@ -1150,7 +1131,7 @@ Sub Nukeit
 		/delay 1s ${Target.ID}==${MATarget}
 	}
 	/call EvaluateCondition "${NukeCondition${i}}"
-	/if (!${RDPause} && ${Macro.Return} && (${NukeSpellSet${i}}==${WhichNuke} || !${NukeSpellSet${i}}) && ((${Me.SpellReady[${Nuke${i}}]} || (!${Me.Gem[${Nuke${i}}]} && ${Me.Book[${Nuke${i}}]})) || ${Me.AltAbilityReady[${Nuke${i}}]} || ${NukeGem${i}.Equal[item]}) && ${Target.PctHPs}>${NukeStopHPs${i}} && ${Target.PctHPs}<${NukeStartHPs${i}} && ${Me.PctMana}<=${NukeMaxMana${i}} && ${Me.PctMana}>=${NukeMinMana${i}} && (!${SitTimer} || ${Me.Gem[${Nuke${i}}]} || ${Me.Mount.ID}) && ${Target.ID}==${MATarget} && ${Target.LineOfSight} && ${Target.Distance}<${Int[${Spell[${NukeID[${i}]}].MyRange}]} && ${Target.Type.Equal[NPC]}) {
+	/if (!${RDPause} && ${Macro.Return} && (${NukeSpellSet${i}}==${WhichNuke} || !${NukeSpellSet${i}}) && ((${Me.SpellReady[${Nuke${i}}]} || (!${Me.Gem[${Nuke${i}}]} && ${Spell[${Nuke${i}}].RankName})) || ${Me.AltAbilityReady[${Nuke${i}}]} || ${NukeGem${i}.Equal[item]}) && ${Target.PctHPs}>${NukeStopHPs${i}} && ${Target.PctHPs}<${NukeStartHPs${i}} && ${Me.PctMana}<=${NukeMaxMana${i}} && ${Me.PctMana}>=${NukeMinMana${i}} && (!${SitTimer} || ${Me.Gem[${Nuke${i}}]} || ${Me.Mount.ID}) && ${Target.ID}==${MATarget} && ${Target.LineOfSight} && ${Target.Distance}<${Int[${Spell[${NukeID[${i}]}].MyRange}]} && ${Target.Type.Equal[NPC]}) {
 		/call Cast "${Nuke${i}}" ${NukeGem${i}} 5s Check4Pad
 		/if (${castReturn.Equal[CAST_SUCCESS]} && ${DoConcussion} && ((!${SitTimer} || ${Me.Gem[${ConcussionSpell}]} || ${Me.Mount.ID}) || ${Select[${ConcussionGem},item,alt]})) /call Cast "${ConcussionSpell}" ${ConcussionGem} 5s Check4Pad
 		/varset NukeTimer ${NukeDelay}
@@ -1386,7 +1367,7 @@ Sub AutoSit
 	/if (${DoCanni} && ${CanniTotal} && !${Me.Casting.ID} && ${Me.PctMana}<${MedPct}) {
 		/for i 1 to ${CanniTotal}
 		/if (${Spell[${CanniSpell${i}}].Level}>70) /varset CanniSpell${i} ${Spell[${CanniSpell${i}}].RankName}
-		/if (((${Me.SpellReady[${CanniSpell${i}}]} || (!${Me.Gem[${CanniSpell${i}}]} && ${Me.Book[${CanniSpell${i}}]})) || ${Me.AltAbilityReady[${CanniSpell${i}}]} || (${CanniGem${i}.Equal[item]} && !${FindItem[${CanniSpell${i}}].Timer})) && ${Me.PctHPs}>${CanniHPs${i}} && ${Me.PctMana}<${CanniMana${i}} && !${Me.Buff[${CanniSpell${i}}].ID}) /call Cast "${CanniSpell${i}}" ${CanniGem${i}} 10s Check4Pad
+		/if (((${Me.SpellReady[${CanniSpell${i}}]} || (!${Me.Gem[${CanniSpell${i}}]} && ${Spell[${CanniSpell${i}}].RankName})) || ${Me.AltAbilityReady[${CanniSpell${i}}]} || (${CanniGem${i}.Equal[item]} && !${FindItem[${CanniSpell${i}}].Timer})) && ${Me.PctHPs}>${CanniHPs${i}} && ${Me.PctMana}<${CanniMana${i}} && !${Me.Buff[${CanniSpell${i}}].ID}) /call Cast "${CanniSpell${i}}" ${CanniGem${i}} 10s Check4Pad
 		/if (${Me.Class.ShortName.Equal[WIZ]} && ${Me.Buff[${CanniSpell${i}}].ID}) /delay 19s !${Me.Buff[${CanniSpell${i}}].ID}
 		/if (${Me.Buff[${CanniSpell${i}}].ID} && ${Me.PctHPs}<${CanniHPs${i}}) /nomodkey /notify BuffWindow buff${Me.Buff[${CanniSpell${i}}].ID} leftmouseup
 		/if (!${Me.Buff[${CanniHealSpell}].ID} && ${Me.PctHPs}<${CanniHealHPs}) {
@@ -1552,7 +1533,7 @@ Sub AddSong(LowGem,HighGem,TwistType,Song)
 }
 /for i ${LowGem} to ${HighGem}
 	/if (${Ini[${RDIni},"Bard-${TwistType}",SongsArray${i},NOTFOUND].Equal[Song Name]}) {
-		/if (!${Me.Book[${Song}]}) {
+		/if (!${Spell[${Song}].RankName}) {
 			/if (${Ini[${RDIni},"Bard-Aliases",${Song},NOTFOUND].Equal[NOTFOUND]}) /return
 		 	/if (TRUE) /${ChatChannel} ${Song}-->${Ini[${RDIni},"Bard-Aliases",${Song}]}
 			/varset Song ${Ini[${RDIni},"Bard-Aliases",${Song}]}
@@ -1579,7 +1560,7 @@ Sub DelSong(LowGem,HighGem,TwistType,Song)
 /declare i    int    local
 /declare k    int    local
 /declare flag int    local
-/if (!${Me.Book[${Song}]}) {
+/if (!${Spell[${Song}].RankName}) {
 	/if (${Ini[${RDIni},"Bard-Aliases",${Song},NOTFOUND].Equal[NOTFOUND]}) {
 		/if (TRUE) /${ChatChannel} Song: ${Song} not found.  Song NOT Removed
 		/return
@@ -1827,7 +1808,7 @@ Sub ShrinkStuff
             }
          /if (${2ndPart.Length} && ${PetToysTemp.Find[${2ndPart}1]} || ${3rdPart.Length} && ${PetToysTemp.Find[${3rdPart}2]}) /goto :SkipPetToy
             | Check for pet toy spells in book to prevent double casting of items
-            /if (${Me.Book[${PetToySpell}]}) {
+            /if (${Spell[${PetToySpell}].RankName}) {
 		/target ${Me}
 		/delay 1s
                 /call Cast "${PetToySpell}" ${BuffGem}
@@ -2089,7 +2070,7 @@ Sub CalmGroup(Puller)
 /declare tempTarget int local 0
 /declare centerMob int local 0
 /declare casted int local 0
-/if (${Spawn[${Puller}].ID} && ((${FindItem[${CalmSpell}].ID} && ${CalmGem.Equal[item]}) || (${CalmGem.Equal[alt]} && ${Me.AltAbilityReady[${CalmSpell}]}) || ${Me.Book[${CalmSpell}]})) {
+/if (${Spawn[${Puller}].ID} && ((${FindItem[${CalmSpell}].ID} && ${CalmGem.Equal[item]}) || (${CalmGem.Equal[alt]} && ${Me.AltAbilityReady[${CalmSpell}]}) || ${Spell[${CalmSpell}].RankName})) {
 	/if (${Puller}!=${Me.ID}) {
 		/squelch /target targetable id ${Puller}
 		/delay 1s ${Target.ID}==${Puller}
@@ -2292,7 +2273,7 @@ Sub Event_MakeStuff(Line,Stuff1,Stuff2)
 /if (${SummonFood}==TRUE) {
    /declare i int local
    /for i 1 to 2
-	/if (${Me.FreeInventory}>=2 && !${RDPause} && ((${Me.Gem[${${Stuff${i}}Spell}]} || (!${SitTimer} && ${Me.Book[${${Stuff${i}}Spell}]})) || (${${Stuff${i}}Gem.Equal[alt]} && ${Me.AltAbilityReady[${${Stuff${i}}Gem}]}) || ${${Stuff${i}}Gem.Equal[item]}) && !${SpawnCount[npc targetable radius 25 noalert 1]}) {
+	/if (${Me.FreeInventory}>=2 && !${RDPause} && ((${Me.Gem[${${Stuff${i}}Spell}]} || (!${SitTimer} && ${Spell[${${Stuff${i}}Spell}].RankName})) || (${${Stuff${i}}Gem.Equal[alt]} && ${Me.AltAbilityReady[${${Stuff${i}}Gem}]}) || ${${Stuff${i}}Gem.Equal[item]}) && !${SpawnCount[npc targetable radius 25 noalert 1]}) {
 		/call Cast "${${Stuff${i}}Spell}" ${${Stuff${i}}Gem} 5s Check4Pad
 		/call ClearCursor
 	}
@@ -2389,7 +2370,7 @@ Sub Event_Rampage
 	/delay 5
 	/if (${Target.ID}==${Spawn[${RampTank}].ID} && ${Target.PctHPs}<${CancelPct} && ${Target.Distance}<${Int[${Spell[${FastHealID}].MyRange}]}) {
 		/delay 10s !${Me.Casting.ID}
-		/if (${ReportHeals} && ${Target.ID}) /${ChatChannel} ${FastHeal} @ ${Target.CleanName} the Rampage Tank
+		/if (${ReportHeals} && ${Target.ID}) /${ChatChannel} ${Spell[${FastHeal}].RankName} @ ${Target.CleanName} the Rampage Tank
 		/call Cast "${FastHeal}" ${FastHealGem} 3s CheckHP
 	}
 	/if (${Target.ID}!=${MATarget}) /call assistMA1
@@ -2722,15 +2703,11 @@ Sub LoadIni(MyIni,Function)
 	/call LoadVar HealStuff UseFranticHeal FALSE UseFranticHeal "${MyIni}" ${Function} bool
 	/call LoadVar HealStuff FranticHeal "Put the name of your Frantic emergancy heal here" FranticHeal "${MyIni}" ${Function} string
 	/call LoadVar HealStuff FranticHealGem "Put the spell gem that FranticHeal is cast from here" FrantHealGem "${MyIni}" ${Function} string
-|	/call LoadVar HealStuff HTCSpell "Put the name of your healing twincast ToT nuke spell here" HTCSpell "${MyIni}" ${Function} string
-|	/call LoadVar HealStuff HTCGem "Put the spell gem you want to cast your healing twincast ToT nuke spell from here" HTCGem "${MyIni}" ${Function} string
-|	/call LoadVar HealStuff HTCIcon "Healing Twincast" HTCIcon "${MyIni}" ${Function} string
-|	/call LoadVar HealStuff HTCMinTgtHPPct 40 HTCMinTgtHPPct "${MyIni}" ${Function} int	
-	/if (!${Defined[FastHealID]}) /declare FastHealID int outer ${Me.Book[${Me.Book[${FastHeal}]}].ID}
-	/if (!${Defined[GroupHealID]}) /declare GroupHealID int outer ${Me.Book[${Me.Book[${GroupHeal}]}].ID}
-	/if (!${Defined[TankHealID]}) /declare TankHealID int outer ${Me.Book[${Me.Book[${TankHeal}]}].ID}
-	/if (!${Defined[PetHealID]})  /declare PetHealID  int outer ${Me.Book[${Me.Book[${PetHeal}]}].ID}
-	/if (!${Defined[DelayedHealID]})  /declare DelayedHealID int outer ${Me.Book[${Me.Book[${DelayedHeal}]}].ID}
+	/if (!${Defined[FastHealID]})     /declare FastHealID    int outer ${Me.Book[${Me.Book[${Spell[${FastHeal}].RankName}]}].ID}
+	/if (!${Defined[GroupHealID]})    /declare GroupHealID   int outer ${Me.Book[${Me.Book[${Spell[${GroupHeal}].RankName}]}].ID}
+	/if (!${Defined[TankHealID]})     /declare TankHealID    int outer ${Me.Book[${Me.Book[${Spell[${TankHeal}].RankName}]}].ID}
+	/if (!${Defined[PetHealID]})      /declare PetHealID     int outer ${Me.Book[${Me.Book[${Spell[${PetHeal}].RankName}]}].ID}
+	/if (!${Defined[DelayedHealID]})  /declare DelayedHealID int outer ${Me.Book[${Me.Book[${Spell[${DelayedHeal}].RankName}]}].ID}
 }
 /call LoadVar CureStuff CureTotal 1 CureTotal "${MyIni}" ${Function} int
 /call LoadVar SelfBuffStuff SelfBuffTotal 1 SelfBuffTotal "${MyIni}" ${Function} int
@@ -2781,7 +2758,7 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar SelfBuffStuff SelfBuffIcon${i} NOTFOUND SelfBuffIcon${i} "${MyIni}" ${Function} string
 		/if (${Me.AltAbility[${SelfBuff${i}}].Spell.ID}) /varset SelfBuffID[${i}] ${Me.AltAbility[${SelfBuff${i}}].Spell.ID}
 		/if (${FindItem[${SelfBuff${i}}].ID}) /varset SelfBuffID[${i}] ${FindItem[${SelfBuff${i}}].Spell.ID}
-		/if (${Me.Book[${SelfBuff${i}}]}) /varset SelfBuffID[${i}] ${Me.Book[${Me.Book[${SelfBuff${i}}]}].ID}
+		/if (${Spell[${SelfBuff${i}}].RankName.ID}) /varset SelfBuffID[${i}] ${Me.Book[${Me.Book[${Spell[${SelfBuff${i}}].RankName}]}].ID}
 		/if (${Me.CombatAbility[${SelfBuff${i}}]}) /varset SelfBuffID[${i}] ${Spell[${SelfBuff${i}}].ID}
 		/if (!${SelfBuffAura${i}}) {
 			/if (${Ini[${RDIni},SelfBuffStuff,SelfBuffIcon${i},NOTFOUND].NotEqual[NOTFOUND]}) /varset SelfBuffID[${i}] ${Spell[${Ini[${RDIni},SelfBuffStuff,SelfBuffIcon${i},NOTFOUND]}].ID}
@@ -2811,7 +2788,7 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar DoBuffStuff RezBuff${i} FALSE RezBuff${i} "${MyIni}" ${Function} bool
 		/if (${Me.AltAbility[${DoBuff${i}}].Spell.ID}) /varset DoBuffID[${i}] ${Me.AltAbility[${DoBuff${i}}].Spell.ID}
 		/if (${FindItem[${DoBuff${i}}].ID}) /varset DoBuffID[${i}] ${FindItem[${DoBuff${i}}].Spell.ID}
-		/if (${Me.Book[${DoBuff${i}}]}) /varset DoBuffID[${i}] ${Me.Book[${Me.Book[${DoBuff${i}}]}].ID}
+		/if (${$Spell[${DoBuff${i}}].RankName}) /varset DoBuffID[${i}] ${Me.Book[${Me.Book[${Spell[${DoBuff${i}}].RankName}]}].ID}
 		/if (${Ini[${RDIni},DoBuffStuff,DoBuffIcon${i},NOTFOUND].NotEqual[NOTFOUND]}) /varset DoBuffID[${i}] ${Spell[${Ini[${RDIni},DoBuffStuff,DoBuffIcon${i},NOTFOUND]}].ID}
 		/if (${BattleBuff${i}} && !${Defined[BattleBuffFlag]}) /declare BattleBuffFlag bool outer TRUE
 		/if (${DoBuffLowest}>${DoBuffMana${i}}) /varset DoBuffLowest ${DoBuffMana${i}}
@@ -2859,7 +2836,8 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar DebuffStuff SpellType${i} 0 SpellType${i} "${MyIni}" ${Function} int
 		/if (${Me.AltAbility[${DebuffSpell${i}}].Spell.ID}) /varset DebuffID[${i}] ${Me.AltAbility[${DebuffSpell${i}}].Spell.ID}
 		/if (${FindItem[${DebuffSpell${i}}].ID}) /varset DebuffID[${i}] ${FindItem[${DebuffSpell${i}}].Spell.ID}
-		/if (${Me.Book[${DebuffSpell${i}}]}) /varset DebuffID[${i}] ${Me.Book[${Me.Book[${DebuffSpell${i}}]}].ID}
+		/bc [+y+] /if (${Spell[${DebuffSpell${i}}].RankName.ID}) /varset DebuffID[${i}] ${Spell[${DebuffSpell${i}}].RankName.ID}
+		          /if (${Spell[${DebuffSpell${i}}].RankName.ID}) /varset DebuffID[${i}] ${Spell[${DebuffSpell${i}}].RankName.ID}
 		/if (${DebuffLowest}>${DebuffMana${i}}) /varset DebuffLowest ${DebuffMana${i}}
 		/call LoadVar ImmuneList_${Zone.ShortName} ${DebuffID[${i}]}Immune | ${DebuffID[${i}]}Immune RDCommon.ini ${Function} string
 	/next i
@@ -2901,7 +2879,8 @@ Sub LoadIni(MyIni,Function)
 		 	/call LoadVar NukeStuff NukeCondition${i} TRUE NukeCondition${i} "${MyIni}" ${Function} string
 		 	/if (${Me.AltAbility[${Nuke${i}}].Spell.ID}) /varset NukeID[${i}] ${Me.AltAbility[${Nuke${i}}].Spell.ID}
 		 	/if (${FindItem[${Nuke${i}}].ID}) /varset NukeID[${i}] ${FindItem[${Nuke${i}}].Spell.ID}
-		 	/if (${Me.Book[${Nuke${i}}]}) /varset NukeID[${i}] ${Me.Book[${Me.Book[${Nuke${i}}]}].ID}
+			/bc [+r+] /if (${Spell[${Nuke${i}}].RankName.ID}) /varset NukeID[${i}] ${Me.Book[${Me.Book[${Spell[${Nuke${i}}].RankName}]}].ID}
+		 	/if (${Spell[${Nuke${i}}].RankName.ID}) /varset NukeID[${i}] ${Me.Book[${Me.Book[${Spell[${Nuke${i}}].RankName}]}].ID}
 		 	/if (${NukeMinMana${i}}<${NukeLowest}) /varset NukeLowest ${NukeMinMana${i}}
 		/next i
 	}
@@ -2957,13 +2936,13 @@ Sub LoadIni(MyIni,Function)
 /if (${Me.Class.ShortName.Equal[CLR]}) {
 	/call LoadVar HealStuff DivArbSpell "Divine Arbitration" DivArbSpell "${MyIni}" ${Function} string
 	/call LoadVar HealStuff DivArbGem "alt" DivArbGem "${MyIni}" ${Function} string
-	/if (!${Defined[DivArbSpellID]})  /declare DivArbSpellID int outer ${Me.Book[${Me.Book[${DivArbSpell}]}].ID}
+	/if (!${Defined[DivArbSpellID]})  /declare DivArbSpellID int outer ${Me.Book[${Me.Book[${Spell[${DivArbSpell}].RankName}]}].ID}
 }
 /if (${Me.Class.ShortName.Equal[SHM]}) {
 	/call LoadVar HealStuff DivArbSpell "Put the name of your divine arbitration spell or item" DivArbSpell "${MyIni}" ${Function} string
 	/call LoadVar HealStuff DivArbGem "Put the name of the Spell Gem you want to cast your Pet Spell from here" DivArbGem "${MyIni}" ${Function} string
 	/if (!${Defined[DivArbTimer]})   /declare DivArbTimer                    timer  outer
-	/if (!${Defined[DivArbSpellID]})  /declare DivArbSpellID int outer ${Me.Book[${Me.Book[${DivArbSpell}]}].ID}
+	/if (!${Defined[DivArbSpellID]})  /declare DivArbSpellID int outer ${Me.Book[${Me.Book[${Spell[${DivArbSpell}].RankName}]}].ID}
 }
 /if (${Me.Class.ShortName.Equal[CLR]}) /call LoadVar HealStuff UseBDA FALSE UseBDA "${MyIni}" ${Function} bool
 /if (${Me.Class.ShortName.Equal[ENC]}) /call LoadVar Settings GatherPct 10 GatherPct "${MyIni}" ${Function} int
@@ -2989,7 +2968,7 @@ Sub LoadIni(MyIni,Function)
 		 	/call LoadVar PetStuff PetBuffGem${i} "pet Buff #${i} Gem or put Item if an item" PetBuffGem${i} ${MyIni} ${Function} string
 		 	/if (${Me.AltAbility[${PetBuff${i}}].Spell.ID}) /varset PetBuffID[${i}] ${Me.AltAbility[${PetBuff${i}}].Spell.ID}
 		 	/if (${FindItem[${PetBuff${i}}].ID}) /varset PetBuffID[${i}] ${FindItem[${PetBuff${i}}].Spell.ID}
-		 	/if (${Me.Book[${PetBuff${i}}]}) /varset PetBuffID[${i}] ${Me.Book[${Me.Book[${PetBuff${i}}]}].ID}
+		 	/if (${Spell[${PetBuff${i}}].RankName.ID}) /varset PetBuffID[${i}] ${Spell[${PetBuff${i}}].RankName}
 		 	/if (${Ini[${RDIni},PetStuff,PetBuffIcon${i},NOTFOUND].NotEqual[NOTFOUND]}) /varset PetBuffID[${i}] ${Spell[${Ini[${RDIni},PetStuff,PetBuffIcon${i},NOTFOUND]}].ID}
 		/next i
 	}
