@@ -2272,7 +2272,7 @@ Sub Event_MakeStuff(Line,Stuff1,Stuff2)
 /if (${SummonFood}==TRUE) {
    /declare i int local
    /for i 1 to 2
-	/if (${Me.FreeInventory}>=2 && !${RDPause} && ((${Me.Gem[${${Stuff${i}}Spell}]} || (!${SitTimer} && ${Spell[${${Stuff${i}}Spell}].RankName.ID})) || (${${Stuff${i}}Gem.Equal[alt]} && ${Me.AltAbilityReady[${${Stuff${i}}Gem}]}) || ${${Stuff${i}}Gem.Equal[item]}) && !${SpawnCount[npc targetable radius 25 noalert 1]}) {
+	/if (${Me.FreeInventory}>=2 && !${RDPause} && ((${Me.Gem[${${Stuff${i}}Spell}]} || (!${SitTimer} && ${Spell[${${Stuff${i}}Spell}].RankName})) || (${${Stuff${i}}Gem.Equal[alt]} && ${Me.AltAbilityReady[${${Stuff${i}}Gem}]}) || ${${Stuff${i}}Gem.Equal[item]}) && !${SpawnCount[npc targetable radius 25 noalert 1]}) {
 		/call Cast "${${Stuff${i}}Spell}" ${${Stuff${i}}Gem} 5s Check4Pad
 		/call ClearCursor
 	}
