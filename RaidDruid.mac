@@ -1445,15 +1445,12 @@ Sub DoBuffEvents
 /doevents WornOff
 /for a 1 to 25
 	/if (${DoBuffQueue[${a},2]}<${TempVar} && ${Spawn[${DoBuffQueue[${a},1]}].ID} && !(${Spawn[${DoBuffQueue[${a},1]}].Type.Equal[corpse]} ^^ ${RezBuff${DoBuffQueue[${a},2]}}) && ( ${Spell[${DoBuffID[${DoBuffQueue[${a},2]}]}].Name.Find[Illusion:]} || ${Spawn[${DoBuffQueue[${a},1]}].Distance}<${Int[${Spell[${DoBuffID[${DoBuffQueue[${a},2]}]}].MyRange}]} || ${Spawn[${DoBuffQueue[${a},1]}].Distance}<${Spell[${DoBuffID[${DoBuffQueue[${a},2]}]}].AERange})) {
-		/echo /varset TempGuy ${DoBuffQueue[${a},1]}
 		/varset TempGuy ${DoBuffQueue[${a},1]}
-		/echo /varset TempVar ${DoBuffQueue[${a},2]}
 		/varset TempVar ${DoBuffQueue[${a},2]}
 	}
 /next a
 /if (!${CheckGroupTimer}) /call CheckGroup
 /if ((${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]} && ${BattleBuff${TempVar}}==1) || (${BattleBuff${TempVar}}==2 && ${Me.CombatState.Equal[COMBAT]}) || ${Select[${DoBuffGem${TempVar}},item,alt]} || (${Me.Gem[${DoBuff${TempVar}}]} && ${BattleBuff${TempVar}}!=2) || (!${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]} && ${BattleBuff${TempVar}}!=2)) {
-	/echo /if (${TempGuy}) /if (((${Me.SpellReady[${DoBuff${TempVar}}]} || !${Me.Gem[${DoBuff${TempVar}}]} || ${Spell[${DoBuffID[${TempVar}]}].RecastTime}<30) && ${Me.CurrentMana}>${Spell[${DoBuffID[${TempVar}]}].Mana} && ${Me.PctMana}>=${DoBuffMana${TempVar}}) && (!${Select[${DoBuffGem${TempVar}},item,alt]} || (${DoBuffGem${TempVar}.Equal[item]} && ${FindItem[${DoBuff${TempVar}}].TimerReady}<30) || (${DoBuffGem${TempVar}.Equal[alt]} && ${Me.AltAbilityReady[${DoBuff${TempVar}}]}))) {
 	/if (${TempGuy}) /if (((${Me.SpellReady[${DoBuff${TempVar}}]} || !${Me.Gem[${DoBuff${TempVar}}]} || ${Spell[${DoBuffID[${TempVar}]}].RecastTime}<30) && ${Me.CurrentMana}>${Spell[${DoBuffID[${TempVar}]}].Mana} && ${Me.PctMana}>=${DoBuffMana${TempVar}}) && (!${Select[${DoBuffGem${TempVar}},item,alt]} || (${DoBuffGem${TempVar}.Equal[item]} && ${FindItem[${DoBuff${TempVar}}].TimerReady}<30) || (${DoBuffGem${TempVar}.Equal[alt]} && ${Me.AltAbilityReady[${DoBuff${TempVar}}]}))) {
 		/squelch /target targetable id ${TempGuy}
 		/delay 1s ${Target.ID}==${TempGuy}
