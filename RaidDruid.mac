@@ -1401,6 +1401,7 @@ Sub AutoSit
 		}
 	}
 	/if (${SpawnCount[npc targetable radius ${ASRadius} zradius ${ASZRadius} noalert 1]} && !${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
+	/if (${Me.PctMana}==100 || ${Me.PctEndurance}==100) /stand
 }
 /return
 
