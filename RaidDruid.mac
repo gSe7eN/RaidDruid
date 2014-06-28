@@ -201,7 +201,6 @@ Sub Main
 	/squelch /alias /UseCH            /echo ToggleVar CHing of MA1,UseCH,HealStuff,UseCH,
 	/squelch /alias /usedelayed       /echo ToggleVar Delayed Heal of MA1,UseDelayedHeal,HealStuff,UseDelayedHeal,
 	/squelch /alias /usedivarb        /echo ToggleVar Auto Divine Arbitration,UseDivArb,HealStuff,UseDivArb,
-	/squelch /alias /usefrantic       /echo ToggleVar Frantic Healing of ${MA1},UseFranticHeal,HealStuff,UseFranticHeal,
 	/squelch /alias /useepic          /echo ToggleString Mobs for use epic,UseEpic,GeneralStuff,UseEpic,
 	/squelch /alias /useirc           /echo ToggleVar Using the IRC Plugin,UseIRC,Settings,UseIRC,
 	/squelch /alias /usegroupassist   /echo ToggleVar Use Group MA Target for adquire MA,UseGroupMA,GeneralStuff,UseGroupMA,
@@ -253,9 +252,11 @@ Sub Main
 		/if (${AEHeal}) /call DoAEHeal
 		/call AssistMA1
 		/if ((${DoMez} || ${DoCharm}) && ${Select[${Me.Class.ShortName},BRD,ENC,DRU]} && (!${CheckGroupTimer} || ${SpawnCount[npc targetable radius ${NPCRadius} zradius ${NPCZRadius} noalert 1]}!=${LastSpawnCount} || (${PetID} && !${Me.Pet.ID}) || (!${PetID} && ${Me.Pet.ID}))) /call CheckMez
+		/if (${PetAttack} && ${Me.CombatState.Equal[COMBAT]}) /call PetAttackStuff
 		/if ((${DoDebuffs} || ${DoDoTs} || ${DoManaTaps}) && ${Me.PctMana}>=${DebuffLowest}) /call DebuffIt
 		/if (!${NukeTimer} && ${DoNukes} && ${Me.PctMana}>=${NukeLowest}) /call Nukeit
 		/if (${DoCombatStuff} && ${Me.CombatState.Equal[COMBAT]} && !${CombatStuffTimer}) /call DoStuff Combat
+		
 	}
 }
 /call MoveStuff
@@ -826,6 +827,7 @@ Sub AssistMA1
 /return
 
 Sub AssistLoop
+/declare i int local
 /if (${UseGroupMA}) {
 	|If we have GroupAssist and group assist is a valid target get it.
 	/if (${Me.GroupAssistTarget.ID} && (${Me.GroupAssistTarget.Type.Equal[NPC]} || ${Me.GroupAssistTarget.Master.Type.Equal[npc]}) && ${Me.GroupAssistTarget.ID}!=${MATarget} && ${Me.GroupAssistTarget.Type.NotEqual[corpse]}) {
@@ -844,8 +846,6 @@ Sub AssistLoop
 	/varset AssistTimer ${AssistDelay}
 	/return
 }
-
-/declare i int local
 /for i 1 to 3
 	/if (${Spawn[${MA${i}} radius 150 zradius 100].ID}) {
 		/if (${Me.CleanName.NotEqual[${MA${i}}]}) /call AssistStuff ${i}
@@ -1182,6 +1182,17 @@ Sub PetStuff
 /call MoveStuff
 /return
 
+Sub PetAttackStuff
+/echo PetAttack
+/echo [+y+] /if (!${Me.Pet.ID}) /return
+/if (!${Me.Pet.ID}=999999) /return
+/echo [+y+] /if (${MATarget}) {
+/if (${MATarget}) {
+	/bc [+G+] Pet is Attacking ${Spawn[${MATarget}].CleanName}
+	/pet attack ${Spawn[${MATarget}].CleanName}
+}
+/return
+
 Sub SummonStuff
    |I am not paused
    |I am a mage
@@ -1400,7 +1411,7 @@ Sub AutoSit
 		 	/varset SitTimer ${SitDelay}
 		}
 	}
-	/if (${SpawnCount[npc targetable radius ${ASRadius} zradius ${ASZRadius} noalert 1]} && !${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
+|	/if (${SpawnCount[npc targetable radius ${ASRadius} zradius ${ASZRadius} noalert 1]} && !${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
 	/if (${Me.PctMana}==100 || ${Me.PctEndurance}==100) /stand
 }
 /return
@@ -2946,6 +2957,7 @@ Sub LoadIni(MyIni,Function)
 /if (${Me.Class.ShortName.Equal[ENC]}) /call LoadVar Settings GatherPct 10 GatherPct "${MyIni}" ${Function} int
 /if (${Select[${Me.Class.ShortName},DRU,SHM,BST,BRD,ENC,MAG,NEC,SHD,WIZ]}) {
 	/call LoadVar PetStuff UsePet FALSE UsePet "${MyIni}" ${Function} bool
+	/call LoadVar PetStuff PetAttack FALSE PetAttack "${MyIni}" ${Function} bool
 	/call LoadVar PetStuff PetMana 0 PetMana "${MyIni}" ${Function} int
 	/call LoadVar PetStuff KillFlappy FALSE KillFlappy "${MyIni}" ${Function} bool
 	/call LoadVar PetStuff PetFocus "Put the name of your pet focus buff item here" PetFocus "${MyIni}" ${Function} string
