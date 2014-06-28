@@ -1755,7 +1755,7 @@ Sub XPCommon
 Sub ShrinkStuff
 /declare i	int	local
 /for i 0 to ${Math.Calc[${Group.GroupSize}-1]}
-     /if (${Group.Member[${i}].Height}>1.6 && ${Group.Member[${i}].Distance}<50) {
+     /if (${Group.Member[${i}].Height}>1.89 && ${Group.Member[${i}].Distance}<50) {
           /target ${Group.Member[${i}]}
 	  /call Cast "${ShrinkSpell}" ${ShrinkGem} 1s Check4Pad
 	  /call Cast "${ShrinkSpell}" ${ShrinkGem} 1s Check4Pad
