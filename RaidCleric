@@ -398,7 +398,7 @@ Sub DoMelee
 			/if (${ReportInterrupts}) /${ChatChannel} Interrupting ${Me.Casting} for DoMelee
 			/call Interrupt
 			/delay 1s !${Me.Casting.ID}
-		}
+			}				 
 		/call Cast "${Epic}" item 2s
 		/if (${Me.Class.ShortName.Equal[BRD]} && !${Me.Invis} && !${TwistTimer}) /call SingSongs
 	}
@@ -499,10 +499,10 @@ Sub CheckHP
 		/varset SpamFlag TRUE
 	}
 	/if (${HealFD} && ${Target.State.NotEqual["FEIGN"]} && ${Select[${Target.Class.ShortName},MNK,NEC,SHD]})  {
-		/if (${ReportInterrupts}) /${ChatChannel} Interrupting ${Me.Casting} for CheckHP-HealFD
-		/call Interrupt
-		/delay 1s !${Me.Casting.ID}
-		}
+			/if (${ReportInterrupts}) /${ChatChannel} Interrupting ${Me.Casting} for CheckHP-FD
+			/call Interrupt
+			/delay 1s !${Me.Casting.ID}
+			}
     /call ${EvaluateFunction}
 	/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
 		/call CheckPPS
@@ -556,11 +556,7 @@ Sub EvaluateGroup
 	/if ( ${Group.Member[${i}].Type.Equal[Corpse]} ) /goto :NextEvaluateGroup
 	/if (!${RDPause} && ${UseDivArb} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))&& ${Spawn[${Group.Member[${i}]}].ID} && ${Spawn[${Group.Member[${i}]}].Distance}<${Spell[Divine Arbitration].MyRange}) /call DoDivArb
 	/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[${MA3}].ID}) {
-|		/if (${Me.Casting.ID})  {
-			/if (${ReportInterrupts}) /${ChatChannel} Interrupting ${Me.Casting} for Evaluate Group
-			/call Interrupt
-			/delay 1s !${Me.Casting.ID}
-			}
+|		/if (${Me.Casting.ID}) /call DoInterrupt
 		/target targetable id ${Group.Member[${i}].ID}
 		/delay 1s ${Target.ID}==${Group.Member[${i}].ID}
 		/call Cast "Bestow Divine Aura" alt 5s
@@ -600,11 +596,7 @@ Sub EvaluateGroupNet
 /if (${HealFD}) /varset fd fd
 /if (!${RDPause} && ${UseDivArb} && ${NetWorst.Request[radius${Int[${Spell[Divine Arbitration].MyRange}]} group all hp${DivArbHPs}]} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))) /call DoDivArb
 /if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[${MA3}].ID}) {
-	/if (${Me.Casting.ID})  {
-		/if (${ReportInterrupts}) /${ChatChannel} Interrupting ${Me.Casting} for Bestow Divine Aura
-		/call Interrupt
-		/delay 1s !${Me.Casting.ID}
-		}
+|	/if (${Me.Casting.ID}) /call DoInterrupt
 	/target targetable id ${NetHeal.ID[1]}
 	/delay 1s ${Target.ID}==${NetHeal.ID[1]}
 	/call Cast "Bestow Divine Aura" alt 5s
