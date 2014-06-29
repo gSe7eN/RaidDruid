@@ -12,7 +12,7 @@
 | It will also detect if your class is not able to purchase a skill defined if you
 | accidentally add a wrong ability and skip it.
 | It will tell you when all your abilities are maxed, will warn you if your banked AAs
-| are over 27, and if you reach 30 banked it will switch you to full Level XP.
+| are over 27, and if you reach 99 banked it will switch you to full Level XP.
 | Can choose to restrict how many levels of an ability to purchase by putting |# where
 | where # would equal the max skill you want to purchase. M would be used to purchase
 | the to the max possible level of the ability.
@@ -32,8 +32,18 @@
 |   Your file is AA_Frank.INI
 |   [AAtoBuy]
 |   AACount=2
-|   AA1=Combat Agility|2
-|   AA2=Combat Stability|M
+|   AA1=Combat Agility|2|1
+|   AA2=Combat Stability|M|1
+|
+|	In this example we have|
+|		AACount=2 - Total AA count (must equal the total AA you wish to puchase)
+|		AA1 - First AA to attempt to puchase
+|		AA1=Combat Agility - Name of the AA to puchase
+|		AA1=Combat Agility|2 - Amount of levels of the AA to purchase. Use a number or "M" to designate Maximum
+|		AA1=Combat Agility|2|1 - Which tab this AA can be found on. In this case: 
+|																					General=1
+|																					Archeo=2
+|																					Class=3
 |
 | Put "/call AAInit" or "/call AAInit inisection" into the initialization section of your macro.
 | Put "/call AAPicker" into your main loop.
@@ -49,6 +59,8 @@
 Sub AAInit(IniSection)
 | Declare local variables
   /if (!${Defined[ListNum]}) /declare ListNum string outer
+|	If you prefer to do INI by toon name, uncomment the line below for names, then comment out the one below it for class. 
+|  /declare AAIniFile string local AA_${Me.Name}.ini
    /declare AAIniFile string local AA_${Me.Class.ShortName}.ini
    /declare a int local
    /if (!${Defined[IniSection]}) /declare IniSection string local AAtoBuy
@@ -174,10 +186,10 @@ Sub AAPicker
    } else {
       def_channel_ Cycled through all AA and nothing to purchase this round.
    }
-| If banked AA is greater than or equal to 27 and less than 30, issue a warning.
-   /if (${Me.AAPoints}>=29 && ${Me.AAPoints}<30) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
-| If banked AA equals 30, turn off alt exp.
-   /if (${Me.AAPoints}>=30) {
+| If banked AA is greater than or equal to 27 and less than 99, issue a warning.
+   /if (${Me.AAPoints}>=29 && ${Me.AAPoints}<99) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
+| If banked AA equals 99, turn off alt exp.
+   /if (${Me.AAPoints}>=99) {
       def_channel_ You have maxed your AAs and are unable to purchase any of your defined AAs.
       def_channel_ Changing you to full level XP. Hopefully you are not max level yet.
       /alt off
