@@ -1376,7 +1376,7 @@ Sub AutoSit
 	}
 	/if (${DoCanni} && ${CanniTotal} && !${Me.Casting.ID} && ${Me.PctMana}<${MedPct}) {
 		/for i 1 to ${CanniTotal}
-		/if (${Spell[${CanniSpell${i}}].Level}>70) /varset CanniSpell${i} ${Spell[${CanniSpell${i}}].RankName}
+		/if (${Spell[${CanniSpell${i}}].Level}>70) /varset CanniSpell${i} ${Spell[${CanniSpell${i}}].RankName.ID}
 		/if (((${Me.SpellReady[${CanniSpell${i}}]} || (!${Me.Gem[${CanniSpell${i}}]} && ${Spell[${CanniSpell${i}}].RankName})) || ${Me.AltAbilityReady[${CanniSpell${i}}]} || (${CanniGem${i}.Equal[item]} && !${FindItem[${CanniSpell${i}}].Timer})) && ${Me.PctHPs}>${CanniHPs${i}} && ${Me.PctMana}<${CanniMana${i}} && !${Me.Buff[${CanniSpell${i}}].ID}) /call Cast "${CanniSpell${i}}" ${CanniGem${i}} 10s Check4Pad
 		/if (${Me.Class.ShortName.Equal[WIZ]} && ${Me.Buff[${CanniSpell${i}}].ID}) /delay 19s !${Me.Buff[${CanniSpell${i}}].ID}
 		/if (${Me.Buff[${CanniSpell${i}}].ID} && ${Me.PctHPs}<${CanniHPs${i}}) /nomodkey /notify BuffWindow buff${Me.Buff[${CanniSpell${i}}].ID} leftmouseup
@@ -1819,7 +1819,7 @@ Sub ShrinkStuff
             }
          /if (${2ndPart.Length} && ${PetToysTemp.Find[${2ndPart}1]} || ${3rdPart.Length} && ${PetToysTemp.Find[${3rdPart}2]}) /goto :SkipPetToy
             | Check for pet toy spells in book to prevent double casting of items
-            /if (${Spell[${PetToySpell}].RankName}) {
+            /if (${Spell[${PetToySpell}].RankName.ID}) {
 		/target ${Me}
 		/delay 1s
                 /call Cast "${PetToySpell}" ${BuffGem}
