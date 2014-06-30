@@ -186,14 +186,34 @@ Sub AAPicker
    } else {
       def_channel_ Cycled through all AA and nothing to purchase this round.
    }
+/if (${Me.Level}<91) {
 | If banked AA is greater than or equal to 27 and less than 99, issue a warning.
-   /if (${Me.AAPoints}>=29 && ${Me.AAPoints}<99) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
+   /if (${Me.AAPoints}>=28 && ${Me.AAPoints}<29) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
 | If banked AA equals 99, turn off alt exp.
-   /if (${Me.AAPoints}>=99) {
+   /if (${Me.AAPoints}>=30) {
       def_channel_ You have maxed your AAs and are unable to purchase any of your defined AAs.
       def_channel_ Changing you to full level XP. Hopefully you are not max level yet.
       /alt off
    }
+} else if (${Me.Level)>90 && ${Me.Level}>100) {
+   | If banked AA is greater than or equal to 27 and less than 99, issue a warning.
+   /if (${Me.AAPoints}>=47 && ${Me.AAPoints}<49) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
+   | If banked AA equals 99, turn off alt exp.
+   /if (${Me.AAPoints}>=50) {
+      def_channel_ You have maxed your AAs and are unable to purchase any of your defined AAs.
+      def_channel_ Changing you to full level XP. Hopefully you are not max level yet.
+      /alt off
+   }
+} else {
+| If banked AA is greater than or equal to 27 and less than 99, issue a warning.
+   /if (${Me.AAPoints}>=97 && ${Me.AAPoints}<99) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
+| If banked AA equals 99, turn off alt exp.
+   /if (${Me.AAPoints}>=100) {
+      def_channel_ You have maxed your AAs and are unable to purchase any of your defined AAs.
+      def_channel_ Changing you to full level XP. Hopefully you are not max level yet.
+      /alt off
+   }
+}
 /return
 
 Sub AASelect(string AAName)
