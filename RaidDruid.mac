@@ -1183,12 +1183,8 @@ Sub PetStuff
 /return
 
 Sub PetAttackStuff
-/echo PetAttack
-/echo [+y+] /if (!${Me.Pet.ID}) /return
-/if (!${Me.Pet.ID}=999999) /return
-/echo [+y+] /if (${MATarget}) {
-/if (${MATarget}) {
-	/bc [+G+] Pet is Attacking ${Spawn[${MATarget}].CleanName}
+/if (!${Me.Pet.ID}) /return
+/if (${MATarget}!=999999) {
 	/pet attack ${Spawn[${MATarget}].CleanName}
 }
 /return
