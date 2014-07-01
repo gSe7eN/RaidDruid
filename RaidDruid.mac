@@ -520,7 +520,7 @@ Sub DoDivArb
 	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID}) /call DoInterrupt
 	/call Cast "${DivArbSpell}" ${DivArbGem} 5s
 }
-/if (!${Select[${DivArbGem},alt,item]} && ${Spell[${DivArbSpell}].RankName}) /varset DivArbTimer ${Spell[${DivArbSpell}].RecastTime}
+/if (!${Select[${DivArbGem},alt,item]} && ${Spell[${DivArbSpell}].RankName.ID}) /varset DivArbTimer ${Spell[${DivArbSpell}].RecastTime}
 /varset StayOnHealTimer ${StayOnHeal}
 /return
 
