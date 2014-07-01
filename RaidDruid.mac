@@ -2064,10 +2064,7 @@ Sub Event_AddRestSong(Line,Song)
 
 Sub BreakInvis
 /varset TravelMode FALSE
-/squelch /target clear
-/if (!${Me.Standing}) /stand
-|/bc Breaking Invis
-/squelch /keypress AUTOPRIM
+/squelch /makemevisible
 /delay 1s !${Me.Invis}
 /return
 
