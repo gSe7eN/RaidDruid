@@ -253,7 +253,7 @@ Sub ItemCast(spellName,mySub)
 /declare slotName string local
 /declare swapItemBack bool local false
 :cast_item
-/useitem "${FindItem[${spellName}]}
+/nomodkey /useitem "${FindItem[${spellName}]}
 /if (${itemRefreshTime}>${MacroQuest.Running}) /goto :wait_item_loop
 /varset itemRefreshTime ${Math.Calc[${MacroQuest.Running}+000]}
 /varset charges ${FindItem[${spellName}].Charges}
