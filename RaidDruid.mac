@@ -14,7 +14,7 @@
 #Event AddAlertCommon "[MQ2] AddAlertCommon #1#"
 #Event AddRestSong    "[MQ2] AddRestSong #1#"
 #Event ShowDebuffs    "[MQ2] ShowDebuffs #1#"
-#Event Camp	      "It will take about 5 more seconds to prepare your camp"
+#Event Camp	          "It will take about 5 more seconds to prepare your camp"
 #Event Dead           "#*#You have been slain by#*#"
 #Event DelCombatSong  "[MQ2] DelCombatSong #1#"
 #Event DelRestSong    "[MQ2] DelRestSong #1#"
@@ -64,13 +64,12 @@
 #Event WornOff        "#*#Your #1# spell has worn off of #2#."
 
 Sub Main
-/echo AutoBot Transforming, hold onto your seatbelt!!!111ONE
+/echo Starting RaidDruid! Just a moment while everything loads for you.
 /declare AlertTimer      timer  outer
 /declare StayOnHealTimer timer  outer
 /declare AssistTimer     timer  outer
 /declare CheckGroupTimer timer  outer
 /declare SitTimer        timer  outer
-|/declare FranticSpamTimer timer outer
 /declare IRCConnect      timer  outer
 /declare FollowGuy       int    outer
 /declare MATarget        int    outer 999999
@@ -99,7 +98,7 @@ Sub Main
 }
 /if (${RDVersion.NotEqual[${Ini[RDCommon.ini,Settings,Version]}]}) {
 	/echo Version Mismatch Detected, Loading Aliases
-	/squelch /alias /aabuy		  /echo ToggleAABuy
+	/squelch /alias /aabuy		      /echo ToggleAABuy
 	/squelch /alias /addalert         /echo AddAlert
 	/squelch /alias /addcombatsong    /echo AddCombatSong
 	/squelch /alias /addrestsong      /echo AddRestSong
@@ -129,9 +128,9 @@ Sub Main
 	/squelch /alias /docures          /echo ToggleVar Auto Curing,DoCures,CureStuff,DoCures,
 	/squelch /alias /doports          /echo ToggleVar Auto Ports,DoPorts,GeneralStuff,DoPorts,
 	/squelch /alias /domelee          /echo ToggleVar Auto Melee,DoMelee,MeleeStuff,DoMelee,
-	/squelch /alias /dopettoys	  /echo ToggleVar Auto Summoning pettoys,DoPetToys,SummonStuff,DoPetToys,
+	/squelch /alias /dopettoys	      /echo ToggleVar Auto Summoning pettoys,DoPetToys,SummonStuff,DoPetToys,
 	/squelch /alias /dorest           /echo ToggleVar Rest Scripts,DoRestStuff,RestStuff,DoRestStuff,	
-	/squelch /alias /doshrink	  /echo ToggleVar DoShrink,DoShrink,Settings,DoShrink,
+	/squelch /alias /doshrink	      /echo ToggleVar DoShrink,DoShrink,Settings,DoShrink,
 	/squelch /alias /dot              /echo ToggleVar Auto DoTing,DoDoTs,DebuffStuff,DoDoTs,
 	/squelch /alias /doyaulp          /echo ToggleVar Auto Yaulping in combat,DoYaulp,GeneralStuff,DoYaulp,	
 	/squelch /alias /engagehps        /echo ToggleString Engage Hitpoints,EngageHPs,GeneralStuff,EngageHPs,
@@ -210,7 +209,6 @@ Sub Main
 	/squelch /alias /usepet           /echo ToggleVar Auto Pet summoning and melee,UsePet,PetStuff,UsePet,
 	/squelch /alias /waittocancel     /echo ToggleVar Waiting to Cancel Heals,WaitToCancel,HealStuff,WaitToCancel,
 	/squelch /alias /wow              /echo ToggleVar Auto Wrath of the Wild,DoWoW,GeneralStuff,DoWoW,
-	
 	/ini "RDCommon.ini" "Settings" "Version" "${RDVersion}"
 }
 /call LoadIni "${RDIni}" LOAD
@@ -372,7 +370,7 @@ Sub MoveStuff
 	/squelch /stick hold uw
 }
 /if (${Stick.Status.Equal[ON]} && ${FollowOn} && ${TravelMode} && !${Me.Invis} && !${Me.CombatState.Equal[COMBAT]}) {
-	/if ((${FindItem[${InvisibilitySpell}].ID} && ${InvisibilityGem.Equal[item]}) || (${InvisibilityGem.Equal[alt]} && ${Me.AltAbilityReady[${InvisibilitySpell}]}) || ${Spell[${InvisibilitySpell}].RankName}) {
+	/if ((${FindItem[${InvisibilitySpell}].ID} && ${InvisibilityGem.Equal[item]}) || (${InvisibilityGem.Equal[alt]} && ${Me.AltAbilityReady[${InvisibilitySpell}]}) || ${Spell[${InvisibilitySpell}].RankName.ID}) {
 		/squelch /target targetable id ${Me.ID}
 		/delay 1s ${Target.ID}==${Me.ID}
 		/call Cast "${InvisibilitySpell}" ${InvisibilityGem} 5s Check4Pad
@@ -403,7 +401,7 @@ Sub DoMelee
 		/delay 1s ${Target.ID}==${MATarget}
 		/if (!${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
 		/stick off
-		/killthis
+		/squelch /killthis
 	}
 	/if (${UseDiscs}) /call DiscStuff 1
 	/if (${DoShield} && !${ShieldTimer}) {
@@ -496,7 +494,7 @@ Sub CheckHP
 	}
 	/if (${HealFD} && ${Target.State.NotEqual["FEIGN"]} && ${Select[${Target.Class.ShortName},MNK,NEC,SHD]}) /call DoInterrupt
     /call ${EvaluateFunction}
-	/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
+	/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[pc ${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
 		/call CheckPPS
 		/if (${Target.PctHPs}>${TankHealPct} && ${TankTTL}>250 && ${castEndTime}<40) /call Interrupt
 		/if (${castEndTime}>=${TankTTL}+50) /call DoHeal ${Target.ID} Fast
@@ -538,9 +536,9 @@ Sub EvaluateGroup
 /varset GroupHurtCount 0
 /for i 0 to ${Group}
 	/if ( ${Group.Member[${i}].Type.Equal[Corpse]} ) /goto :NextEvaluateGroup
-	/if (!${RDPause} && ${UseDivArb} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))&& ${Spawn[${Group.Member[${i}]}].ID} && ${Spawn[${Group.Member[${i}]}].Distance}<${Spell[Divine Arbitration].MyRange}) /call DoDivArb
-	/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[${MA3}].ID}) {
-|		/if (${Me.Casting.ID}) /call DoInterrupt
+	/if (!${RDPause} && ${UseDivArb} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))&& ${Spawn[pc ${Group.Member[${i}]}].ID} && ${Spawn[pc ${Group.Member[${i}]}].Distance}<${Spell[Divine Arbitration].MyRange}) /call DoDivArb
+	/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA3}].ID}) {
+		/if (${Me.Casting.ID}) /call DoInterrupt
 		/target targetable id ${Group.Member[${i}].ID}
 		/delay 1s ${Target.ID}==${Group.Member[${i}].ID}
 		/call Cast "Bestow Divine Aura" alt 5s
@@ -556,9 +554,9 @@ Sub EvaluateGroup
 		/varset DAArray[${Math.Calc[${i}+1]},1] 0
 		/varset DAArray[${Math.Calc[${i}+1]},2] 0
 	}
-	/if ((${HealFD} && ${Group.Member[${i}].State.NotEqual["FEIGN"]} && ${Select[${Group.Member[${i}].Class.ShortName},MNK,NEC,SHD]}) || ((${UseCH} || ${Group.Member[${i}].PctHPs}>${TankHealPct}) && ${Group.Member[${i}].ID}==${Spawn[${MA1}].ID})) /goto :NextEvaluateGroup
+	/if ((${HealFD} && ${Group.Member[${i}].State.NotEqual["FEIGN"]} && ${Select[${Group.Member[${i}].Class.ShortName},MNK,NEC,SHD]}) || ((${UseCH} || ${Group.Member[${i}].PctHPs}>${TankHealPct}) && ${Group.Member[${i}].ID}==${Spawn[pc ${MA1}].ID})) /goto :NextEvaluateGroup
         | don't do fast heals on MA1 unless TankHealPct not set
-	/if (${Group.Member[${i}].PctHPs}<=${WorstHPs} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance}<${Spell[${FastHealID}].MyRange} && (${Group.Member[${i}].ID}!=${Spawn[${MA1}].ID} || !${TankHealPct})) {
+	/if (${Group.Member[${i}].PctHPs}<=${WorstHPs} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance}<${Spell[${FastHealID}].MyRange} && (${Group.Member[${i}].ID}!=${Spawn[pc ${MA1}].ID} || !${TankHealPct})) {
 		/varset WorstHPs ${Group.Member[${i}].PctHPs}
 		/varset WorstID ${Group.Member[${i}].ID}
 		/varcalc WorstMember ${i}+1
@@ -578,9 +576,9 @@ Sub EvaluateGroupNet
 /varset GroupHurtCount 0
 /declare fd string local
 /if (${HealFD}) /varset fd fd
-/if (!${RDPause} && ${UseDivArb} && ${NetWorst.Request[radius${Int[${Spell[Divine Arbitration].MyRange}]} group all hp${DivArbHPs}]} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))) /call DoDivArb
-/if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[${MA3}].ID}) {
-|	/if (${Me.Casting.ID}) /call DoInterrupt
+/if (!${RDPause} && ${UseDivArb} && ${NetWorst.Request[radius${Int[${Spell[Divine Arbitration].MyRange}]} pc group all hp${DivArbHPs}]} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))) /call DoDivArb
+/if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[pc group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA3}].ID}) {
+	/if (${Me.Casting.ID}) /call DoInterrupt
 	/target targetable id ${NetHeal.ID[1]}
 	/delay 1s ${Target.ID}==${NetHeal.ID[1]}
 	/call Cast "Bestow Divine Aura" alt 5s
@@ -591,10 +589,10 @@ Sub EvaluateGroupNet
 	/varset WorstID ${Me.ID}
 	/goto :EndCheck
 }
-/if (!${RDPause} && ${NetWorst.Request[radius${Int[${Spell[${FastHealID}].MyRange}]} all hp${HealPct} ${fd}]}) {
+/if (!${RDPause} && ${NetWorst.Request[radius${Int[${Spell[${FastHealID}].MyRange}]} pc all hp${HealPct} ${fd}]}) {
 	/varset i 1
-	/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[${MA1}].ID} && ${NetWorst.Counter}==1) /goto :EndCheck
-	/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[${MA1}].ID} && ${NetWorst.Counter}>1) /varset i 2
+	/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc ${MA1}].ID} && ${NetWorst.Counter}==1) /goto :EndCheck
+	/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc ${MA1}].ID} && ${NetWorst.Counter}>1) /varset i 2
 	/varset WorstHPs ${NetHeal.PctHPs[${i}]}
 	/varset WorstID ${NetHeal.ID[${i}]}
 }
@@ -619,9 +617,9 @@ Sub EvaluatePets
 
 Sub CheckGroup
 :StayOnHeal
-/if (!${RDPause} && ${UseDelayedHeal} && ${Spawn[${MA1}].ID} && ${Spawn[${MA1}].PctHPs}<${DelayedHealPct} && ((${NetBots[${MA1}].ID} && ${NetBots[${MA1}].Stacks[${DelayedHealID}]}) || (!${NetBots[${MA1}].ID} && !${DoDelayedTimer})) && (!${Me.Gem[${DelayedHeal}]} || ${Me.SpellReady[${DelayedHeal}]}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${DelayedHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${DelayedHealID}].Mana}) {
-	/target targetable id ${Spawn[${MA1}].ID}
-	/delay 1s ${Target.ID}==${Spawn[${MA1}].ID}
+/if (!${RDPause} && ${UseDelayedHeal} && ${Spawn[pc ${MA1}].ID} && ${Spawn[pc ${MA1}].PctHPs}<${DelayedHealPct} && ((${NetBots[${MA1}].ID} && ${NetBots[${MA1}].Stacks[${DelayedHealID}]}) || (!${NetBots[${MA1}].ID} && !${DoDelayedTimer})) && (!${Me.Gem[${DelayedHeal}]} || ${Me.SpellReady[${DelayedHeal}]}) && ${Spawn[pc ${MA1}].Distance}<${Int[${Spell[${DelayedHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${DelayedHealID}].Mana}) {
+	/target targetable id ${Spawn[pc ${MA1}].ID}
+	/delay 1s ${Target.ID}==${Spawn[pc ${MA1}].ID}
 	/delay 1s ${Target.Buff[${DelayedHeal}].Duration}
 	/if (!${Target.Buff[${DelayedHeal}].ID}) {
 		/call Cast "${DelayedHeal}" ${DelayedHealGem} 2s CheckHP
@@ -631,9 +629,9 @@ Sub CheckGroup
 		/varcalc DoDelayedTimer 2+10*${Target.BuffDuration[${DelayedHeal}].TotalSeconds}
 	}
 }
-/if (!${RDPause} && ${UseCH} && ${Spawn[${MA1}].ID} && (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${TankHeal}]})) {
+/if (!${RDPause} && ${UseCH} && ${Spawn[pc ${MA1}].ID} && (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${TankHeal}]})) {
 	/call CheckPPS
-	/if ((${TankTTL}<200 || ${Spawn[${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[${MA1}].ID} Tank
+	/if ((${TankTTL}<200 || ${Spawn[pc ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc ${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc ${MA1}].ID} Tank
 }
 /if (!${RDPause} && ${HealGroup}) {
 	/call ${EvaluateFunction}
@@ -657,7 +655,7 @@ Sub CheckGroup
 Sub CureMe
 /declare i int local
 /for i 1 to ${CureTotal}
-	/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${CureSpell${i}}]} || (!${Me.Gem[${CureSpell${i}}]} && ${Spell[${CureSpell${i}}].RankName})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
+	/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${CureSpell${i}}]} || (!${Me.Gem[${CureSpell${i}}]} && ${Me.Book[${CureSpell${i}}]})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
 		/target targetable id ${Me.ID}
 		/delay 1s ${Target.ID}==${Me.ID}
 		/if (${ReportCures}) /${HealChannel} Curing myself with ${CureSpell${i}}
@@ -725,9 +723,9 @@ Sub DoSotWNet
 Sub Check4Pad(int spellID)
 /doevents MezIt
 /if (!${RDPause} && ${Stop4Pad}) {
-	/if (${UseCH} && ${Spawn[${MA1}].ID}) {
+	/if (${UseCH} && ${Spawn[pc ${MA1}].ID}) {
 		/call CheckPPS
-		/if ((${TankTTL}<150 || ${Spawn[${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[${MA1}].ID} Tank
+		/if ((${TankTTL}<150 || ${Spawn[pc ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc ${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc ${MA1}].ID} Tank
 	}
 	/if (${HealGroup}) {
 		/call ${EvaluateFunction}
@@ -748,24 +746,24 @@ Sub CheckPPS
 
 /declare tmpTarget int local 0
 /declare wegothit int local 0
-/if (${Target.ID}!=${Spawn[${MA1}].ID} && !${Spawn[group ${MA1}].ID}) {
+/if (${Target.ID}!=${Spawn[pc ${MA1}].ID} && !${Spawn[pc group ${MA1}].ID}) {
     /varset tmpTarget ${Target.ID}
-    /target targetable id ${Spawn[${MA1}].ID}
-    /delay 1s ${Target.ID}==${Spawn[${MA1}].ID}
+    /target targetable id ${Spawn[pc ${MA1}].ID}
+    /delay 1s ${Target.ID}==${Spawn[pc ${MA1}].ID}
 }
 | if he's not in our group
 | and is pct went down 
 | and it wasn't a complete heal
-/if (!${Spawn[group ${MA1}].ID} && ${TankLastPct}>${Target.PctHPs} && ${Target.PctHPs}!=100) {
+/if (!${Spawn[pc group ${MA1}].ID} && ${TankLastPct}>${Target.PctHPs} && ${Target.PctHPs}!=100) {
     | he got hit by something (bad assumption of complete heal)
     | /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Target.PctHPs})
     /varset wegothit ${Target.PctHPs}
 } else {
     | if (tank in group) && (hp went down) && (hp != 100)
     | tothits = tothits+deltahp
-    /if (${Spawn[group ${MA1}].ID} && ${TankLastPct}>${Spawn[group ${MA1}].PctHPs}) {
-        | /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Spawn[group ${MA1}].PctHPs})
-        /varset wegothit ${Spawn[group ${MA1}].PctHPs}
+    /if (${Spawn[pc group ${MA1}].ID} && ${TankLastPct}>${Spawn[pc group ${MA1}].PctHPs}) {
+        | /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Spawn[pc group ${MA1}].PctHPs})
+        /varset wegothit ${Spawn[pc group ${MA1}].PctHPs}
 	}
 }
 
@@ -790,7 +788,7 @@ Sub CheckPPS
 /if (!${TankPPS}) {
 		 /varset TankTTL 3000
 } else {
-		 /varcalc TankTTL (${Spawn[${MA1}].PctHPs}*10)/${TankPPS}
+		 /varcalc TankTTL (${Spawn[pc ${MA1}].PctHPs}*10)/${TankPPS}
 }
 
 |/if (${SpawnCount[npc radius 200]} && ${TankTTL}!=3000) {
@@ -798,7 +796,7 @@ Sub CheckPPS
 |/echo TotalTankTime ${TotalTankTime} TotalTankHits ${TotalTankHits}
 |}
 
-/varset TankLastPct ${Spawn[${MA1}].PctHPs}
+/varset TankLastPct ${Spawn[pc ${MA1}].PctHPs}
 /if (${tmpTarget}) {
     /target targetable id ${tmpTarget}
     /delay 1
@@ -847,7 +845,7 @@ Sub AssistLoop
 	/return
 }
 /for i 1 to 3
-	/if (${Spawn[${MA${i}} radius 150 zradius 100].ID}) {
+	/if (${Spawn[pc ${MA${i}} radius 150 zradius 100].ID}) {
 		/if (${Me.CleanName.NotEqual[${MA${i}}]}) /call AssistStuff ${i}
 		/if ((${Target.Type.Equal[NPC]} || ${Target.Master.Type.Equal[npc]}) && ${Target.ID}!=${MATarget} && ${Target.Type.NotEqual[corpse]}) {
 			/varset MATarget ${Target.ID}
@@ -1038,7 +1036,7 @@ Sub DebuffIt
 
 Sub DebuffCommon(int a, int i)
 /if (!${CheckGroupTimer}) /call CheckGroup
-/if (${DoCombatStuff} && ${Me.CombatState.Equal[COMBAT]} && !${CombatStuffTimer}) /call DoStuff Combat
+| /if (${DoCombatStuff} && ${Me.CombatState.Equal[COMBAT]} && !${CombatStuffTimer}) /call DoStuff Combat
 /if ((${MobList[${a}]}!=${MATarget}) && ((!${MADebuffed} && ${DebuffMAFirst}) || ${DebuffMAOnly${i}})) /return
 /if (!${RDPause} && (${Me.Class.ShortName.Equal[BRD]} || !${Me.Casting.ID}) && ${Spawn[${MobList[${a}]}].LineOfSight} && ${Spawn[${MobList[${a}]}].Standing}  && (${WhichNuke}==${DebuffSpellSet${i}} || !${DebuffSpellSet${i}}) && ${DebuffArray[${a},${i}]}<=${Macro.RunTime} && ${MobList[${a}]} && (${NearestSpawn[npc targetable named].ID}==${MobList[${a}]} || !${DebuffNamedOnly${i}})) {
 	/if (!${${DebuffID[${i}]}Immune.Find[|${Spawn[${MobList[${a}]}].CleanName}|]} && (${Spawn[${MobList[${a}]}].Distance}<${Int[${Spell[${DebuffID[${i}]}].MyRange}]} || !${Spell[${DebuffID[${i}]}].MyRange})) {
@@ -1145,13 +1143,19 @@ Sub PetStuff
 /declare SusMinion bool local FALSE
 /if (!${RDPause} && ${UsePet} && (!${Me.Pet.ID} && !${KillFlappy}) || (${KillFlappy} && !(${Me.Buff[${PetSpell}].ID} || ${Me.Buff[Familiar: ${PetSpell}].ID}))) {
 	| See if we have a suspended pet
-	/if (${Me.AltAbilityReady[suspended minion]} && !${SusMinion}) {
-		|/call Cast "suspended minion" alt 3s
-		/varset SusMinion TRUE
+	|/if (${Me.AltAbilityReady[suspended minion]}) /call Cast "suspended minion" alt 3s
+	|/delay 5s ${Me.Pet.ID}
+	|/if (${Me.Pet.ID}) /return
+	/if (${FindItem[${PetFocus}].InvSlot}>21) {
+		/declare SwapItemBack int    local 1
+		/declare OldItemName  string local ${InvSlot[${FindItem[${PetFocus}].WornSlot[1].ID}].Item.Name}
+		/declare SlotName     string local ${FindItem[${PetFocus}].WornSlot[1].Name}
+		/call SwapItem "${PetFocus}" ${SlotName}
 	}
 	/delay 5s ${Me.Pet.ID}
 	/if (${Me.Pet.ID}) /return
 	/call Cast "${PetSpell}" ${PetGem} 35s Check4Pad
+	/if (${SwapItemBack}) /call SwapItem "${OldItemName}" ${SlotName}
 	/delay 2s ${Me.Pet.ID}
 	/if (${Me.Pet.ID} && (${PetShrink} || ${DoPetToys})) {
 		/if (${Target.ID}!=${Me.Pet.ID}) /squelch /target targetable id ${Me.Pet.ID}
@@ -1374,7 +1378,6 @@ Sub AutoSit
 	}
 	/if (${DoCanni} && ${CanniTotal} && !${Me.Casting.ID} && ${Me.PctMana}<${MedPct}) {
 		/for i 1 to ${CanniTotal}
-		/if (${Spell[${CanniSpell${i}}].Level}>70) /varset CanniSpell${i} ${Spell[${CanniSpell${i}}].RankName.ID}
 		/if (((${Me.SpellReady[${CanniSpell${i}}]} || (!${Me.Gem[${CanniSpell${i}}]} && ${Spell[${CanniSpell${i}}].RankName.ID})) || ${Me.AltAbilityReady[${CanniSpell${i}}]} || (${CanniGem${i}.Equal[item]} && !${FindItem[${CanniSpell${i}}].Timer})) && ${Me.PctHPs}>${CanniHPs${i}} && ${Me.PctMana}<${CanniMana${i}} && !${Me.Buff[${CanniSpell${i}}].ID}) /call Cast "${CanniSpell${i}}" ${CanniGem${i}} 10s Check4Pad
 		/if (${Me.Class.ShortName.Equal[WIZ]} && ${Me.Buff[${CanniSpell${i}}].ID}) /delay 19s !${Me.Buff[${CanniSpell${i}}].ID}
 		/if (${Me.Buff[${CanniSpell${i}}].ID} && ${Me.PctHPs}<${CanniHPs${i}}) /nomodkey /notify BuffWindow buff${Me.Buff[${CanniSpell${i}}].ID} leftmouseup
@@ -1393,7 +1396,6 @@ Sub AutoSit
 		/autoinv
 	}
 }
-	/if (${Spell[${YaulpSpell}].Level}>70) /varset YaulpSpell ${Spell[${YaulpSpell}].RankName}
 	/if (${DoYaulp} && !${Me.Buff[${YaulpSpell}].ID} && ${Spell[${YaulpSpell}].Stacks[0]} && (${Me.SpellReady[${YaulpSpell}]} || !${Me.Gem[${YaulpSpell}]}) && !${Me.Casting.ID} && ${Me.PctMana}<${MedPct} && !${Me.Mount.ID} && ((${SpawnCount[npc targetable radius ${NPCRadius} zradius ${NPCZRadius} noalert 1]} && ${NearestSpawn[npc targetable radius ${NPCRadius} zradius ${NPCZRadius} noalert 1].LineOfSight}) || !${AutoSit})) /call Cast "${YaulpSpell}" ${YaulpGem} 10s		 
 |	/if (${Me.PctMana}<=${GatherPct} && ${FindItem["Azure Mind Crystal"].ID} && !${FindItem["Azure Mind Crystal"].Timer}) /call Cast "Azure Mind Crystal" item 10s
 	/if (${Me.PctMana}<=${GatherPct} && ${Me.AltAbilityReady[Mana draw]}) /call Cast "Mana draw" alt 10s
@@ -1410,7 +1412,6 @@ Sub AutoSit
 		}
 	}
 	/if (${SpawnCount[npc targetable radius ${ASRadius} zradius ${ASZRadius} noalert 1]} && !${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
-|	/if (${Me.PctMana}==100 || ${Me.PctEndurance}==100) /stand
 }
 /return
 
@@ -1569,7 +1570,7 @@ Sub DelSong(LowGem,HighGem,TwistType,Song)
 /declare i    int    local
 /declare k    int    local
 /declare flag int    local
-/if (!${Spell[${Song}].RankName}) {
+/if (!${Spell[${Song}].RankName}.ID) {
 	/if (${Ini[${RDIni},"Bard-Aliases",${Song},NOTFOUND].Equal[NOTFOUND]}) {
 		/if (TRUE) /${ChatChannel} Song: ${Song} not found.  Song NOT Removed
 		/return
@@ -1648,7 +1649,7 @@ Sub HolyShit(MobName)
 Sub HolyShitRun(AggroMob)
 /declare i int local
 /for i 1 to 3
-	/if (!${RDPause} && ${Spawn[${MA${i}}].ID}) {
+	/if (!${RDPause} && ${Spawn[pc ${MA${i}}].ID}) {
 		/squelch /face fast nolook id ${NearestSpawn[pc ${MA${i}}].ID}
 		/keypress forward hold
 		/delay 1s ${Spawn[npc targetable id ${AggroMob}].Distance}>${Spawn[npc targetable id ${AggroMob}].MaxRange}+10
@@ -2013,13 +2014,13 @@ Sub CheckDoBuffs(Sender,ChatText)
 /for i 1 to ${DoBuffTotal}
 	/for a 1 to ${DoBuffAliases${i}.Count[|]}
 		/if (${ChatText.Find["${DoBuffAliases${i}.Arg[${a},|]}"]}) {
-			/if (${ChatText.Find[" pet"]} || ${ChatText.Find[${Spawn["${Sender}"].Pet.CleanName}]}) {
-				/call AddToQueue ${Spawn[${Sender}].Pet.ID} ${i}
-			} else /if (${Spawn["${Sender}"].ID} && ${Spawn[corpse "${Sender}"].ID}) {
-				/call AddToQueue ${Spawn[${Sender}].ID} ${i}
+			/if (${ChatText.Find[" pet"]} || ${ChatText.Find[${Spawn[pc "${Sender}"].Pet.CleanName}]}) {
+				/call AddToQueue ${Spawn[pc ${Sender}].Pet.ID} ${i}
+			} else /if (${Spawn[pc "${Sender}"].ID} && ${Spawn[corpse "${Sender}"].ID}) {
+				/call AddToQueue ${Spawn[pc ${Sender}].ID} ${i}
 				/call AddToQueue ${Spawn[corpse ${Sender}].ID} ${i}
-			} else /if (${Spawn["${Sender}"].ID}) {
-				/call AddToQueue ${Spawn[${Sender}].ID} ${i}
+			} else /if (${Spawn[pc "${Sender}"].ID}) {
+				/call AddToQueue ${Spawn[pc ${Sender}].ID} ${i}
 			} else /if (${Spawn[corpse "${Sender}"].ID}) {
 				/call AddToQueue ${Spawn[corpse ${Sender}].ID} ${i}
 			}		 		 
@@ -2076,7 +2077,7 @@ Sub CalmGroup(Puller)
 /declare tempTarget int local 0
 /declare centerMob int local 0
 /declare casted int local 0
-/if (${Spawn[${Puller}].ID} && ((${FindItem[${CalmSpell}].ID} && ${CalmGem.Equal[item]}) || (${CalmGem.Equal[alt]} && ${Me.AltAbilityReady[${CalmSpell}]}) || ${Spell[${CalmSpell}].RankName})) {
+/if (${Spawn[${Puller}].ID} && ((${FindItem[${CalmSpell}].ID} && ${CalmGem.Equal[item]}) || (${CalmGem.Equal[alt]} && ${Me.AltAbilityReady[${CalmSpell}]}) || ${Spell[${CalmSpell}].RankName.ID})) {
 	/if (${Puller}!=${Me.ID}) {
 		/squelch /target targetable id ${Puller}
 		/delay 1s ${Target.ID}==${Puller}
@@ -2112,26 +2113,23 @@ Sub Event_Camp
 Sub Event_Chat(ChatType,Sender,ChatText)
 /if (${ChatType.Equal[tell]} && ${Sender.Left[1].Compare[ ]}<0) /varset Sender ${Sender.Right[-2].Left[-1]}
 /if (${ChatType.Equal[tell]} && ${RelayTells} && (${Spawn[${Sender}].Type.Equal[PC]} || !${Spawn[${Sender}].ID})) /${ChatChannel} ${Sender} told me ${ChatText}
-/if (${ChatText.Find[Frantic Heal Now!]} && ${UseFranticHeal}) {
-	/if (${Spawn[${Sender}].ID}==${Spawn[${MA1}].ID}) /call FranticHeal
-}
-/if (${DoBuffTotal} && ${DoBuffs} && ${Sender.NotEqual[${Me.CleanName}]} && (${Spawn[${Sender}].ID} || ${Spawn[corpse ${Sender}].ID})) /call CheckDoBuffs "${Sender}" "${ChatText}"
+/if (${DoBuffTotal} && ${DoBuffs} && ${Sender.NotEqual[${Me.CleanName}]} && (${Spawn[pc ${Sender}].ID} || ${Spawn[corpse ${Sender}].ID})) /call CheckDoBuffs "${Sender}" "${ChatText}"
 /if (${ChatText.Find[pet toys]} && ${DoPetToys} && ${Me.Class.ShortName.Equal[MAG]} && ${Spawn[${Sender}].Pet.ID} && ${Spawn[${Spawn[${Sender}].Pet.ID}].Distance3D}<250 && ${Spawn[${Spawn[${Sender}].Pet.ID}].LineOfSight}) /call PetToys ${Spawn[${Sender}].Pet.ID}
 /if (${MasterList.Find[${Sender}]}) {
 	/if (${ChatText.Find[portto]} && ${DoPorts} && ${Select[${Me.Class.ShortName},DRU,WIZ]}) /call PortUs ${ChatText.Arg[2]}
 	/if (${ChatText.Left[1].Equal[/]}) /docommand ${ChatText}
 	/if ((${ChatText.Find[move up]} || ${ChatText.Find[camp here]} || ${ChatText.Find[follow]}) && !${Me.Standing}) /stand
 	/if (${ChatText.Find[move up]} && ${Sender.NotEqual[${Me.CleanName}]}) {
-		/if (${MakeCamp.Status.Equal[ON]}) /makecamp ${Spawn[${Sender}].Y} ${Spawn[${Sender}].X}
-		/moveto loc ${Spawn[${Sender}].Y} ${Spawn[${Sender}].X}
+		/if (${MakeCamp.Status.Equal[ON]}) /makecamp ${Spawn[pc ${Sender}].Y} ${Spawn[pc ${Sender}].X}
+		/moveto loc ${Spawn[pc ${Sender}].Y} ${Spawn[pc ${Sender}].X}
 	}
 	/if (${ChatText.Find[camp here]} && ${Sender.NotEqual[${Me.CleanName}]}) {
 		/if (${MakeCamp.Status.Equal[ON]}) /makecamp off
 		/makecamp loc ${Spawn[${Sender}].Y} ${Spawn[${Sender}].X} 
 	}
 	/if (${ChatText.Find[follow]} && ${Sender.NotEqual[${Me.CleanName}]}) {
-		/if (${ChatText.Arg[2].Length} && ${Spawn[${ChatText.Arg[2]}].ID}) /varset FollowGuy ${Spawn[${ChatText.Arg[2]}].ID}
-		/if ((!${ChatText.Arg[2].Length} || !${Spawn[${ChatText.Arg[2]}].ID}) && ${Spawn[${Sender}].ID}) /varset FollowGuy ${Spawn[${Sender}].ID}
+		/if (${ChatText.Arg[2].Length} && ${Spawn[pc ${ChatText.Arg[2]}].ID}) /varset FollowGuy ${Spawn[pc ${ChatText.Arg[2]}].ID}
+		/if ((!${ChatText.Arg[2].Length} || !${Spawn[pc ${ChatText.Arg[2]}].ID}) && ${Spawn[pc ${Sender}].ID}) /varset FollowGuy ${Spawn[pc ${Sender}].ID}
 		/target targetable id ${FollowGuy}
 		/delay 1s ${Target.ID}==${FollowGuy}
 		/squelch /stick hold uw
@@ -2145,23 +2143,20 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 		/varset FollowGuy 0
 	}
 	/if (${ChatText.Find[mana]} && ${Me.MaxMana}) /${ChatChannel} ${Me.PctMana}m
-	/if (${ChatText.Equal[rez me]} && ${Spawn[${Sender}].Type.Find[Corpse]}) {
-		/if (${Me.Class.ShortName.Equal[CLR]}) {
-		{
-		}
+	/if (${ChatText.Equal[rez me]} && ${Spawn[${Sender}].Type.Find[Corpse]} && ${Me.Class.ShortName.Equal[CLR]}) {
 		/if (${DoBuffTells} && !${SpamTimer}) /tell ${Sender} Rezz inc!
 		/squelch /target ${Sender}'s Corpse
 		/if (${Target.ID} && ${Target.Distance}>20) /corpse
-		/if (!${Target.ID} && ${Announce}) /${MyChannel} I can't target ${Sender}'s corpse
-		/if (!${Target.ID} && ${DoBuffTells}&&!${SpamTimer}) /tell ${Sender} I can't target your corpse
+		/if (!${Target.ID} && ${ReportHeals}) /${MyChannel} I can't target ${Sender}'s corpse
+		/if (!${Target.ID} && ${DoBuffTells} && !${SpamTimer}) /tell ${Sender} I can't target your corpse
 		/if (${Target.Type.Equal[Corpse]}) {
-		/if (${Announce}) /${ChatChannel} I am attempting to resurrect ${Sender}
+		/if (${ReportHeals}) /${ChatChannel} I am attempting to resurrect ${Sender}
 		/if (${Me.AltAbility[Blessing of Resurrection]} && ${Me.AltAbilityReady[Blessing of Resurrection]}) {
 			/call Cast "Blessing of Resurrection" alt 10s
 			} else /if (${FindItem[Water Sprinkler of Nem Ankh].ID}) {
 			/call Cast "Water Sprinkler of Nem Ankh" item 6s
 			} else {
-			/call Cast "Reviviscence" ${PreferedBuffGem} 3s
+			/call Cast "Reviviscence" ${BuffGem} 3s
 			 }
 		 }
 		 }
@@ -2172,8 +2167,8 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 	/if (${ChatText.Find[break]}) /call BreakInvis
 	/if (${ChatText.Find[calm them]}) {
 		/declare Puller int local 0
-		/if (${ChatText.Arg[2].Length} && ${Spawn[${ChatText.Arg[2]}].ID}) /varset Puller ${Spawn[${ChatText.Arg[2]}].ID}
-		/if ((!${ChatText.Arg[2].Length} || !${Spawn[${ChatText.Arg[2]}].ID}) && ${Spawn[${Sender}].ID}) /varset Puller ${Spawn[${Sender}].ID}
+		/if (${ChatText.Arg[2].Length} && ${Spawn[pc ${ChatText.Arg[2]}].ID}) /varset Puller ${Spawn[pc ${ChatText.Arg[2]}].ID}
+		/if ((!${ChatText.Arg[2].Length} || !${Spawn[pc ${ChatText.Arg[2]}].ID}) && ${Spawn[pc ${Sender}].ID}) /varset Puller ${Spawn[pc ${Sender}].ID}
 		/call CalmGroup ${Puller}
 	}
 }
@@ -2184,15 +2179,6 @@ Sub Event_Dead
 /if (TRUE) /${ChatChannel} rez me
 /call Wait4Rez
 /delay 2s
-/if (${WhichNuke} && ${Me.Class.ShortName.NotEqual[BRD]}) /memspellset ${SpellSet${WhichNuke}}
-/delay 5s ${Window[SpellBookWnd].Open}
-/delay 30s !${Window[SpellBookWnd].Open}
-/if (${Me.Class.ShortName.Equal[BRD]}) {
-	/if (${DoBardSwap} && ${BardSwap.Swapping}) /bardswap
-	/if (${DoBardMeleeSwap} && ${BardSwap.MeleeSwap}) /bardswap melee
-	/call GetFreeGems
-	/call MemSongs
-}
 /call Event_NewZone
 /doevents flush
 /return
@@ -2372,9 +2358,9 @@ Sub Event_RaidExperience
 
 Sub Event_Rampage
 /if (!${RDPause} && ${DoRamp} && ${Me.CurrentMana}>${Spell[${FastHealID}].Mana}) {
-	/target targetable ${RampTank}
+	/target targetable pc ${RampTank}
 	/delay 5
-	/if (${Target.ID}==${Spawn[${RampTank}].ID} && ${Target.PctHPs}<${CancelPct} && ${Target.Distance}<${Int[${Spell[${FastHealID}].MyRange}]}) {
+	/if (${Target.ID}==${Spawn[pc ${RampTank}].ID} && ${Target.PctHPs}<${CancelPct} && ${Target.Distance}<${Int[${Spell[${FastHealID}].MyRange}]}) {
 		/delay 10s !${Me.Casting.ID}
 		/if (${ReportHeals} && ${Target.ID}) /${ChatChannel} ${Spell[${FastHeal}].RankName} @ ${Target.CleanName} the Rampage Tank
 		/call Cast "${FastHeal}" ${FastHealGem} 3s CheckHP
@@ -2433,9 +2419,9 @@ Sub Event_SetBuff(Line,LineArg)
 		 	/next i
 		 	/return
 		}
-		/if (${Spawn[${Line.Arg[4]}].ID}) {
-			/target targetable id ${Spawn[${Line.Arg[4]}].ID}
-		 	/delay 1s ${Target.ID}==${Spawn[${Line.Arg[4]}].ID}
+		/if (${Spawn[pc ${Line.Arg[4]}].ID}) {
+			/target targetable id ${Spawn[pc ${Line.Arg[4]}].ID}
+		 	/delay 1s ${Target.ID}==${Spawn[pc ${Line.Arg[4]}].ID}
 		} else {
 			/if (${Spawn[${Line.Arg[4]}].ID}) {
 		 	/target targetable id ${Spawn[${Line.Arg[4]}].ID}
@@ -2467,24 +2453,24 @@ Sub Event_SetBuff(Line,LineArg)
 	/next i
 	/return
 }
-/if (${Line.Arg[4].Length} && ${Spawn[${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
+/if (${Line.Arg[4].Length} && ${Spawn[pc ${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[pc ${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
 /if (${Line.Arg[4].Length} && ${Spawn[${Line.Arg[4]}].Type.NotEqual[npc]} && ${Spawn[${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
 /return
 
 Sub Event_SetMA1(Line,LineArg)
-/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[${LineArg}].CleanName}"
+/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc ${LineArg}].CleanName}"
 /return
 
 Sub Event_SetMA2(Line,LineArg)
-/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[${LineArg}].CleanName}"
+/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[pc ${LineArg}].CleanName}"
 /return
 
 Sub Event_SetMA3(Line,LineArg)
-/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${Spawn[${LineArg}].CleanName}"
+/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${Spawn[pc ${LineArg}].CleanName}"
 /return
 
 Sub Event_SetRampTank(Line,LineArg)
-/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${Spawn[${LineArg}].CleanName}"
+/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${Spawn[pc ${LineArg}].CleanName}"
 /return
 
 Sub Event_SongAlias(Line,AliasName,FullName)
@@ -2849,7 +2835,11 @@ Sub LoadIni(MyIni,Function)
 	/if (!${Defined[DebuffArray]}) /declare DebuffArray[${MaxMobs},${DebuffTotal}] int outer
 	/if (!${Defined[MobList]})     /declare MobList[${MaxMobs}]                    int outer
 }
-
+/call LoadVar Settings AutoSit FALSE AutoSit "${MyIni}" ${Function} bool
+/call LoadVar Settings ASRadius 20 ASRaidus "${MyIni}" ${Function} int
+/call LoadVar Settings ASZRadius 50 AZRadius "${MyIni}" ${Function} int
+/call LoadVar Settings SitDelay 3s SitDelay "${MyIni}" ${Function} string
+/call LoadVar Settings EndMedPct 80 EndMedPct "${MyIni}" ${Function} int
 /if (!${Select[${Me.Class.ShortName},MNK,WAR,BER,ROG]}) {
 	/if (!${Defined[ReportFM]})   /declare ReportFM bool outer
 	/call LoadVar DoBuffStuff BuffGem "Buff Gem you would like to cast /buff requests from" BuffGem "${MyIni}" ${Function} string
@@ -2903,7 +2893,7 @@ Sub LoadIni(MyIni,Function)
          /call LoadVar SummonStuff PetToysGave "PetToysGiven" PetToysGave "${MyIni} ${Function} string
 	 }
 }
-/if (${Select[${Me.Class.ShortName},CLR,SHM,DRU,BST]}) {%
+/if (${Select[${Me.Class.ShortName},CLR,SHM,DRU,BST]}) {
 	/call LoadVar HealStuff DoSotW FALSE DoSotW "${MyIni}" ${Function} bool
 	/call LoadVar HealStuff ReportSotW FALSE ReportSotW "${MyIni}" ${Function} bool
 	/call LoadVar HealStuff SotWAA "Put the name of your AE Healing AA here" SotWAA "${MyIni}" ${Function} string
