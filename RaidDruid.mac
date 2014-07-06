@@ -2120,7 +2120,7 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 	/if (${ChatText.Left[1].Equal[/]}) /docommand ${ChatText}
 	/if ((${ChatText.Find[move up]} || ${ChatText.Find[camp here]} || ${ChatText.Find[follow]}) && !${Me.Standing}) /stand
 	/if (${ChatText.Find[move up]} && ${Sender.NotEqual[${Me.CleanName}]}) {
-		/if (${MakeCamp.Status.Equal[ON]}) /makecamp ${Spawn[pc ${Sender}].Y} ${Spawn[pc ${Sender}].X}
+		/if (${MakeCamp.Status.Equal[ON]}) /makecamp loc ${Spawn[pc ${Sender}].Y} ${Spawn[pc ${Sender}].X}
 		/moveto loc ${Spawn[pc ${Sender}].Y} ${Spawn[pc ${Sender}].X}
 	}
 	/if (${ChatText.Find[camp here]} && ${Sender.NotEqual[${Me.CleanName}]}) {
@@ -2143,25 +2143,6 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 		/varset FollowGuy 0
 	}
 	/if (${ChatText.Find[mana]} && ${Me.MaxMana}) /${ChatChannel} ${Me.PctMana}m
-	/if (${ChatText.Equal[rez me]} && ${Spawn[${Sender}].Type.Find[Corpse]} && ${Me.Class.ShortName.Equal[CLR]}) {
-		/if (${DoBuffTells} && !${SpamTimer}) /tell ${Sender} Rezz inc!
-		/squelch /target ${Sender}'s Corpse
-		/if (${Target.ID} && ${Target.Distance}>20) /corpse
-		/if (!${Target.ID} && ${ReportHeals}) /${MyChannel} I can't target ${Sender}'s corpse
-		/if (!${Target.ID} && ${DoBuffTells} && !${SpamTimer}) /tell ${Sender} I can't target your corpse
-		/if (${Target.Type.Equal[Corpse]}) {
-		/if (${ReportHeals}) /${ChatChannel} I am attempting to resurrect ${Sender}
-		/if (${Me.AltAbility[Blessing of Resurrection]} && ${Me.AltAbilityReady[Blessing of Resurrection]}) {
-			/call Cast "Blessing of Resurrection" alt 10s
-			} else /if (${FindItem[Water Sprinkler of Nem Ankh].ID}) {
-			/call Cast "Water Sprinkler of Nem Ankh" item 6s
-			} else {
-			/call Cast "Reviviscence" ${BuffGem} 3s
-			 }
-		 }
-		 }
-		 /return
-	 }
 	/if (${ChatText.Find[medtime]} && ${Me.PctMana}<100 && ${Me.MaxMana}) /${ChatChannel} FM in: ${Int[${Math.Calc[(${Me.MaxMana}-${Me.CurrentMana})/(${Me.ManaRegen}|1)/10]}]}m${Int[${Math.Calc[(${Me.MaxMana}-${Me.CurrentMana})/(${Me.ManaRegen}|1)%10*6]}]}s
 	/if (${ChatText.Find[buffqueue]} && ${QueueCount}) /${ChatChannel} I have ${QueueCount} buffs waiting to be served.
 	/if (${ChatText.Find[break]}) /call BreakInvis
