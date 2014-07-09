@@ -2153,6 +2153,23 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 		/call CalmGroup ${Puller}
 	}
 }
+/if (${ChatText.Equal[rez me]} && ${Spawn[${Sender}].Type.Find[Corpse]} && ${Me.Class.ShortName.Equal[CLR]}) {
+	/if (${DoBuffTells} && !${SpamTimer}) /tell ${Sender} Rezz inc!
+	/squelch /target ${Sender}'s Corpse
+	/if (${Target.ID} && ${Target.Distance}>20) /corpse
+	/if (!${Target.ID} && ${ReportHeals}) /${HealChannel} I can't target ${Sender}'s corpse
+	/if (!${Target.ID} && ${DoBuffTells} && !${SpamTimer}) /tell ${Sender} I can't target your corpse
+	/if (${Target.Type.Equal[Corpse]}) {
+	     /if (${ReportHeals}) /${HealChannel} I am attempting to resurrect ${Sender}
+	     /if (${Me.AltAbility[Blessing of Resurrection]} && ${Me.AltAbilityReady[Blessing of Resurrection]}) {
+		/call Cast "Blessing of Resurrection" alt 10s
+		} else /if (${FindItem[Water Sprinkler of Nem Ankh].ID}) {
+		/call Cast "Water Sprinkler of Nem Ankh" item 6s
+		} else {
+		/call Cast "Reviviscence" ${BuffGem} 3s
+	     }
+		 }
+}
 /return
 
 Sub Event_Dead
@@ -2726,7 +2743,7 @@ Sub LoadIni(MyIni,Function)
 	/for i 1 to ${SelfBuffTotal}
 		/call LoadVar SelfBuffStuff SelfBuff${i} "Self Buff Item/Spell #${i}" SelfBuff${i} "${MyIni}" ${Function} string
 		/call LoadVar SelfBuffStuff SelfBuffGem${i} "Self Buff #${i} Gem or put Item if an item or comb if it is a disc" SelfBuffGem${i} "${MyIni}" ${Function} string
-		/call LoadVar SelfBuffStuff SelfBuffCount${i} 15 SelfBuffCount${i} "${MyIni}" ${Function} int
+		/call LoadVar SelfBuffStuff SelfBuffCount${i} 30 SelfBuffCount${i} "${MyIni}" ${Function} int
 		/call LoadVar SelfBuffStuff SelfBuffAura${i} FALSE SelfBuffAura${i} "${MyIni}" ${Function} bool
 		/call LoadVar SelfBuffStuff SelfBuffIcon${i} NOTFOUND SelfBuffIcon${i} "${MyIni}" ${Function} string
 		/if (${Me.AltAbility[${SelfBuff${i}}].Spell.ID}) /varset SelfBuffID[${i}] ${Me.AltAbility[${SelfBuff${i}}].Spell.ID}
