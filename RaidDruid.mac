@@ -2961,8 +2961,8 @@ Sub LoadIni(MyIni,Function)
 		 	/call LoadVar PetStuff PetBuffGem${i} "pet Buff #${i} Gem or put Item if an item" PetBuffGem${i} ${MyIni} ${Function} string
 		 	/if (${Me.AltAbility[${PetBuff${i}}].Spell.ID}) /varset PetBuffID[${i}] ${Me.AltAbility[${PetBuff${i}}].Spell.ID}
 		 	/if (${FindItem[${PetBuff${i}}].ID}) /varset PetBuffID[${i}] ${FindItem[${PetBuff${i}}].Spell.ID}
-		 	/if (${Spell[${PetBuff${i}}].RankName.ID}) /varset PetBuffID[${i}] ${Spell[${PetBuff${i}}].RankName}
-		 	/if (${Ini[${RDIni},PetStuff,PetBuffIcon${i},NOTFOUND].NotEqual[NOTFOUND]}) /varset PetBuffID[${i}] ${Spell[${Ini[${RDIni},PetStuff,PetBuffIcon${i},NOTFOUND]}].ID}
+			/if (${Spell[${PetBuff${i}}].RankName.ID}) /varset PetBuffID[${i}] ${Me.Book[${Me.Book[${Spell[${PetBuff${i}}].RankName}]}].ID}
+			/if (${Ini[${RDIni},PetStuff,PetBuffIcon${i},NOTFOUND].NotEqual[NOTFOUND]}) /varset PetBuffID[${i}] ${Spell[${Ini[${RDIni},PetStuff,PetBuffIcon${i},NOTFOUND]}].ID}
 		/next i
 	}
 }

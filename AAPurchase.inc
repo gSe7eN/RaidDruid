@@ -104,7 +104,7 @@ Sub AAPicker
 | Bookmark            
       :BuyAdditional
 | If Can Purchase is selected unselect it.
-      /if (${Window[AAWindow].Child[CanPurchaseFilter].Checked}) /nomodkey /notify AAWindow CanPurchaseFilter leftmouseup
+|      /if (${Window[AAWindow].Child[CanPurchaseFilter].Checked}) /nomodkey /notify AAWindow CanPurchaseFilter leftmouseup
 | Check if the skill is available to your class.
       /if (${AA[${x}].Arg[1,"|"].Equal[${nameAA}]}) {
 | Grab the level information from the AAWindow so that
@@ -142,7 +142,7 @@ Sub AAPicker
 | Define Cost be the cost listed in the AAWindow.
                /varset Cost ${Window[AAWindow].Child[${ListNum}].List[${Window[AAWindow].Child[${ListNum}].List[=${nameAA}]}, 3]}
 | Click the can purchase button.
-               /nomodkey /notify AAWindow CanPurchaseFilter leftmouseup
+|               /nomodkey /notify AAWindow CanPurchaseFilter leftmouseup
 | If the Cost of the ability is less than or equal to your banked AA and if the AA still shows in the list.
                /if (${Cost}<=${Me.AAPoints} && !${Window[AAWindow].Child[${ListNum}].List[=${nameAA}]}==NULL) {
 | Select and purcahse the AA.
@@ -186,6 +186,7 @@ Sub AAPicker
    } else {
       def_channel_ Cycled through all AA and nothing to purchase this round.
    }
+|**
 /if (${Me.Level}<91) {
 | If banked AA is greater than or equal to 27 and less than 99, issue a warning.
    /if (${Me.AAPoints}>=28 && ${Me.AAPoints}<29) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
@@ -195,7 +196,7 @@ Sub AAPicker
       def_channel_ Changing you to full level XP. Hopefully you are not max level yet.
       /alt off
    }
-} else if (${Me.Level)>90 && ${Me.Level}>100) {
+} else /if (${Me.Level})>90 && ${Me.Level}>100) {
    | If banked AA is greater than or equal to 27 and less than 99, issue a warning.
    /if (${Me.AAPoints}>=47 && ${Me.AAPoints}<49) def_channel_ WARNING!!! You are at ${Me.AAPoints} banked AA.
    | If banked AA equals 99, turn off alt exp.
@@ -214,6 +215,7 @@ Sub AAPicker
       /alt off
    }
 }
+**|
 /return
 
 Sub AASelect(string AAName)
