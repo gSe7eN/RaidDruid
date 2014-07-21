@@ -1988,11 +1988,6 @@ Sub ShrinkStuff
 
     /return
 
-|===========================================================================================|
-|
-|End of Maskoi's shit
-|
-|===========================================================================================|
 Sub ParseMessage(Replace,NewText)
 /declare Lefttext  string local
 /declare Righttext string local
@@ -2136,6 +2131,9 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 		/varset FollowOn TRUE
 		/varset TravelMode ${ChatText.Find[travel]}
 		/if (${MakeCamp.Status.Equal[ON]}) /makecamp off
+	}
+	/if (${ChatText.Find[mount up]} && !${Me.Invis} && !${RDPause} !${Me.FeetWet} && !${RestrictedList.Find[|NoMount|]}) {
+		/itemnotify "${FindItem[${MountItem}]}" rightmouseup
 	}
 	/if (${ChatText.Find[stop]}) {
 		/squelch /stick off
@@ -2382,6 +2380,7 @@ Sub Event_NoMount
 /return
 
 Sub Event_SaveIni(Line,LineArg)
+/if (!${Defined[${LineArg}]}) /varset LineArg ${RDIni}
 /call LoadIni ${LineArg} SAVE
 /return
 
