@@ -2111,7 +2111,7 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 /if (${DoBuffTotal} && ${DoBuffs} && ${Sender.NotEqual[${Me.CleanName}]} && (${Spawn[pc ${Sender}].ID} || ${Spawn[corpse ${Sender}].ID})) /call CheckDoBuffs "${Sender}" "${ChatText}"
 /if (${ChatText.Find[pet toys]} && ${DoPetToys} && ${Me.Class.ShortName.Equal[MAG]} && ${Spawn[${Sender}].Pet.ID} && ${Spawn[${Spawn[${Sender}].Pet.ID}].Distance3D}<250 && ${Spawn[${Spawn[${Sender}].Pet.ID}].LineOfSight}) /call PetToys ${Spawn[${Sender}].Pet.ID}
 /if (${MasterList.Find[${Sender}]}) {
-	/if (${ChatText.Find[mount up]} && !${Me.Invis} && !${RDPause} !${Me.FeetWet} && !${RestrictedList.Find[|NoMount|]}) /itemnotify "${FindItem[${MountItem}]}" rightmouseup
+	/if (${ChatText.Find[mount up]} && !${Me.Mount.ID} && !${Me.Invis} && !${RDPause} && !${Me.FeetWet} && !${RestrictedList.Find[|NoMount|]}) /call Cast "${MountItem}" item 10s Check4Pad
 	/if (${ChatText.Find[portto]} && ${DoPorts} && ${Select[${Me.Class.ShortName},DRU,WIZ]}) /call PortUs ${ChatText.Arg[2]}
 	/if (${ChatText.Left[1].Equal[/]}) /docommand ${ChatText}
 	/if ((${ChatText.Find[move up]} || ${ChatText.Find[camp here]} || ${ChatText.Find[follow]}) && !${Me.Standing}) /stand
