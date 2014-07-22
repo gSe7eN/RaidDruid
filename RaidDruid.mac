@@ -248,7 +248,7 @@ Sub Main
 		/if (${AEHeal}) /call DoAEHeal
 		/call AssistMA1
 		/if ((${DoMez} || ${DoCharm}) && ${Select[${Me.Class.ShortName},BRD,ENC,DRU]} && (!${CheckGroupTimer} || ${SpawnCount[npc targetable radius ${NPCRadius} zradius ${NPCZRadius} noalert 1]}!=${LastSpawnCount} || (${PetID} && !${Me.Pet.ID}) || (!${PetID} && ${Me.Pet.ID}))) /call CheckMez
-		/if (${PetAttack} && ${Me.CombatState.Equal[COMBAT]}) /call PetAttackStuff
+		/if (${PetAttack} && ${Spawn[${MATarget}].PctHPs}<${EngageHPs} && !${AssistTimer}) /call PetAttackStuff
 		/if ((${DoDebuffs} || ${DoDoTs} || ${DoManaTaps}) && ${Me.PctMana}>=${DebuffLowest}) /call DebuffIt
 		/if (!${NukeTimer} && ${DoNukes} && ${Me.PctMana}>=${NukeLowest}) /call Nukeit
 		/if (${DoCombatStuff} && ${Me.CombatState.Equal[COMBAT]} && !${CombatStuffTimer}) /call DoStuff Combat
