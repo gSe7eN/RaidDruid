@@ -1541,7 +1541,7 @@ Sub AddSong(LowGem,HighGem,TwistType,Song)
 }
 /for i ${LowGem} to ${HighGem}
 	/if (${Ini[${RDIni},"Bard-${TwistType}",SongsArray${i},NOTFOUND].Equal[Song Name]}) {
-		/if (!${Spell[${Song}].RankName}) {
+		/if (!${Spell[${Song}].RankName.ID}) {
 			/if (${Ini[${RDIni},"Bard-Aliases",${Song},NOTFOUND].Equal[NOTFOUND]}) /return
 		 	/if (TRUE) /${ChatChannel} ${Song}-->${Ini[${RDIni},"Bard-Aliases",${Song}]}
 			/varset Song ${Ini[${RDIni},"Bard-Aliases",${Song}]}
@@ -1568,7 +1568,7 @@ Sub DelSong(LowGem,HighGem,TwistType,Song)
 /declare i    int    local
 /declare k    int    local
 /declare flag int    local
-/if (!${Spell[${Song}].RankName}.ID) {
+/if (!${Spell[${Song}].RankName.ID}) {
 	/if (${Ini[${RDIni},"Bard-Aliases",${Song},NOTFOUND].Equal[NOTFOUND]}) {
 		/if (TRUE) /${ChatChannel} Song: ${Song} not found.  Song NOT Removed
 		/return
