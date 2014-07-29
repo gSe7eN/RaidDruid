@@ -490,14 +490,14 @@ Sub CheckHP
         /if (1) /${HealChannel} ${Parse}
 		/varset SpamFlag TRUE
 	}
-	/if (${HealFD} && ${Target.State.NotEqual["FEIGN"]} && ${Select[${Target.Class.ShortName},MNK,NEC,SHD]}) /call DoInterrupt
+|	/if (${HealFD} && ${Target.State.Equal["FEIGN"]} && ${Select[${Target.Class.ShortName},MNK,NEC,SHD]}) /call DoInterrupt
     /call ${EvaluateFunction}
 	/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[pc ${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
 		/call CheckPPS
-		/if (${Target.PctHPs}>${TankHealPct} && ${TankTTL}>250 && ${castEndTime}<40) /call Interrupt
+|		/if (${Target.PctHPs}>${TankHealPct} && ${TankTTL}>250 && ${castEndTime}<40) /call Interrupt
 		/if (${castEndTime}>=${TankTTL}+50) /call DoHeal ${Target.ID} Fast
 	}
-	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${TankHealID} && ${Me.Casting.ID}!=${DelayedHealID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Target.PctHPs}>=${CancelPct} && (!${WaitToCancel} || ${castEndTime}<5)) /call Interrupt
+|	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${TankHealID} && ${Me.Casting.ID}!=${DelayedHealID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Target.PctHPs}>=${CancelPct} && (!${WaitToCancel} || ${castEndTime}<5)) /call Interrupt
 	/if (${HealMeFirst} && ${Me.PctHPs}<=${HealPct} && ${Target.ID}!=${Me.ID}) /call DoHeal ${Me.ID} Fast
 }
 /doevents Dead
