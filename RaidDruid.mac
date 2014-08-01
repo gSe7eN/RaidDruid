@@ -54,6 +54,7 @@
 #Event SetMA3         "[MQ2] SetMA3#1#"
 #Event SetRampTank    "[MQ2] SetRampTank#1#"
 #Event SongAlias      "[MQ2] SongAlias #1# #2#"
+#Event Stand          "You must be standing to attack!"
 #Event ToggleString   "[MQ2] ToggleString #1#,#2#,#3#,#4#,#5#"
 #Event ToggleVar      "[MQ2] ToggleVar #1#,#2#,#3#,#4#,#5#"
 #Event ToggleAABuy    "[MQ2] ToggleAABuy"
@@ -2148,7 +2149,7 @@ Sub Event_Chat(ChatType,Sender,ChatText)
 		/call CalmGroup ${Puller}
 	}
 }
-/if (${ChatText.Equal[rez me]} && ${Spawn[${Sender}].Type.Find[Corpse]} && ${Me.Class.ShortName.Equal[CLR]}) {
+/if (${ChatText.Equal[rez me]} && ${Spawn[${Sender}].Type.Find[Corpse]} && ${Spawn[${Sender}].ID}!=${Me.ID} && ${Me.Class.ShortName.Equal[CLR]}) {
 	/if (${DoBuffTells} && !${SpamTimer}) /tell ${Sender} Rezz inc!
 	/squelch /target ${Sender}'s Corpse
 	/if (${Target.ID} && ${Target.Distance}>20) /corpse
@@ -2552,6 +2553,10 @@ Sub Event_AddAlertCommon(line,MobName)
 
 Sub Event_LoadAlert
 	/call RefreshAlerts
+/return
+
+Sub Event_Stand
+  /if (!${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
 /return
 
 Sub LoadIni(MyIni,Function)
