@@ -55,6 +55,7 @@
 #Event SetRampTank    "[MQ2] SetRampTank#1#"
 #Event SongAlias      "[MQ2] SongAlias #1# #2#"
 #Event Stand          "You must be standing to attack!"
+#Event Stand	      "Auto attack is off."
 #Event ToggleString   "[MQ2] ToggleString #1#,#2#,#3#,#4#,#5#"
 #Event ToggleVar      "[MQ2] ToggleVar #1#,#2#,#3#,#4#,#5#"
 #Event ToggleAABuy    "[MQ2] ToggleAABuy"
