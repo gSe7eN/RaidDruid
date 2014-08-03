@@ -6,7 +6,7 @@
 | 
 |Credit:
 |	Blitter - Author
-|	PussyFoot - Edited for enchanter use
+|	PussyFoot - Edited for Enchanter use
 |
 | Modified for Raid Druid usage on other toons - Necrognomie
 | 	Removed SpellStun, added 4th manatapping Nuke
@@ -27,14 +27,13 @@
 
 
 Sub Main
-
-
-	| Variables to determine when to do certain things. 
-	| All settings for this macro can be found in the file set in IniSelfBuff
-	| If you do not have this file, run the program for the first time and 
-	| it will create one for you. Then you must go through and edit all of the variables
-	| to match your character. 
-	
+|========================================
+| Variables to determine when to do certain things. 
+| All settings for this macro can be found in the file set in IniSelfBuff
+| If you do not have this file, run the program for the first time and 
+| it will create one for you. Then you must go through and edit all of the variables
+| to match your character. 
+|========================================	
 	/declare IniSelfBuff 	 string 	outer   mystuff.ini
 	/declare NukeAt				int 	outer	
 	/declare NoNukeAt 			int 	outer
