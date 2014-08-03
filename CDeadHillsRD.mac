@@ -1,0 +1,911 @@
+|========================================
+| Enchanter Dead Hills Routine. 
+| Version 1.04
+| Attempting to clean up some of the problems that people seem to be having. Also looking to 
+| automate more of it instead of using /load etc. Make it a bit faster maybe.
+| 
+|Credit:
+|	Blitter - Author
+|	PussyFoot - Edited for enchanter use
+|
+| Modified for Raid Druid usage on other toons - Necrognomie
+| 	Removed SpellStun, added 4th manatapping Nuke
+| 	re-aligned spacing
+|========================================
+
+#include spell_routines.inc
+
+#event ToonReady "<#1> Ready"
+#event WarriorEnage "<#1#> Engaging #2#"
+#event LootingEvent "#*# has looted a #1#.-#*#"
+#event UpdateEvent "#*#Your task '#1#' has been updated."
+
+Sub Main
+
+
+	| Variables to determine when to do certain things. 
+	| All settings for this macro can be found in the file set in IniSelfBuff
+	| If you do not have this file, run the program for the first time and 
+	| it will create one for you. Then you must go through and edit all of the variables
+	| to match your character. 
+	
+	/declare IniSelfBuff 	 string 	outer   mystuff.ini
+	/declare NukeAt				int 	outer	
+	/declare NoNukeAt 			int 	outer
+	/declare NoDebuffAt 		int 	outer	
+	/declare DoNuke1			int 	outer
+	/declare DoNuke2			int 	outer 
+	/declare DoNuke3			int 	outer
+	/declare DoNuke4			int 	outer
+	/declare TankName 			string 	outer 
+	/declare TankMacro 			string 	outer 
+	/declare LooterName 		string 	outer 
+	/declare LooterMacro 		string 	outer 
+	/declare Toon1 				string 	outer
+	/declare Macro1		 		string 	outer 
+	/declare Toon2 				string 	outer
+	/declare Macro2		 		string 	outer
+	/declare Toon3 				string 	outer
+	/declare Macro3 			string 	outer
+	/declare SpellNuke1 		outer
+	/declare SpellNuke2 		outer
+	/declare SpellNuke3 		outer
+	/declare SpellNuke4 		outer
+	/declare SpellMez   		outer
+	/declare SpellAEMez 		outer
+	/declare SpellRune  		outer
+	/declare SpellRuneBuff  	outer
+	/declare SpellDot   		outer
+	/declare SpellTash  		outer
+	/declare SpellCripple		outer
+	/declare SpellAura1			outer
+	/declare SpellAura2 		outer	
+	/declare SpellAura1Message	outer
+	/declare SpellAura2Message	outer
+	/declare CampX				int		outer
+	/declare CampY				int 	outer
+ 	/declare Buff1 				outer
+	/declare Buff2				outer
+	/declare Buff3				outer
+	/declare IniPathFile		string	outer
+  	/declare Path[5,20,2] 		int 	outer
+  	/declare MaxPaths 			int 	outer
+  	/declare NumReady 			int 	outer 		0
+	/declare CampNum 			int 	outer 		1
+  	/declare ReadysRequired 	int 	outer 		0
+  	/declare BardSong 			int 	outer 		0
+  	/declare MezMob 			int 	outer 		0
+  	/declare MezCount 			int 	outer 		0
+  	/declare MezTimer 			timer 	outer 		0
+  	/declare ClickName 			string 	outer 		0
+  	/declare OuterItem 			string 	outer
+  	/declare ReturnGribble 		int 	outer 		0
+  	/declare zrange			 	int 	outer 		100
+  	/declare BugTimer 			timer 	outer 		20000
+  	/declare BugF 				int 	outer 		0
+  	/declare NumTargets 		int 	outer 		0
+  	/declare CurrentTarget 		int 	outer 		0
+  	/declare NumMez 			int 	outer 		0
+  	/declare MelodyTimer		timer 	outer	 	0
+  	/declare EventStep 			int 	outer 		0
+	/declare MezTimerTwo   		timer 	outer   	0
+	/declare Restart			int 	outer 
+	/declare kk 				int 	local 		0
+  	/declare MezTargets 		int 	outer 		0
+  	/declare CheckMez 			timer 	outer	 	0
+:StartAgain
+
+	/varset NumReady 0
+	/varset CampNum 1
+  	/varset ReadysRequired 0
+  	/varset BardSong 0
+  	/varset MezMob 0
+  	/varset MezCount 0
+  	/varset MezTimer 0
+  	/varset ClickName 0
+  	/varset ReturnGribble 0
+  	/varset zrange	100
+  	/varset BugTimer 20000
+  	/varset BugF 	0
+  	/varset NumTargets 0
+  	/varset CurrentTarget 0
+  	/varset NumMez 0
+  	/varset MelodyTimer 0
+  	/varset EventStep 0
+	/varset MezTimerTwo 0
+	/varset Restart 0
+
+	/doevents flush
+
+	/if (${Me.Pet.ID}) /pet ghold on	
+|========================================
+| Here begins the actual bulk of the routines. 
+|========================================
+	/for kk 1 to ${Group}
+	/if (${Group.Member[${kk}].Type.Equal[PC]}) {
+		/varcalc ReadysRequired ${ReadysRequired}+1
+		}
+	/next kk
+	/if (!${Zone.ShortName.Equal[deadhills_errand]})  /echo Readys Required: ${ReadysRequired}
+	/if (${Zone.ShortName.Equal[deadhills_errand]}) {
+		/call LoadIni
+		/call SetUp
+		/call MemSpells
+		/goto :killmob
+		}
+  	/call GetInstance
+:SkipZoneIn
+  	/call ZoneIn
+|========================================
+| Move Puller and Tank to the Camp
+|========================================
+|  	/bct ${TankName} //moveto loc ${CampX} ${CampY}
+| 	/moveto loc ${CampX} ${CampY}
+|	/delay 3s
+  	
+:killmob
+	/if (${Me.Buff[Slackening Wave Rk. II].ID}) {
+		/bc Mezzed myself. Waiting. 
+		/delay 1s
+		/goto :killmob
+		}
+	/if (${Me.CombatState.NotEqual[COMBAT]} && ${ReturnGribble}==1) { 
+		/call ReturnToGribble
+		/goto :StartAgain
+		}
+  	/if (${Me.CombatState.NotEqual[COMBAT]}) {
+       	/call PullMobA 1 6 160 0 4
+		/if (${Restart}) /goto :StartAgain
+		}
+	
+	/doevents
+|======================================== 
+| Ressurection routine should go here.
+|========================================
+	/if (${Me.State.Equal[HOVER]}) {
+    	/varset CampNum 6
+    	/call Wait4Rez
+		}
+
+  	/delay 2
+  	/doevents
+|========================================  	
+| No mobs? Go back to the top. 
+|========================================
+	/if (${Me.XTarget}==0) /goto :killmob
+|========================================
+| There are mobs in the Xtarget Window, time to kill them/mez them etc. 
+|========================================
+   	/if (!${Target.ID} || (${Target.ID} && !${Target.AggroHolder.ID})) {
+   		/if (${Me.XTarget}>0) {
+			/if (${Me.XTarget}==1) { 
+  				/xtar 1
+				/delay 10
+				/bc  /varset MATarget ${Target.ID}
+			} else { 
+				/xtar 2
+				/delay 10 
+				}
+			}
+		}
+
+	
+	|/grouproles unset ${Me.Name} 3
+	/if (${Target.ID}) /face fast
+	
+	/delay 1s
+|========================================
+| Make sure runes are up. 
+|========================================
+	/if (!${Me.Buff[${SpellRuneBuff}].ID}) {
+		/bc [+g+] Casting - [+y+] ${SpellRune}
+		/cast "${SpellRune}"
+		}
+	/if (${Me.Buff[${Spell[27616].Name}].ID}) {
+		/alt act 791
+		/bc [+g+] Casting - [+y+] Veil of Mindshadow
+		}
+	/if (!${Me.Buff[Eldritch Rune].ID}) { 
+		/alt act 173
+		/bc [+g+] Casting - [+y+] Eldritch Rune
+		}
+        /if (${Target.Distance}<70) { 
+		/if (${Me.PctMana}<60 && !${FindItem[Latent Robe of Compulsion].Timer}) {
+			/useitem 17
+			/bc [+g+] Robe Click for Mana
+			}
+		/if (${Me.PctMana}<70 && ${Me.AltAbilityReady[Fundament: Second Spire of Enchantment]}) {
+			/alt act 1381
+			/bc [+g+] Second Spire AA for Mana.
+			}				
+		/doevents
+        	/if (${Me.XTarget}==1 || (${MezTimerTwo.Value} && ${Me.XTarget}>1)&&!${Target.Dead}) {
+			/xtar 1
+			/if (!${Me.Buff[${SpellRuneBuff}].ID}) {
+				/bc [+g+] Casting [+y+] ${SpellRune}...
+				/call cast "${SpellRune}"
+				}
+			/delay 10
+			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /pet attack
+			/if (!${Target.Buff[${SpellTash}].ID} && ${Int[${Target.PctHPs}]}>${NoDebuffAt}) {
+				/bc [+g+] Casting [+y+] ${SpellTash}...
+		 		/call cast "${SpellTash}"
+				/goto :NextPass
+				}
+			/if (!${Target.Buff[${SpellCripple}].ID} && ${Int[${Target.PctHPs}]}>${NoDebuffAt}) {
+				/bc [+g+] Casting [+y+] ${SpellCripple}
+				/call cast "${SpellCripple}"
+				/goto :NextPass
+				}
+			/if (!${Target.Buff[${Target.Slowed}].ID} && ${Int[${Target.PctHPs}]}>${NoDebuffAt}) {
+				/bc [+g+] Casting [+y+] Dready Deeds AA
+				/alt act 753
+				/delay 4s
+				/goto :NextPass
+				}
+			/if (!(${Me.Aura[1].Equal[${SpellAura1Message}]}) && !(${Me.Aura[2].Equal[${SpellAura1Message}]})) {
+				/bc [+g+] Casting [+y+] ${SpellAura1}.... 
+				/delay 1s
+				/call cast "${SpellAura1}"
+				/delay 3s
+				}
+    			/if (!(${Me.Aura[1].Equal[${SpellAura2Message}]}) && !(${Me.Aura[2].Equal[${SpellAura2Message}]})) {
+				/bc [+g+] Casting [+y+] ${SpellAura2}
+				/delay 1s
+				/call cast "${SpellAura2}"
+				/delay 3s
+				}
+			/xtar 1
+			/delay 10
+			/if (${Int[${Target.PctHPs}]}<${NukeAt} && ${Int[${Target.PctHPs}]}>${NoNukeAt}) {
+				| Nuke Routines. 
+
+				/if ((${Me.Gem[${SpellNuke1}]})&&(${Me.SpellReady[${SpellNuke1}]})&&(!${Me.Casting.ID})&& ${DoNuke1}) {
+					/bc [+g+] Casting [+y+] ${SpellNuke1}....
+					/call cast "${SpellNuke1}"
+				}
+				/if ((${Me.Gem[${SpellNuke2}]})&&(${Me.SpellReady[${SpellNuke2}]})&&(!${Me.Casting.ID})&& ${DoNuke2}) {
+					/bc [+g+] Casting [+y+] ${SpellNuke2}...
+					/call cast "${SpellNuke2}"
+				}
+				/if ((${Me.Gem[${SpellNuke3}]})&&(${Me.SpellReady[${SpellNuke3}]})&&(!${Me.Casting.ID})&& ${DoNuke3}) {
+					/bc [+g+] Casting [+y+] ${SpellNuke3}...
+					/call cast "${SpellNuke3}"
+				}
+				/if ((${Me.Gem[${SpellNuke4}]})&&(${Me.SpellReady[${SpellNuke4}]})&&(!${Me.Casting.ID})&& ${DoNuke4}) {
+					/bc [+g+] Casting [+y+] ${SpellNuke4}...
+					/call cast "${SpellNuke4}"
+				}
+			}
+			/delay 10
+:NextPass
+			/doevents
+		}	
+		/if (${Me.XTarget}>1 && !${MezTimerTwo.Value}) {
+			/xtar 2
+			/delay 1s
+			/if (${Me.XTarget}==2) {
+:ReMez
+				/bc Casting ${SpellMez} on ${Target.Name}....
+				/call cast "${SpellMez}"
+				/if (!${Target.ID}) /goto :SkipMez
+				/if (${Me.XTarget}<2) /goto :SkipMez
+				/if (!${Macro.Return.Equal["CAST_SUCCESS"]}) /goto :ReMez
+			} else {
+:ReAEMez
+				/if (${Target.ID}) /face fast
+				/if (!${Target.ID}) /goto :SkipMez
+				/bc Casting Bite of Tashani AA
+				/alt act 1125
+				/delay 10
+				/bc Casting ${SpellAEMez}....
+				/call cast "${SpellAEMez}"
+				/for MezCount 2 to ${Me.XTarget}
+					/xtar ${MezCount}
+					/delay 10 
+					/if (!${Target.Buff[${Target.Mezzed}].ID}) /goto :ReAEMez
+					/if (${Me.XTarget}<3) /goto :SkipMez
+				/next MezCount	
+			}
+		/varset MezTimerTwo 360
+:SkipMez
+		}   
+  	}  
+	/delay 2
+ 	/goto :killmob
+/return
+
+Sub SetUp
+	/declare kk int inner
+	/declare i int inner
+	/declare k int inner
+  	/alert clear 1
+  	/alert add 1 Gribble
+ 	/alert add 1 adventurer
+  	/alert add 1 Cogwitz
+  	/hidecorpse looted
+	/varset i 1
+|  Loads the Path file
+:iloop1
+   	/varset k 1
+   	/if (!${Bool[${Ini[${IniPathFile},"Path${i}","PointX${k}"]}]}) {
+   		/varcalc MaxPaths ${i}-1 
+   		/echo Number of paths ${MaxPaths}    
+   		/return
+    	}
+:kloop1
+   	/if (!${Bool[${Ini[${IniPathFile},"Path${i}","PointX${k}"]}]}) {
+       	/varset Path[${i},${k},1] 0
+       	/varset Path[${i},${k},2] 0
+       	/varcalc i ${i}+1
+       	/goto :iloop1
+		} else {
+		|   /echo ${i} ${k} ${Ini[${IniPathFile},"Path${i}","PointX${k}"]}
+			/varset Path[${i},${k},1] ${Ini[${IniPathFile},"Path${i}","PointX${k}"]}
+			/varset Path[${i},${k},2] ${Ini[${IniPathFile},"Path${i}","PointY${k}"]}
+			|/echo ${Path[${i},${k},1]}
+			/varcalc k ${k}+1
+			}  
+ 	/goto :kloop1
+	/return
+
+Sub ReturnToGribble
+  	/delay 90s ${Me.CombatState.NotEqual[COMBAT]}
+  	/delay 180s !${Me.XTarget}||${Me.XTarget[1].PctHPs}>99 
+  	/delay 15s
+  	/beep
+  	/bca //rdpause on
+ 	/delay 2s
+  	/bca //tar Gribble
+  	/bca //stick hold
+  	/tar Gribble	
+	/delay 5s
+  	/delay 20s ${SpawnCount[PC]}==${SpawnCount[PC radius 40]}
+  	/keypress H
+  	/delay 5s
+  	/bca //say back
+  	/kickplayers task
+  	/delay 5s ${Window[ConfirmationDialogBox].Open}
+  	/nomodkey /notify ConfirmationDialogBox Yes_Button leftmouseup
+  	/delay 10s
+  	/say back
+  	/delay 120s ${Zone.ShortName.Equal[deadhills]}
+  	/delay 30s
+  	/varset CampNum 1
+  	/varset ReturnGribble 0
+	/varset Restart 1
+	/return 
+
+Sub GetInstance
+	/bc Getting instance, and zoning in.
+	/bc move up
+  	/tar Gribble
+	/delay 2s
+	/stick hold
+  	/delay 10s
+  	/if (${Target.Distance}<50) {
+    		/say investigate
+    		/delay 2s
+    		/notify TaskSelectWnd TSEL_TaskList listselect 3
+    		/delay 2s
+    		/notify TaskSelectWnd TSEL_AcceptButton leftmouse 3
+  	} else {
+   		/bc Gribble is OOR
+   		/endm
+		}
+	/bc move up
+	/delay 120s
+	/return
+
+Sub Wait4Ready(int MaxReady)
+|========================================
+|  This is a routine I call which waits for every toon to say they are ready to proceed.  I normally use this 
+|  for zoning and moving between camps (I've used the slacker /afol method tho in this macro)
+|========================================
+  	/doevents flush
+:loop
+   	/doevents
+   	/delay 1s
+  	/if (${NumReady}<${MaxReady}) /goto :loop
+  	/bc All toons are [+g+]Ready
+  	/varset NumReady 0
+	/return
+
+Sub ZoneIn
+|========================================
+|  Insert your /bct commands to role buffs for the characters.  You can do it here (in deadhills) b4 you zone in.
+|
+|----------
+|  /bct ${Toon1} //cast "Talisman of the Courageous Rk. II"
+|  /bct ${Toon2} //cast "Unified Hand of Certitude"
+|  /delay 10s
+| Group perfected Leviatation
+|  /bct ${Toon1} //alt activate 1666
+|  /delay 5s
+|  /bct ${Toon1} //cast "Talisman of Celerity"
+|========================================
+	/declare kk int inner
+	/declare bufflist string local ${Ini[${IniSelfBuff}, MyBuffs]}
+	/declare buffloop int local 0 
+	/declare lastbuff int local 0
+:shortloop
+  	/tar Gribble
+	/bca //rdpause on
+	/delay 20s
+	/bca //target Gribble
+	/delay 30s
+	/bca //stick hold
+	/delay 30s
+	/bca //say when
+	/delay 10s
+	/say when
+  	/delay 32s
+  	/delay 120s ${Zone.ShortName.Equal[deadhills_errand]}
+  	/if (!${Zone.ShortName.Equal[deadhills_errand]}) /goto :shortloop
+	/call LoadIni
+	/call SetUp
+  	/bcaa /keypress ESC
+|  	/delay 10s
+|  	/for kk 1 to ${Group}
+|      		/delay ${Math.Rand[9]}s
+|      		/bct ${Group.Member[${kk}].Name} //mac deadzone.mac
+|  	/next kk
+|  	/echo waiting for readys.
+|  	/call Wait4Ready ${ReadysRequired}
+	/call SetupCamp
+	/delay 8s
+|========================================
+|
+|  Or you can do it here, inside the zone
+|	
+|========================================
+	/bc [+m+] cert focus regen sob lev brells vie 
+	/delay 10s
+	/if (!${Me.Gem[${Buff1}]} ) { 
+      	/memspell 12 "${Buff1}" 
+      	/delay 5s
+		} 	
+	/call cast "${Buff1}"
+	/delay 8s
+	/if (!${Me.Gem[${Buff2}]} ) { 
+      	/memspell 12 "${Buff2}" 
+      	/delay 5s
+		} 
+	/call cast "${Buff2}"
+	/delay 8s
+	/if (!${Me.Gem[${Buff3}]} ) { 
+      	/memspell 12 "${Buff3}" 
+      	/delay 5s
+		} 
+	/call cast "${Buff3}"
+	/delay 8s
+	/call MemSpells
+	/delay 8s
+|========================================	
+| Load up some clickie buffs on toons.
+|========================================
+  	/bca //useitem 6
+  	/delay 6s
+ 	/bca //useitem 8
+ 	/delay 6s
+  	/bca //useitem 20
+  	/delay 6s
+  	/bca //useitem 16
+  	/delay 6s
+  	/bca //useitem 15
+  	/delay 2s
+|========================================
+| Custom self buffs from the ini file defined in IniSelfBuff at top.	
+| File should look similar to the following
+|
+| [MyBuffs]
+| Item1name=casttime
+| Item2name=casttime
+| Item3name=casttime
+| etc
+|
+| I.E. 
+| [MyBuffs]
+| Staff of Eternal Eloquence=30
+|========================================
+	/varcalc lastbuff ${bufflist.Count[|]}-1
+	/if (!${Ini[${IniSelfBuff}].Length}) {
+		/echo You do not have a ${IniSelfBuff} file created. Skipping.
+		/goto :SkipSelfBuff
+		}
+	/for buffloop 1 to ${lastbuff}
+		/echo Attempting to use item: ${bufflist.Arg[${buffloop},|]}
+		/useitem "${bufflist.Arg[${buffloop},|]}"
+		/delay ${Ini[${IniSelfBuff},MyBuffs,${bufflist.Arg[${buffloop},|]}]}
+	/next buffloop
+ :SkipSelfBuff
+	/return
+
+Sub FollowPath(PathNumber)
+	/declare i int inner
+   	/varset i 1
+:movecamploop1
+   	/doevents
+   	/bc [+t+]Path : [+y+]${PathNumber}[+t+]  Point : [+y+]${i}  [+x+]
+   	/squelch /moveto loc ${Path[${PathNumber},${i},1]} ${Path[${PathNumber},${i},2]}    
+   	/delay 60s ${MoveTo.Stopped}
+  	/varcalc i ${i}+1
+  	/if (${Bool[${Path[${PathNumber},${i},1]}]}) /goto :movecamploop1
+/return
+
+Sub SetupCamp
+|========================================
+|
+|  This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
+|
+|========================================
+  	|/bct ${Toon2} //tar ${TankName}
+  	/bca //tar ${TankName}
+	/delay 5s
+	/bct //target ${Tankname}
+	/delay 1s
+  	/bct ${TankName} //mac ${TankMacro}
+	/bct ${TankName} //makecamp
+  	/bct ${Toon1} //mac ${Macro1}
+  	/bct ${Toon3} //mac ${Macro3}
+  	/bct ${Toon2} //mac ${Macro2}
+  	/bct ${LooterName} //hidecorpse looted
+  	/delay 5s
+  	/bct ${LooterName} //mac ${LooterMacro}
+  	/delay 5s
+	/return
+
+Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
+|========================================
+| This macro no longer uses the PullType but I haven't removed it yet.  (To avoid
+| issues with calls up top. Eventually I'll remove it and change all those calls. 
+| For now I've removed all the bard fade checks and such, the chanter will not fade
+| with the current setup.  My chanter has never needed to with 4 mobs. 
+|| PullType = 1 = Boastful Bellow,  2 = Sonic Displacement, 4 = Slumber, 8 = Double Pull...  (bitwise operation)
+|========================================
+	/declare i int inner
+	/declare EndOfPath int inner 0
+	/declare CheckMob int inner 1
+	/declare PullList string inner
+	/declare tt int inner 0
+  	/if (${Zone.ShortName.NotEqual[deadhills_errand]}) {
+     	/bc [+r+] Not in the correct zone
+     	/bca //end
+    	/end
+		}
+
+ 	/if (!(${Me.Aura[1].Equal[${SpellAura1Message}]}) && !(${Me.Aura[2].Equal[${SpellAura1Message}]})) {
+		/echo Twincast Down, casting. 
+		/bc [+g+] Twincast down, casting.
+		/delay 1s
+		/call cast "${SpellAura1}"
+		/delay 3s
+		}
+   	/if (!(${Me.Aura[1].Equal[${SpellAura2Message}]}) && !(${Me.Aura[2].Equal[${SpellAura2Message}]})) {
+		/echo Mana Reverb down, casting
+		/bc [+g+] Mana Reverb down, casting
+		/delay 1s
+		/call cast "${SpellAura2}"
+		/delay 3s
+		}
+  	/varset EndOfPath 0
+  	/varset i 1
+  	/if (${Me.PctMana}<15) {
+		/if (${Me.AltAbilityReady[Mana draw]}) {
+			/bc [+g+] Casting [+y+] Mana Draw [+g+] for some mana.
+			/call Cast "Mana draw" alt 10s
+			/goto :SkipMed 
+			} 
+		/sit
+		/echo Medding for some Mana....
+:MedIt
+		/if (${Me.PctMana}<99) /goto :MedIt
+:SkipMed
+		}
+
+:moveloop
+   	/bc [+t+]Path : [+y+]${CampNum}[+t+]  Point : [+y+]${i}  [+x+]
+   	/squelch /moveto loc ${Path[${CampNum},${i},1]} ${Path[${CampNum},${i},2]}
+
+:MoveLoop1
+   	/doevents
+|========================================
+|  This is the grunt of the pulling routine
+|  This bit is checking for targets while moving....
+|========================================
+	/varset CheckMob ${SpawnCount[NPC radius ${PullRange} zradius ${zrange} los noalert 1]}
+   	/if (${CheckMob}>${NumberMobsToCheck}) /varset CheckMob ${NumberMobsToCheck}
+   	/if (${CheckMob}) {
+       	/for tt 1 to ${CheckMob} 
+   		/doevents  
+   		/if (${ReturnGribble}==1 || ${Me.CombatState.Equal[COMBAT]}) {
+			/varcalc i ${i}-1
+			/goto :ReturnPath
+			}
+   		/tar id ${NearestSpawn[${tt}, NPC los radius ${PullRange} zradius ${zrange} noalert 1].ID}
+   		/delay 2s ${Target.ID}==${NearestSpawn[${tt}, NPC los radius ${PullRange} zradius ${zrange} noalert 1].ID}||${Me.CombatState.Equal[COMBAT]}
+   		/if (${Target.Type.Equal[NPC]} && ${Target.LineOfSight}) {
+       		/if (${Zone.ShortName.NotEqual[deadhills_errand]}) {
+				/bc Not in the correct zone
+				/bca //end
+				/end
+				}
+       		/bc [+y+] Ethereal Mainpulation [+r+] ${Target.Name}
+       		/alt activate 2207
+			/BC  /varset MATarget ${Target.ID}
+   			/delay 1
+			/BC  /varset MATarget ${Target.ID}
+			}   
+          	/next tt
+		}
+    /delay 1
+    /if (!${MoveTo.Stopped}) /goto :MoveLoop1
+|========================================
+|  This bit is checking for mobs to pull at the way point.
+|========================================
+   	/varset CheckMob ${SpawnCount[NPC radius ${PullRange} zradius ${zrange} los noalert 1]}
+   	/if (${CheckMob}>${NumberMobsToCheck}) /varset CheckMob ${NumberMobsToCheck}
+   	/if (${CheckMob}) {
+       	/for tt 1 to ${CheckMob} 
+   		/doevents
+   		/if (${ReturnGribble}==1 || ${Me.CombatState.Equal[COMBAT]}) {
+   			/varcalc i ${i}-1
+   			/goto :ReturnPath
+       		} 
+        /tar id ${NearestSpawn[${tt}, NPC los radius ${PullRange} zradius ${zrange} noalert 1].ID}
+        /delay 2s ${Target.ID}==${NearestSpawn[${tt}, NPC los radius ${PullRange} zradius ${zrange} noalert 1].ID}||${Me.CombatState.Equal[COMBAT]}
+        /if (${Target.Type.Equal[NPC]} && ${Target.LineOfSight}) {
+        	/bc Ethereal Manipulation [+t+]${Target.Name}
+			/if (${Zone.ShortName.NotEqual[deadhills_errand]}) {
+     			/bc Not in the correct zone
+     			/bca //end
+     			/end
+ 				}
+            /alt activate 2207
+            /delay 4
+           	}
+        /next tt
+		}
+  	/varcalc i ${i}+1	
+  	/if (${Bool[${Path[${CampNum},${i},1]}]}) /goto :moveloop
+  	/delay 1s
+  	/bc [+g+] End of Path Encounted - [+y+] No Aggro ${i}
+  	/varset EndOfPath 1
+  	/if (${CampNum}==3) {
+   		/tar Cogwitz
+   		/delay 2s ${Target.Name.Find[Cogwitz]}
+   		/keypress H
+   		/delay 5
+   		/keypress H
+		}
+  	/varcalc i ${i}-2
+
+:ReturnPath
+	/if (${Me.XTarget} && ${i}<10 && ${CampNum}==3 && ${NearestSpawn[1,NPC noalert 1].Distance}>180) {
+   		/delay 3s ${NearestSpawn[1,NPC noalert 1].Distance}<160 || ${Me.PctHPs}<60
+		}
+   	/if (${i}<1) { 
+     	/if (${EndOfPath}==1 && ${CampNum}<3) {
+        	/varcalc CampNum ${CampNum}+1
+        	/varset EndOfPath 0
+			}
+     	/if (${EndOfPath}==1 && ${CampNum}==3) {   
+       		/call ReturnToGribble    
+			}
+     	/return
+		}
+    /squelch /moveto loc ${Path[${CampNum},${i},1]} ${Path[${CampNum},${i},2]}
+	
+:MoveLoop2
+    /delay 1s
+    /doevents
+    /if (!${MoveTo.Stopped}) /goto :MoveLoop2
+    /varcalc i ${i}-1
+    /goto :ReturnPath
+	/return
+
+Sub Event_ToonReady(Line1,ToonName)
+	/varcalc NumReady ${NumReady}+1
+	/return
+
+Sub Event_LootingEvent(Line1, ItemName)
+  	/varset ItemName ${ItemName.Right[-57]}
+  	/varset ItemName ${ItemName.Left[-1]}
+  	/bc Item = ${ItemName}
+  	/if (${ItemName.Find[Excavation Tools]} || ${ItemName.Find[Dynamite]} || ${ItemName.Find[Xulous Spellbook]}) {
+    	/bc [+g+] Click item found = [+y+] ${ItemName}
+    	/delay 2s   
+    	/delay 6s ${Me.CombatState.Equal[COMBAT]}
+    	/bct ${LooterName} //useitem "${ItemName}"
+    	/delay 6s ${Me.CombatState.Equal[COMBAT]}
+    	/bct ${LooterName} //useitem "${ItemName}"
+    	/varset OuterItem ${ItemName}
+    	/varset ReturnGribble 1
+		}
+	/return
+
+Sub Event_UpdateEvent(Line1, TaskName)
+  	/varcalc EventStep ${EventStep}+1
+ 	 /bc [+m+]${TaskName}[+g+] : finished STEP [+m+]${EventStep}
+	/return
+
+Sub MemSpells 
+	/declare changed	int inner 	0
+	
+:SpellChanged
+	/varset changed 0
+	/echo Memming spells. Hang on. 
+	/if (!${Me.Gem[${SpellNuke1}]} ) { 
+   		/memspell 4 "${SpellNuke1}" 
+		/bc [+g+] Memmeing ${SpellNuke1} - Slot 4
+   		/delay 20s
+   		/varset changed 1
+		} 
+   	/if (!${Me.Gem[${SpellNuke2}]} ) { 
+      	/memspell 5 "${SpellNuke2}" 
+		/bc [+g+] Memming ${SpellNuke2} - Slot 5
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellNuke3}]} ) { 
+      	/memspell 6 "${SpellNuke3}" 
+      	/bc [+g+] Memming ${SpellNuke3} - Slot 6
+		/delay 10s
+     	/varset changed 1
+		}
+	/if (!${Me.Gem[${SpellNuke4}]} ) { 
+      	/memspell 9 "${SpellNuke4}" 
+      	/bc [+g+] Memming ${SpellNuke4} - Slot 9
+		/delay 10s
+     	/varset changed 1
+		}		
+	/if (!${Me.Gem[${SpellMez}]} ) { 
+      	/memspell 1 "${SpellMez}" 
+		/bc [+g+] Memming ${SpellMez} - Slot 1
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellAEMez}]} ) { 
+      	/memspell 11 "${SpellAEMez}" 
+		/bc [+g+] Memming ${SpellAEMez} - Slot 11
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellRune}]} ) { 
+      	/memspell 7 "${SpellRune}"
+		/bc [+g+] Memming ${SpellRune} - Slot 7
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellCripple}]} ) { 
+      	/memspell 3 "${SpellCripple}"
+		/bc [+g+] Memming ${SpellCripple} - Slot 3
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellDot}]} ) { 
+      	/memspell 8 "${SpellDot}"  
+		/bc [+g+] Memming ${SpellDot} - Slot 8 
+      	/delay10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellTash}]} ) { 
+      	/memspell 2 "${SpellTash}" 
+		/bc [+g+] Memming ${SpellTash} - Slot 2
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellAura1}]} ) { 
+      	/memspell 10 "${SpellAura1}" 
+		/bc [+g+] Memming ${SpellAura1} - Slot 10
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (!${Me.Gem[${SpellAura2}]} ) { 
+      	/memspell 12 "${SpellAura2}"
+		/bc [+g+] Memming ${SpellAura2} - Slot 12
+      	/delay 10s
+     	/varset changed 1
+		} 
+	/if (${changed}) {
+		/varset changed 0
+		/bc [+y+] test: spell changed so memming again.
+		/goto :SpellChanged
+		}
+	/echo Spells are memmed. 
+	/bc [+g+] Spells are ready
+	/return 
+
+Sub LoadIni
+	/if (!${Restart}) {
+	/if (!${Ini[${IniSelfBuff}].Length}) {
+		/echo Nosuch file ${IniSelfBuff}, creating file. 
+		/echo Please Edit ${IniSelfBuff} and set up your macro. 
+		/ini ${IniSelfBuff} "MySettings" "TankName" "TANKNAMEGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "TankMacro" "TANKMACROGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "LooterName" "LOOTERNAMEGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "LooterMacro" "LOOTERMACROGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "Toon1" "TOON1NAMEGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "Macro1" "TOON1MACROGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "Toon2" "TOON2NAMEGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "Macro2" "TOON2MACROGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "Toon3" "TOON3NAMEGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "Macro3" "TOON3MACROGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "NukeAt" "90"
+		/ini ${IniSelfBuff} "MySettings" "NoNukeAt" "20"
+		/ini ${IniSelfBuff} "MySettings" "NoDebuffAt" "65"
+		/ini ${IniSelfBuff} "MySettings" "DoNuke1" "1"
+		/ini ${IniSelfBuff} "MySettings" "DoNuke2" "1"
+		/ini ${IniSelfBuff} "MySettings" "DoNuke3" "1"
+		/ini ${IniSelfBuff} "MySettings" "DoNuke4" "1"		
+		/ini ${IniSelfBuff} "MySettings" "SpellNuke1" "Mindcleave Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellNuke2" "Phantasmal Assault Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellNuke3" "Chromaclash Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellNuke4" "Mental Appropriation Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellMez" "Confound Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellAEMez" "Slackening Wave Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellRune=Phantasmal Unity Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellRuneBuff" "Polyiridescent Rune Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellDot" "Mind Squall Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellTash" "Eunciation of Tashan Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellCripple" "Diminishing Helix Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellAura1" "Twincast Aura"
+		/ini ${IniSelfBuff} "MySettings" "SpellAura1Message" "Twincast Aura"
+		/ini ${IniSelfBuff} "MySettings" "SpellAura2" "Mana Reverberation Aura Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "SpellAura2Message" "Mana Rev. Aura Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "Buff1" "Hastening of Sviir Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "Buff2" "Voice of Foresight Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "Buff3" "Shield of the Dauntless Rk. II"
+		/ini ${IniSelfBuff} "MySettings" "deadhills_errandCampX" "480.4"
+		/ini ${IniSelfBuff} "MySettings" "deadhills_errandCampY" "-251"
+		/ini ${IniSelfBuff} "MySettings" "deadhills_errand" "hillsinto.ini"
+		/ini ${IniSelfBuff} "MyBuffs" "clickitem1" "casttime"
+		/ini ${IniSelfBuff} "MyBuffs" "clickitem2" "casttime"
+		/ini ${IniSelfBuff} "MyBuffs" "clickitem3" "casttime"
+		/ini ${IniSelfBuff} "MyBuffs" "Staff of Eternal Eloquence" "30"
+		/endmac
+		} else {	
+			/echo Loading INI settings from ${IniSelfBuff} 
+			/varset NukeAt ${Ini[${IniSelfBuff},MySettings,NukeAt]}
+			/varset NoNukeAt ${Ini[${IniSelfBuff},MySettings,NoNukeAt]}
+			/varset NoDebuffAt ${Ini[${IniSelfBuff},MySettings,NoDebuffAt]}
+			/varset DoNuke1 ${Ini[${IniSelfBuff},MySettings,DoNuke1]}
+			/varset DoNuke2 ${Ini[${IniSelfBuff},MySettings,DoNuke2]}
+			/varset DoNuke3 ${Ini[${IniSelfBuff},MySettings,DoNuke3]}
+			/varset DoNuke4 ${Ini[${IniSelfBuff},MySettings,DoNuke4]}
+			/varset TankName ${Ini[${IniSelfBuff},MySettings,TankName]}
+			/varset TankMacro ${Ini[${IniSelfBuff},MySettings,TankMacro]}
+			/varset LooterName ${Ini[${IniSelfBuff},MySettings,LooterName]}
+			/varset LooterMacro ${Ini[${IniSelfBuff},MySettings,LooterMacro]}
+			/varset Toon1 ${Ini[${IniSelfBuff},MySettings,Toon1]}
+			/varset Macro1 ${Ini[${IniSelfBuff},MySettings,Macro1]}
+			/varset Toon2 ${Ini[${IniSelfBuff},MySettings,Toon2]}
+			/varset Macro2 ${Ini[${IniSelfBuff},MySettings,Macro2]}
+			/varset Toon3 ${Ini[${IniSelfBuff},MySettings,Toon3]}
+			/varset Macro3 ${Ini[${IniSelfBuff},MySettings,Macro3]}
+			/varset SpellNuke1 ${Ini[${IniSelfBuff},MySettings,SpellNuke1]}
+			/varset SpellNuke2 ${Ini[${IniSelfBuff},MySettings,SpellNuke2]}
+			/varset SpellNuke3 ${Ini[${IniSelfBuff},MySettings,SpellNuke3]}
+			/varset SpellNuke4 ${Ini[${IniSelfBuff},MySettings,SpellNuke4]}
+			/varset SpellMez ${Ini[${IniSelfBuff},MySettings,SpellMez]}
+			/varset SpellAEMez ${Ini[${IniSelfBuff},MySettings,SpellAEMez]}
+			/varset SpellRune ${Ini[${IniSelfBuff},MySettings,SpellRune]}
+			/varset SpellRuneBuff ${Ini[${IniSelfBuff},MySettings,SpellRuneBuff]}
+			/varset SpellDot ${Ini[${IniSelfBuff},MySettings,SpellDot]}
+			/varset SpellTash ${Ini[${IniSelfBuff},MySettings,SpellTash]}
+			/varset SpellCripple ${Ini[${IniSelfBuff},MySettings,SpellCripple]}
+			/varset SpellAura1 ${Ini[${IniSelfBuff},MySettings,SpellAura1]}
+			/varset SpellAura1Message ${Ini[${IniSelfBuff},MySettings,SpellAura1Message]}
+			/varset SpellAura2 ${Ini[${IniSelfBuff},MySettings,SpellAura2]}
+			/varset SpellAura2Message ${Ini[${IniSelfBuff},MySettings,SpellAura2Message]}
+			/varset Buff1 ${Ini[${IniSelfBuff},MySettings,Buff1]}
+			/varset Buff2 ${Ini[${IniSelfBuff},MySettings,Buff2]}
+			/varset Buff3 ${Ini[${IniSelfBuff},MySettings,Buff3]}
+			/varset CampX ${Ini[${IniSelfBuff},MySettings,${Zone.ShortName}CampX]}
+			/varset CampY ${Ini[${IniSelfBuff},MySettings,${Zone.ShortName}CampY]}
+			/varset IniPathFile ${Ini[${IniSelfBuff},MySettings,${Zone.ShortName}]}
+			/echo IniPathFile set to ${IniPathFile}
+			/echo INI settings complete.
+		}
+	}
+	/return
