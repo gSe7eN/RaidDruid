@@ -226,7 +226,8 @@ Sub Main
 				/call cast "${SpellRune}"
 				}
 			/delay 10
-			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /pet attack
+			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /
+			/BC  /varset MATarget ${Target.ID}
 			/if (!${Target.Buff[${SpellTash}].ID} && ${Int[${Target.PctHPs}]}>${NoDebuffAt}) {
 				/bc [+g+] Casting [+y+] ${SpellTash}...
 		 		/call cast "${SpellTash}"
@@ -431,9 +432,8 @@ Sub ZoneIn
 :shortloop
   	/tar Gribble
 	/bca //rdpause on
-	/delay 20s
 	/bca //target Gribble
-	/delay 30s
+	/delay 5s
 	/bca //stick hold
 	/delay 30s
 	/bca //say when
@@ -461,6 +461,8 @@ Sub ZoneIn
 |========================================
 	/bc [+m+] cert focus regen sob lev brells vie 
 	/delay 10s
+	/bct ${TankName} //makecamp
+	/bct ${TankName} //bc follow
 	/if (!${Me.Gem[${Buff1}]} ) { 
       	/memspell 12 "${Buff1}" 
       	/delay 5s
