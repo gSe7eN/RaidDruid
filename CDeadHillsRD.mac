@@ -10,15 +10,21 @@
 |
 | Modified for Raid Druid usage on other toons - Necrognomie
 | 	Removed SpellStun, added 4th manatapping Nuke
-| 	re-aligned spacing
+| 	Re-aligned spacing
+|	Added support for Large Modulation Shards
+|	Added support for Gather Mana AA
+|	Added support for AA purchase
 |========================================
 
 #include spell_routines.inc
+#include AAPurchase.inc
 
-#event ToonReady "<#1> Ready"
-#event WarriorEnage "<#1#> Engaging #2#"
-#event LootingEvent "#*# has looted a #1#.-#*#"
-#event UpdateEvent "#*#Your task '#1#' has been updated."
+#event ToonReady 		 "<#1> Ready"
+#event WarriorEnage    	 "<#1#> Engaging #2#"
+#event LootingEvent		 "#*# has looted a #1#.-#*#"
+#event UpdateEvent		 "#*#Your task '#1#' has been updated."
+#Event ToggleAABuy		 "[MQ2] ToggleAABuy"
+
 
 Sub Main
 
@@ -93,6 +99,8 @@ Sub Main
 	/declare kk 				int 	local 		0
   	/declare MezTargets 		int 	outer 		0
   	/declare CheckMez 			timer 	outer	 	0
+	/squelch /alias /aabuy		  /echo ToggleAABuy
+
 :StartAgain
 
 	/varset NumReady 0
@@ -129,6 +137,7 @@ Sub Main
 	/if (!${Zone.ShortName.Equal[deadhills_errand]})  /echo Readys Required: ${ReadysRequired}
 	/if (${Zone.ShortName.Equal[deadhills_errand]}) {
 		/call LoadIni
+		/call AAInit AAtoBuy
 		/call SetUp
 		/call MemSpells
 		/goto :killmob
@@ -210,15 +219,23 @@ Sub Main
 		/bc [+g+] Casting - [+y+] Eldritch Rune
 		}
         /if (${Target.Distance}<70) { 
-		/if (${Me.PctMana}<60 && !${FindItem[Latent Robe of Compulsion].Timer}) {
-			/useitem 17
-			/bc [+g+] Robe Click for Mana
-			}
-		/if (${Me.PctMana}<70 && ${Me.AltAbilityReady[Fundament: Second Spire of Enchantment]}) {
-			/alt act 1381
-			/bc [+g+] Second Spire AA for Mana.
-			}				
-		/doevents
+			/if (${Me.PctMana}<60 && !${FindItem[Latent Robe of Compulsion].Timer}) {
+				/useitem 17
+				/bc [+g+] Robe Click for Mana
+				}
+			/if (${Me.PctMana}<70 && ${Me.AltAbilityReady[Fundament: Second Spire of Enchantment]}) {
+				/alt act 1381
+				/bc [+g+] Second Spire AA for Mana.
+				}
+			/if (${Me.PctMana}<70 && ${Me.AltAbilityReady[Gather Mana]}) {
+				/alt act 57
+				/bc [+g+] Gathering Mana Mana.
+				}				
+			/if (${FindItem[Summoned: Large Modulation Shard].ID} && !${FindItem[Large Modulation Shard].TimerReady}) {
+				/call Cast "Summoned: Large Modulation Shard" item 5s
+				/bc [+g+] click mod rod!
+				} 	
+			/doevents
         	/if (${Me.XTarget}==1 || (${MezTimerTwo.Value} && ${Me.XTarget}>1)&&!${Target.Dead}) {
 			/xtar 1
 			/if (!${Me.Buff[${SpellRuneBuff}].ID}) {
@@ -395,7 +412,7 @@ Sub GetInstance
    		/endm
 		}
 	/bc move up
-	/delay 120s
+	/delay 60s
 	/return
 
 Sub Wait4Ready(int MaxReady)
@@ -439,12 +456,13 @@ Sub ZoneIn
 	/bca //say when
 	/delay 10s
 	/say when
-  	/delay 32s
   	/delay 120s ${Zone.ShortName.Equal[deadhills_errand]}
-  	/if (!${Zone.ShortName.Equal[deadhills_errand]}) /goto :shortloop
+  	/if (${Zone.ShortName.Not.Equal[deadhills_errand]}) /goto :shortloop
 	/call LoadIni
+	/call AAInit inisection
 	/call SetUp
   	/bcaa /keypress ESC
+	/bcaa //rdpause off
 |  	/delay 10s
 |  	/for kk 1 to ${Group}
 |      		/delay ${Math.Rand[9]}s
@@ -817,6 +835,11 @@ Sub MemSpells
 	/echo Spells are memmed. 
 	/bc [+g+] Spells are ready
 	/return 
+	
+Sub Event_ToggleAABuy
+	/echo ToggleVar Auto AABuy,AABuy,Settings,AABuy,
+	/if (${AABuy})	/call AAInit
+	/return	
 
 Sub LoadIni
 	/if (!${Restart}) {
@@ -861,10 +884,12 @@ Sub LoadIni
 		/ini ${IniSelfBuff} "MySettings" "deadhills_errandCampX" "480.4"
 		/ini ${IniSelfBuff} "MySettings" "deadhills_errandCampY" "-251"
 		/ini ${IniSelfBuff} "MySettings" "deadhills_errand" "hillsinto.ini"
+		/ini ${IniSelfBuff} "MySettings" "AAbuy" "FALSE"
 		/ini ${IniSelfBuff} "MyBuffs" "clickitem1" "casttime"
 		/ini ${IniSelfBuff} "MyBuffs" "clickitem2" "casttime"
 		/ini ${IniSelfBuff} "MyBuffs" "clickitem3" "casttime"
 		/ini ${IniSelfBuff} "MyBuffs" "Staff of Eternal Eloquence" "30"
+
 		/endmac
 		} else {	
 			/echo Loading INI settings from ${IniSelfBuff} 
