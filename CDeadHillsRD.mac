@@ -226,7 +226,7 @@ Sub Main
 				/call cast "${SpellRune}"
 				}
 			/delay 10
-			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /
+			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /pet attack
 			/BC  /varset MATarget ${Target.ID}
 			/if (!${Target.Buff[${SpellTash}].ID} && ${Int[${Target.PctHPs}]}>${NoDebuffAt}) {
 				/bc [+g+] Casting [+y+] ${SpellTash}...
