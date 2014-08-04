@@ -12,7 +12,6 @@
 | 	Removed SpellStun, added 4th manatapping Nuke
 | 	Re-aligned spacing
 |	Added support for Large Modulation Shards
-|	Added support for Gather Mana AA
 |	Added support for AA purchase
 |========================================
 
@@ -225,11 +224,7 @@ Sub Main
 			/if (${Me.PctMana}<70 && ${Me.AltAbilityReady[Fundament: Second Spire of Enchantment]}) {
 				/alt act 1381
 				/bc [+g+] Second Spire AA for Mana.
-				}
-			/if (${Me.PctMana}<70 && ${Me.AltAbilityReady[Gather Mana]}) {
-				/alt act 57
-				/bc [+g+] Gathering Mana Mana.
-				}				
+				}	
 			/if (${FindItem[Summoned: Large Modulation Shard].ID} && !${FindItem[Large Modulation Shard].TimerReady}) {
 				/call Cast "Summoned: Large Modulation Shard" item 5s
 				/bc [+g+] click mod rod!
@@ -613,7 +608,7 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
 		}
   	/varset EndOfPath 0
   	/varset i 1
-  	/if (${Me.PctMana}<15) {
+  	/if (${Me.PctMana}<45) {
 		/if (${Me.AltAbilityReady[Mana draw]}) {
 			/bc [+g+] Casting [+y+] Mana Draw [+g+] for some mana.
 			/call Cast "Mana draw" alt 10s
