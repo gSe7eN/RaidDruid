@@ -340,7 +340,9 @@ Sub SetUp
 	/bct ${TankName} //makecamp
 	/bct ${TankName} //bc follow
 	/varset i 1
+|========================================	
 |  Loads the Path file
+|========================================
 :iloop1
    	/varset k 1
    	/if (!${Bool[${Ini[${IniPathFile},"Path${i}","PointX${k}"]}]}) {
@@ -399,11 +401,11 @@ Sub GetInstance
 	/stick hold
   	/delay 10s
   	/if (${Target.Distance}<50) {
-    		/say investigate
-    		/delay 2s
-    		/notify TaskSelectWnd TSEL_TaskList listselect 3
-    		/delay 2s
-    		/notify TaskSelectWnd TSEL_AcceptButton leftmouse 3
+    	/say investigate
+    	/delay 2s
+    	/notify TaskSelectWnd TSEL_TaskList listselect 3
+    	/delay 2s
+    	/notify TaskSelectWnd TSEL_AcceptButton leftmouse 3
   	} else {
    		/bc Gribble is OOR
    		/endm
@@ -536,7 +538,7 @@ Sub ZoneIn
 		/useitem "${bufflist.Arg[${buffloop},|]}"
 		/delay ${Ini[${IniSelfBuff},MyBuffs,${bufflist.Arg[${buffloop},|]}]}
 	/next buffloop
- :SkipSelfBuff
+:SkipSelfBuff
 	/return
 
 Sub FollowPath(PathNumber)
@@ -549,7 +551,7 @@ Sub FollowPath(PathNumber)
    	/delay 60s ${MoveTo.Stopped}
   	/varcalc i ${i}+1
   	/if (${Bool[${Path[${PathNumber},${i},1]}]}) /goto :movecamploop1
-/return
+	/return
 
 Sub SetupCamp
 |========================================
@@ -591,7 +593,6 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
      	/bca //end
     	/end
 		}
-
  	/if (!(${Me.Aura[1].Equal[${SpellAura1Message}]}) && !(${Me.Aura[2].Equal[${SpellAura1Message}]})) {
 		/echo Twincast Down, casting. 
 		/bc [+g+] Twincast down, casting.
@@ -620,11 +621,9 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
 		/if (${Me.PctMana}<99) /goto :MedIt
 :SkipMed
 		}
-
 :moveloop
    	/bc [+t+]Path : [+y+]${CampNum}[+t+]  Point : [+y+]${i}  [+x+]
    	/squelch /moveto loc ${Path[${CampNum},${i},1]} ${Path[${CampNum},${i},2]}
-
 :MoveLoop1
    	/doevents
 |========================================
