@@ -233,7 +233,8 @@ Sub Main
 			/if (${FindItem[Summoned: Large Modulation Shard].ID} && !${FindItem[Large Modulation Shard].TimerReady}) {
 				/call Cast "Summoned: Large Modulation Shard" item 5s
 				/bc [+g+] click mod rod!
-				} 	
+				}
+			/if (${Select[${Cursor.ID},79322,79321,79320,76503,76502,64951,57264,52888,52803,52709,52674,18745,6346,3426]}) /autoinv
 			/doevents
         	/if (${Me.XTarget}==1 || (${MezTimerTwo.Value} && ${Me.XTarget}>1)&&!${Target.Dead}) {
 			/xtar 1
@@ -341,6 +342,8 @@ Sub SetUp
  	/alert add 1 adventurer
   	/alert add 1 Cogwitz
   	/hidecorpse looted
+	/bct ${TankName} //makecamp
+	/bct ${TankName} //bc follow
 	/varset i 1
 |  Loads the Path file
 :iloop1
@@ -460,7 +463,8 @@ Sub ZoneIn
 	/call LoadIni
 	/call AAInit inisection
 	/call SetUp
-  	/bcaa /keypress ESC
+	/delay 2s
+  	/bcaa /keypress ALT+Q
 	/bcaa //rdpause off
 |  	/delay 10s
 |  	/for kk 1 to ${Group}
@@ -561,7 +565,7 @@ Sub SetupCamp
   	|/bct ${Toon2} //tar ${TankName}
   	/bca //tar ${TankName}
 	/delay 5s
-	/bct //target ${Tankname}
+	/bct //target ${TankName}
 	/delay 1s
   	/bct ${TankName} //mac ${TankMacro}
 	/bct ${TankName} //makecamp
@@ -845,7 +849,7 @@ Sub LoadIni
 	/if (!${Ini[${IniSelfBuff}].Length}) {
 		/echo Nosuch file ${IniSelfBuff}, creating file. 
 		/echo Please Edit ${IniSelfBuff} and set up your macro. 
-		/ini ${IniSelfBuff} "MySettings" "TankName" "TANKNAMEGOESHERE"
+		/ini ${IniSelfBuff} "MySettings" "TankName" "TankNameGOESHERE"
 		/ini ${IniSelfBuff} "MySettings" "TankMacro" "TANKMACROGOESHERE"
 		/ini ${IniSelfBuff} "MySettings" "LooterName" "LOOTERNAMEGOESHERE"
 		/ini ${IniSelfBuff} "MySettings" "LooterMacro" "LOOTERMACROGOESHERE"
