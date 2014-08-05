@@ -336,13 +336,6 @@ Sub SetUp
   	/alert add 1 Gribble
  	/alert add 1 adventurer
   	/alert add 1 Cogwitz
-	/bca //makecamp on
-	/delay 1s
-	/grouproles set ${Me} 3
-	/delay 1s
-	/grouproles set ${TankName} 2
-	/delay 1s
-	/grouproles set ${TankName} 1
 	/varset i 1
 |========================================	
 |  Loads the Path file
@@ -435,16 +428,8 @@ Sub Wait4Ready(int MaxReady)
 
 Sub ZoneIn
 |========================================
-|  Insert your /bct commands to role buffs for the characters.  You can do it here (in deadhills) before you zone in.
-|
-|----------
-|  /bct ${Toon1} //cast "Talisman of the Courageous Rk. II"
-|  /bct ${Toon2} //cast "Unified Hand of Certitude"
-|  /delay 10s
-| Group perfected Leviatation
-|  /bct ${Toon1} //alt activate 1666
-|  /delay 5s
-|  /bct ${Toon1} //cast "Talisman of Celerity"
+|	Insert your /bct commands to role buffs for the characters.  You can do it here (in deadhills) before you zone in.
+|	This is adjusted for Raid Druid, I do my buffs inside.
 |========================================
 	/declare kk int inner
 	/declare bufflist string local ${Ini[${IniSelfBuff}, MyBuffs]}
@@ -466,19 +451,10 @@ Sub ZoneIn
 	/delay 2s
   	/bcaa /keypress ALT+Q
 	/bcaa //rdpause off
-|  	/delay 10s
-|  	/for kk 1 to ${Group}
-|      		/delay ${Math.Rand[9]}s
-|      		/bct ${Group.Member[${kk}].Name} //mac deadzone.mac
-|  	/next kk
-|  	/echo waiting for readys.
-|  	/call Wait4Ready ${ReadysRequired}
 	/call SetupCamp
 	/delay 8s
 |========================================
-|
 |  Or you can do it here, inside the zone
-|	
 |========================================
 	/bc [+m+] cert focus regen sob lev brells vie 
 	/delay 10s
@@ -557,22 +533,21 @@ Sub FollowPath(PathNumber)
 Sub SetupCamp
 |========================================
 |
-|  This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
-|
+|	This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
+|	This is adjust for RaidDruid 
 |========================================
-  	|/bct ${Toon2} //tar ${TankName}
-  	/bca //tar ${TankName}
-	/delay 5s
-	/bct //target ${TankName}
+	/bca //moveto loc 434 -285
+	/delay 2s
+	/bca //makecamp on
 	/delay 1s
-  	/bct ${TankName} //mac ${TankMacro}
-  	/bct ${Toon1} //mac ${Macro1}
-  	/bct ${Toon3} //mac ${Macro3}
-  	/bct ${Toon2} //mac ${Macro2}
-  	/bct ${LooterName} //hidecorpse looted
-  	/delay 5s
-  	/bct ${LooterName} //mac ${LooterMacro}
-  	/delay 5s
+	/bca //mac raiddruid
+	/bcaa //hidecorpse looted
+	/delay 1s
+	/grouproles set ${Me} 3
+	/delay 1s
+	/grouproles set ${TankName} 2
+	/delay 1s
+	/grouproles set ${TankName} 1
 	/return
 
 Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
