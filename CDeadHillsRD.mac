@@ -13,6 +13,12 @@
 | 	Re-aligned spacing
 |	Added support for Large Modulation Shards
 |	Added support for AA purchase
+|
+| Insure you have the file "hillsinto.ini" in your macro directory.
+| Run the macro once to generate the "mystuff.ini" file, then edit to fit your group.
+|
+| There are a number of places you can edit this macro to better fir your preferences.
+| Please look it over before using.
 |========================================
 
 #include spell_routines.inc
@@ -144,13 +150,6 @@ Sub Main
   	/call GetInstance
 :SkipZoneIn
   	/call ZoneIn
-|========================================
-| Move Puller and Tank to the Camp
-|========================================
-|  	/bct ${TankName} //moveto loc ${CampX} ${CampY}
-| 	/moveto loc ${CampX} ${CampY}
-|	/delay 3s
-  	
 :killmob
 	/if (${Me.Buff[Slackening Wave Rk. II].ID}) {
 		/bc Mezzed myself. Waiting. 
@@ -189,18 +188,13 @@ Sub Main
 			/if (${Me.XTarget}==1) { 
   				/xtar 1
 				/delay 10
-				/bc  /varset MATarget ${Target.ID}
 			} else { 
 				/xtar 2
 				/delay 10 
 				}
 			}
-		}
-
-	
-	|/grouproles unset ${Me.Name} 3
+		}	
 	/if (${Target.ID}) /face fast
-	
 	/delay 1s
 |========================================
 | Make sure runes are up. 
@@ -234,13 +228,13 @@ Sub Main
 			/doevents
         	/if (${Me.XTarget}==1 || (${MezTimerTwo.Value} && ${Me.XTarget}>1)&&!${Target.Dead}) {
 			/xtar 1
+			/BC  /varset MATarget ${Target.ID}
 			/if (!${Me.Buff[${SpellRuneBuff}].ID}) {
 				/bc [+g+] Casting [+y+] ${SpellRune}...
 				/call cast "${SpellRune}"
 				}
 			/delay 10
-			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /pet attack
-			/BC  /varset MATarget ${Target.ID}
+			/if (!(${Target.ID}==${Me.Pet.Target.ID}) && ${Me.Pet.ID}) /pet attack			
 			/if (!${Target.Buff[${SpellTash}].ID} && ${Int[${Target.PctHPs}]}>${NoDebuffAt}) {
 				/bc [+g+] Casting [+y+] ${SpellTash}...
 		 		/call cast "${SpellTash}"
@@ -480,7 +474,7 @@ Sub ZoneIn
 	/call MemSpells
 	/delay 8s
 |========================================	
-| Load up some clickie buffs on toons.
+| Load up some clickie buffs on toons. Here we are refreshing basic worn clicky buffs
 |========================================
   	/bca //useitem 6
   	/delay 6s
@@ -536,7 +530,7 @@ Sub SetupCamp
 |	This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
 |	This is adjust for RaidDruid 
 |========================================
-	/bca //moveto loc 434 -285
+	/bca //moveto loc 435 -255
 	/delay 2s
 	/bca //makecamp on
 	/delay 1s
@@ -626,8 +620,7 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
 				}
        		/bc [+y+] Ethereal Mainpulation [+r+] ${Target.Name}
        		/alt activate 2207
-			/BC  /varset MATarget ${Target.ID}
-   			/delay 1
+			/delay 1s
 			/BC  /varset MATarget ${Target.ID}
 			}   
           	/next tt
@@ -725,6 +718,13 @@ Sub Event_UpdateEvent(Line1, TaskName)
 
 Sub MemSpells 
 	/declare changed	int inner 	0
+|========================================
+|	Spell line up. Change the number in /memspell line if you have a different preference of spell order
+|	EG: "/memspell 4 "${SpellNuke1}"  is memorizing spellnuke 1 in slot 4. Change to "/memspell 8 "${SpellNuke1}" to change it to slot 8
+|	
+|	Be sure to update the message to reflect your changes...
+|	EG: "/bc [+g+] Memmeing ${SpellNuke1} - Slot 4" change slot to 8
+|========================================
 	
 :SpellChanged
 	/varset changed 0
