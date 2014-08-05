@@ -14,11 +14,21 @@
 |	Added support for Large Modulation Shards
 |	Added support for AA purchase
 |
-| Insure you have the file "hillsinto.ini" in your macro directory.
+| Needed files:
+|	wait4res.inc
+|	AApurchase.inc
+|	SpellRoutines.inc
+|	hillsinto.ini - Path File! 
+|	
+| Needed Plugins:
+|	MQ2MoveUtils
+|
 | Run the macro once to generate the "mystuff.ini" file, then edit to fit your group.
 |
 | There are a number of places you can edit this macro to better fir your preferences.
 | Please look it over before using.
+|
+|
 |========================================
 
 #include spell_routines.inc
