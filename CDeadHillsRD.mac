@@ -437,7 +437,7 @@ Sub Wait4Ready(int MaxReady)
 
 Sub ZoneIn
 |========================================
-|  Insert your /bct commands to role buffs for the characters.  You can do it here (in deadhills) b4 you zone in.
+|  Insert your /bct commands to role buffs for the characters.  You can do it here (in deadhills) before you zone in.
 |
 |----------
 |  /bct ${Toon1} //cast "Talisman of the Courageous Rk. II"
@@ -459,10 +459,8 @@ Sub ZoneIn
 	/delay 5s
 	/bca //stick hold
 	/delay 30s
-	/bca //say when
-	/delay 10s
-	/say when
-  	/delay 120s ${Zone.ShortName.Equal[deadhills_errand]}
+	/bcaa //say when
+  	/delay 45s
   	/if (${Zone.ShortName.Not.Equal[deadhills_errand]}) /goto :shortloop
 	/call LoadIni
 	/call AAInit inisection
