@@ -373,11 +373,11 @@ Sub ReturnToGribble
   	/beep
   	/bca //rdpause on
  	/delay 2s
-  	/bca //tar Gribble
-  	/bca //stick hold
-  	/tar Gribble	
+  	/bcaa //tar Gribble
+	/delays 2s
+  	/bcaa //stick hold	
 	/delay 5s
-  	/delay 20s ${SpawnCount[PC]}==${SpawnCount[PC radius 40]}
+  	/delay 20s ${SpawnCount[PC]}==${SpawnCount[PC radius 20]}
   	/keypress H
   	/delay 5s
   	/bca //say back
@@ -411,7 +411,8 @@ Sub GetInstance
    		/endm
 		}
 	/bc move up
-	/delay 60s
+	/delay 6s
+	/bcaa //keypress ALT+Q
 	/return
 
 Sub Wait4Ready(int MaxReady)
@@ -479,8 +480,6 @@ Sub ZoneIn
 |========================================
 	/bc [+m+] cert focus regen sob lev brells vie 
 	/delay 10s
-	/bct ${TankName} //makecamp on
-	/bct ${TankName} //bc follow
 	/if (!${Me.Gem[${Buff1}]} ) { 
       	/memspell 12 "${Buff1}" 
       	/delay 5s
@@ -565,7 +564,6 @@ Sub SetupCamp
 	/bct //target ${TankName}
 	/delay 1s
   	/bct ${TankName} //mac ${TankMacro}
-	/bct ${TankName} //makecamp on
   	/bct ${Toon1} //mac ${Macro1}
   	/bct ${Toon3} //mac ${Macro3}
   	/bct ${Toon2} //mac ${Macro2}
