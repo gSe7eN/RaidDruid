@@ -337,7 +337,7 @@ Sub SetUp
  	/alert add 1 adventurer
   	/alert add 1 Cogwitz
   	/hidecorpse looted
-	/bct ${TankName} //makecamp
+	/bct ${TankName} //makecamp on
 	/bct ${TankName} //bc follow
 	/varset i 1
 |========================================	
@@ -479,7 +479,7 @@ Sub ZoneIn
 |========================================
 	/bc [+m+] cert focus regen sob lev brells vie 
 	/delay 10s
-	/bct ${TankName} //makecamp
+	/bct ${TankName} //makecamp on
 	/bct ${TankName} //bc follow
 	/if (!${Me.Gem[${Buff1}]} ) { 
       	/memspell 12 "${Buff1}" 
@@ -565,7 +565,7 @@ Sub SetupCamp
 	/bct //target ${TankName}
 	/delay 1s
   	/bct ${TankName} //mac ${TankMacro}
-	/bct ${TankName} //makecamp
+	/bct ${TankName} //makecamp on
   	/bct ${Toon1} //mac ${Macro1}
   	/bct ${Toon3} //mac ${Macro3}
   	/bct ${Toon2} //mac ${Macro2}
