@@ -17,6 +17,7 @@
 
 #include spell_routines.inc
 #include AAPurchase.inc
+#include wait4rez.inc
 
 #event ToonReady 		 "<#1> Ready"
 #event WarriorEnage    	 "<#1#> Engaging #2#"
@@ -532,13 +533,14 @@ Sub FollowPath(PathNumber)
 
 Sub SetupCamp
 |========================================
-|
 |	This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
 |	This is adjust for RaidDruid 
 |========================================
 	/bca //moveto loc 434 -285
 	/delay 2s
 	/bca //makecamp on
+	/delay 1s
+	/bca //makecamp radius 10
 	/delay 1s
 	/bca //mac raiddruid
 	/bcaa //hidecorpse looted
