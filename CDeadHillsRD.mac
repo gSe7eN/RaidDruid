@@ -336,9 +336,15 @@ Sub SetUp
   	/alert add 1 Gribble
  	/alert add 1 adventurer
   	/alert add 1 Cogwitz
-  	/hidecorpse looted
-	/bct ${TankName} //makecamp on
+	/bca //makecamp on
+	/delay 1s
 	/bct ${TankName} //bc follow
+	/delay 1s
+	/grouproles set ${Me} 3
+	/delay 1s
+	/grouproles set ${TankName} 2
+	/delay 1s
+	/grouproles set ${TankName} 1
 	/varset i 1
 |========================================	
 |  Loads the Path file
