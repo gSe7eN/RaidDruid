@@ -376,7 +376,7 @@ Sub ReturnToGribble
   	/bca //rdpause on
  	/delay 2s
   	/bcaa //tar Gribble
-	/delays 2s
+	/delay 2s
   	/bcaa //stick hold	
 	/delay 5s
   	/delay 20s ${SpawnCount[PC]}==${SpawnCount[PC radius 20]}
