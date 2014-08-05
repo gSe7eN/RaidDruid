@@ -38,6 +38,7 @@
 #Event NewZone        "You have entered#*#"
 #Event NoLuclin       "You must have both the Horse Models and your current Luclin Character Model enabled#*#"
 #Event NoLuclin       "You can not summon a mount in this form#*#"
+#Event PCDeath	      "#1# has been slain by #2#"
 #Event RaidExperience "#*#You gained raid experience#*#"
 #Event lootall        "#*#lootall#*#"
 #Event Rampage        "#*#goes on a RAMPAGE#*#"
@@ -2345,6 +2346,29 @@ Sub Event_NewZone
 
 Sub Event_NoLuclin
 /varset UseMount 0
+/return
+
+Sub Event_PCDeath(DeadPlayer)
+| If I'm a cleric and a player has died, I should rez them if set to auto-rez.
+/if (!${Me.Class.ShortName.Equal[CLR]}) /return
+/if (${TRUE} && !${RDPause} && !${Me.Invis}) {
+|change TRUE to ${AutoRez} later #DEBUG
+   /if (${Spawn[${DeadPlayer}].Type.Equal[pc]} && ${Spawn[${DeadPlayer}].Type.Find[corpse]}) {
+	/if (${DoBuffTells} && !${SpamTimer}) /tell ${DeadPlayer} Rezz inc!
+	/squelch /target ${DeadPlayer}'s Corpse
+	/if (${Target.ID} && ${Target.Distance}>20) /corpse
+	/if (!${Target.ID} && ${ReportHeals}) /${HealChannel} I can't target ${DeadPlayer}'s corpse
+	/if (!${Target.ID} && ${DoBuffTells} && !${SpamTimer}) /tell ${DeadPlayer} I can't target your corpse
+	/if (${Target.Type.Equal[Corpse]}) {
+	     /if (${ReportHeals}) /${HealChannel} I am attempting to resurrect ${DeadPlayer}
+	     /if (${Me.AltAbility[Blessing of Resurrection]} && ${Me.AltAbilityReady[Blessing of Resurrection]}) {
+		/call Cast "Blessing of Resurrection" alt 10s
+		} else {
+		/call Cast "Reviviscence" ${BuffGem} 3s
+	     }
+	}
+   }
+}
 /return
 
 Sub Event_RaidExperience
