@@ -37,7 +37,7 @@
 #include wait4rez.inc
 
 #event ToonReady 		 "<#1> Ready"
-#event WarriorEnage    	 "<#1#> Engaging #2#"
+#event WarriorEnage    	         "<#1#> Engaging #2#"
 #event LootingEvent		 "#*# has looted a #1#.-#*#"
 #event UpdateEvent		 "#*#Your task '#1#' has been updated."
 #Event ToggleAABuy		 "[MQ2] ToggleAABuy"
@@ -421,7 +421,7 @@ Sub GetInstance
 		}
 	/bc move up
 	/delay 6s
-	/bcaa //keypress ALT+Q
+	/bcaa //keypress CMD_TOGGLETASKWIN
 	/return
 
 Sub Wait4Ready(int MaxReady)
@@ -461,7 +461,7 @@ Sub ZoneIn
 	/call AAInit inisection
 	/call SetUp
 	/delay 2s
-  	/bcaa /keypress ALT+Q
+  	/bcaa /keypress CMD_TOGGLETASKWIN
 	/bcaa //rdpause off
 	/call SetupCamp
 	/delay 8s
