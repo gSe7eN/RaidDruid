@@ -2351,8 +2351,10 @@ Sub Event_NoLuclin
 Sub Event_PCDeath(DeadPlayer)
 | If I'm a cleric and a player has died, I should rez them if set to auto-rez.
 /if (!${Me.Class.ShortName.Equal[CLR]}) /return
+/echo I saw a death!
 /if (${TRUE} && !${RDPause} && !${Me.Invis}) {
 |change TRUE to ${AutoRez} later #DEBUG
+   /bc [+G+] I saw the death Event and it's a player!!
    /if (${Spawn[${DeadPlayer}].Type.Equal[pc]} && ${Spawn[${DeadPlayer}].Type.Find[corpse]}) {
 	/if (${DoBuffTells} && !${SpamTimer}) /tell ${DeadPlayer} Rezz inc!
 	/squelch /target ${DeadPlayer}'s Corpse
