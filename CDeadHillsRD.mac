@@ -163,7 +163,7 @@ Sub Main
   	/call ZoneIn
 :killmob
 	/if (${Me.Buff[Slackening Wave Rk. II].ID}) {
-		/bc Mezzed myself. Waiting. 
+		/bc [+y+] Mezzed myself. Waiting. 
 		/delay 1s
 		/goto :killmob
 		}
@@ -305,7 +305,7 @@ Sub Main
 			/delay 1s
 			/if (${Me.XTarget}==2) {
 :ReMez
-				/bc Casting ${SpellMez} on ${Target.Name}....
+				/bc [+g+] Casting [+y+] ${SpellMez} [+g+] on [+r+] ${Target.Name}....
 				/call cast "${SpellMez}"
 				/if (!${Target.ID}) /goto :SkipMez
 				/if (${Me.XTarget}<2) /goto :SkipMez
@@ -314,10 +314,10 @@ Sub Main
 :ReAEMez
 				/if (${Target.ID}) /face fast
 				/if (!${Target.ID}) /goto :SkipMez
-				/bc Casting Bite of Tashani AA
+				/bc [+g+] Casting [+y+] Bite of Tashani AA
 				/alt act 1125
 				/delay 10
-				/bc Casting ${SpellAEMez}....
+				/bc [+g+] Casting [+y+] ${SpellAEMez}....
 				/call cast "${SpellAEMez}"
 				/for MezCount 2 to ${Me.XTarget}
 					/xtar ${MezCount}
@@ -397,7 +397,7 @@ Sub ReturnToGribble
 	/return 
 
 Sub GetInstance
-	/bc Getting instance, and zoning in.
+	/bc [+g+] Getting instance, and zoning in.
 	/bc move up
   	/tar Gribble
 	/delay 2s
@@ -410,7 +410,7 @@ Sub GetInstance
     	/delay 2s
     	/notify TaskSelectWnd TSEL_AcceptButton leftmouse 3
   	} else {
-   		/bc Gribble is OOR
+   		/bc [+r+] Gribble is OOR
    		/endm
 		}
 	/bc move up
@@ -428,7 +428,7 @@ Sub Wait4Ready(int MaxReady)
    	/doevents
    	/delay 1s
   	/if (${NumReady}<${MaxReady}) /goto :loop
-  	/bc All toons are [+g+]Ready
+  	/bc [+g+] All toons are [+m+]Ready
   	/varset NumReady 0
 	/return
 
@@ -577,14 +577,14 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
 		}
  	/if (!(${Me.Aura[1].Equal[${SpellAura1Message}]}) && !(${Me.Aura[2].Equal[${SpellAura1Message}]})) {
 		/echo Twincast Down, casting. 
-		/bc [+g+] Twincast down, casting.
+		/bc [+y+] Twincast [+g+] down, casting.
 		/delay 1s
 		/call cast "${SpellAura1}"
 		/delay 3s
 		}
    	/if (!(${Me.Aura[1].Equal[${SpellAura2Message}]}) && !(${Me.Aura[2].Equal[${SpellAura2Message}]})) {
 		/echo Mana Reverb down, casting
-		/bc [+g+] Mana Reverb down, casting
+		/bc [+y+] Reverb [+g+]down, casting
 		/delay 1s
 		/call cast "${SpellAura2}"
 		/delay 3s
@@ -625,7 +625,7 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
    		/delay 2s ${Target.ID}==${NearestSpawn[${tt}, NPC los radius ${PullRange} zradius ${zrange} noalert 1].ID}||${Me.CombatState.Equal[COMBAT]}
    		/if (${Target.Type.Equal[NPC]} && ${Target.LineOfSight}) {
        		/if (${Zone.ShortName.NotEqual[deadhills_errand]}) {
-				/bc Not in the correct zone
+				/bc [+r+]Not in the correct zone
 				/bca //end
 				/end
 				}
@@ -655,7 +655,7 @@ Sub PullMobA(PullType, MaxMobs, PullRange, MezRange, NumberMobsToCheck)
         /if (${Target.Type.Equal[NPC]} && ${Target.LineOfSight}) {
         	/bc Ethereal Manipulation [+t+]${Target.Name}
 			/if (${Zone.ShortName.NotEqual[deadhills_errand]}) {
-     			/bc Not in the correct zone
+     			/bc [+r+] Not in the correct zone
      			/bca //end
      			/end
  				}
@@ -709,7 +709,7 @@ Sub Event_ToonReady(Line1,ToonName)
 Sub Event_LootingEvent(Line1, ItemName)
   	/varset ItemName ${ItemName.Right[-57]}
   	/varset ItemName ${ItemName.Left[-1]}
-  	/bc Item = ${ItemName}
+  	/bc [+y+]Item = [+m+] ${ItemName}
   	/if (${ItemName.Find[Excavation Tools]} || ${ItemName.Find[Dynamite]} || ${ItemName.Find[Xulous Spellbook]}) {
     	/bc [+g+] Click item found = [+y+] ${ItemName}
     	/delay 2s   
@@ -742,73 +742,73 @@ Sub MemSpells
 	/echo Memming spells. Hang on. 
 	/if (!${Me.Gem[${SpellNuke1}]} ) { 
    		/memspell 4 "${SpellNuke1}" 
-		/bc [+g+] Memmeing ${SpellNuke1} - Slot 4
+		/bc [+g+] Memmeing [+y+] ${SpellNuke1} [+g+]- Slot 4
    		/delay 20s
    		/varset changed 1
 		} 
    	/if (!${Me.Gem[${SpellNuke2}]} ) { 
       	/memspell 5 "${SpellNuke2}" 
-		/bc [+g+] Memming ${SpellNuke2} - Slot 5
+		/bc [+g+] Memming [+y+] ${SpellNuke2} [+g+]- Slot 5
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellNuke3}]} ) { 
       	/memspell 6 "${SpellNuke3}" 
-      	/bc [+g+] Memming ${SpellNuke3} - Slot 6
+      	/bc [+g+] Memming [+y+] ${SpellNuke3} [+g+]- Slot 6
 		/delay 10s
      	/varset changed 1
 		}
 	/if (!${Me.Gem[${SpellNuke4}]} ) { 
       	/memspell 9 "${SpellNuke4}" 
-      	/bc [+g+] Memming ${SpellNuke4} - Slot 9
+      	/bc [+g+] Memming [+y+] ${SpellNuke4} [+g+]- Slot 9
 		/delay 10s
      	/varset changed 1
 		}		
 	/if (!${Me.Gem[${SpellMez}]} ) { 
       	/memspell 1 "${SpellMez}" 
-		/bc [+g+] Memming ${SpellMez} - Slot 1
+		/bc [+g+] Memming [+y+]${SpellMez} [+g+]- Slot 1
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellAEMez}]} ) { 
       	/memspell 11 "${SpellAEMez}" 
-		/bc [+g+] Memming ${SpellAEMez} - Slot 11
+		/bc [+g+] Memming [+y+]${SpellAEMez} [+g+]- Slot 11
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellRune}]} ) { 
       	/memspell 7 "${SpellRune}"
-		/bc [+g+] Memming ${SpellRune} - Slot 7
+		/bc [+g+] Memming [+y+]${SpellRune} [+g+]- Slot 7
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellCripple}]} ) { 
       	/memspell 3 "${SpellCripple}"
-		/bc [+g+] Memming ${SpellCripple} - Slot 3
+		/bc [+g+] Memming [+y+]${SpellCripple} [+g+]- Slot 3
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellDot}]} ) { 
       	/memspell 8 "${SpellDot}"  
-		/bc [+g+] Memming ${SpellDot} - Slot 8 
+		/bc [+g+] Memming [+y+]${SpellDot} [+g+]- Slot 8 
       	/delay10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellTash}]} ) { 
       	/memspell 2 "${SpellTash}" 
-		/bc [+g+] Memming ${SpellTash} - Slot 2
+		/bc [+g+] Memming [+y+]${SpellTash} [+g+]- Slot 2
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellAura1}]} ) { 
       	/memspell 10 "${SpellAura1}" 
-		/bc [+g+] Memming ${SpellAura1} - Slot 10
+		/bc [+g+] Memming [+y+]${SpellAura1} [+g+]- Slot 10
       	/delay 10s
      	/varset changed 1
 		} 
 	/if (!${Me.Gem[${SpellAura2}]} ) { 
       	/memspell 12 "${SpellAura2}"
-		/bc [+g+] Memming ${SpellAura2} - Slot 12
+		/bc [+g+] Memming [+y+]${SpellAura2} [+g+]- Slot 12
       	/delay 10s
      	/varset changed 1
 		} 
