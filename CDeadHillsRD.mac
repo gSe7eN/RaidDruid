@@ -13,6 +13,7 @@
 | 	Re-aligned spacing
 |	Added support for Large Modulation Shards
 |	Added support for AA purchase
+|	Set INI to be character name based 
 |
 | Needed files:
 |	wait4res.inc
@@ -23,7 +24,7 @@
 | Needed Plugins:
 |	MQ2MoveUtils
 |
-| Run the macro once to generate the "mystuff.ini" file, then edit to fit your group.
+| Run the macro once to generate the "CDH_ToonName.ini" file, then edit to fit your group.
 |
 | There are a number of places you can edit this macro to better fir your preferences.
 | Please look it over before using.
@@ -50,7 +51,7 @@ Sub Main
 | it will create one for you. Then you must go through and edit all of the variables
 | to match your character. 
 |========================================	
-	/declare IniSelfBuff 	 string 	outer   mystuff.ini
+	/declare IniSelfBuff 	 string 	outer   CDH_${Me.CleanName}.ini
 	/declare NukeAt				int 	outer	
 	/declare NoNukeAt 			int 	outer
 	/declare NoDebuffAt 		int 	outer	
@@ -540,7 +541,7 @@ Sub SetupCamp
 |	This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
 |	This is adjust for RaidDruid 
 |========================================
-	/bca //moveto loc 435 -255
+	/bca //moveto loc 480 -255
 	/delay 2s
 	/bca //makecamp on
 	/delay 1s
