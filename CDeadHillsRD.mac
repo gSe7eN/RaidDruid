@@ -46,7 +46,7 @@
 Sub Main
 |========================================
 | Variables to determine when to do certain things. 
-| All settings for this macro can be found in the file set in IniSelfBuff
+| All settings for this macro can be found in the file "CDH_ToonName.ini"
 | If you do not have this file, run the program for the first time and 
 | it will create one for you. Then you must go through and edit all of the variables
 | to match your character. 
@@ -161,6 +161,12 @@ Sub Main
   	/call GetInstance
 :SkipZoneIn
   	/call ZoneIn
+|========================================
+| Move Puller and Tank to the Camp	
+|========================================
+	/bct ${TankName} //moveto loc ${CampX} ${CampY}
+  	/moveto loc ${CampX} ${CampY}
+	/delay 3s
 :killmob
 	/if (${Me.Buff[Slackening Wave Rk. II].ID}) {
 		/bc [+y+] Mezzed myself. Waiting. 
@@ -498,7 +504,7 @@ Sub ZoneIn
   	/bca //useitem 15
   	/delay 2s
 |========================================
-| Custom self buffs from the ini file defined in IniSelfBuff at top.	
+| Custom self buffs from the ini file defined in the MyBuff section.
 | File should look similar to the following
 |
 | [MyBuffs]
@@ -538,11 +544,10 @@ Sub FollowPath(PathNumber)
 
 Sub SetupCamp
 |========================================
-|	This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, you healers set up.
-|	This is adjust for RaidDruid 
+|	This area is where you send out /bct's to your other toons to set up.  i.e The tank sets up ready to receive mobs, your healers set up.
+|	This is adjusted for RaidDruid, using MQ2Moveutil's makecamp function.
+|	Adust these commands if your using different macros/set up
 |========================================
-	/bca //moveto loc 480 -255
-	/delay 2s
 	/bca //makecamp on
 	/delay 1s
 	/bca //makecamp radius 10
