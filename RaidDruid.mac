@@ -1191,7 +1191,7 @@ Sub PetStuff
 
 Sub PetAttackStuff
 /if (!${Me.Pet.ID}) /return
-/if (${MATarget}!=999999 && ${Target.ID}==${MATarget}) {
+/if (${MATarget}!=999999 && ${Spawn[${MATarget}].PctHPs}<${EngageHPs}) {
 	/pet attack ${Spawn[${MATarget}].CleanName}
 }
 /return
