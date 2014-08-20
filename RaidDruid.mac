@@ -1192,7 +1192,7 @@ Sub PetStuff
 
 Sub PetAttackStuff
 /if (!${Me.Pet.ID}) /return
-/if (${MATarget}!=999999 && ${Spawn[${MATarget}].PctHPs}<${EngageHPs}) {
+/if (!${RDPause} && ${MATarget}!=999999 && ${Spawn[${MATarget}].PctHPs}<${EngageHPs}) {
 	/pet attack ${Spawn[${MATarget}].CleanName}
 }
 /return
