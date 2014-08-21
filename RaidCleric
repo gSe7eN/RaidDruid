@@ -6,6 +6,7 @@
 |Added "I'm hit" to any class but PAL/SK/War
 |Adjusted to end macro at 25 sec camp countdown
 |
+|
 #include AAPurchase.inc
 #include Ninjadvloot.inc
 #include Spell_Routines.inc
