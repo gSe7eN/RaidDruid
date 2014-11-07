@@ -233,11 +233,7 @@ Sub Main
 	}
 	/varset ZoneName ${Zone.Name}
 	/echo Finished loading, ready for battle.
-	/if (${ChatChannel.Equal[BC]}) {
-		/BC [+g+]Ready
-		} else {
-		/${ChatChannel} Ready
-		}
+	/if (${Bool[${Plugin[MQ2EQBC].Name}]}) /BC [+g+] Ready
 :mainloop
 	/if (${Me.State.Equal[HOVER]}) /call Event_Dead
 	/if (!${Zone.Name.Equal[${ZoneName}]}) /call Event_NewZone
@@ -2676,12 +2672,14 @@ Sub Event_SetBuff(Line,LineArg)
 						} else {
 						/${ChatChannel} Casting ${Line.Arg[3]}
 						}
+					}
 				/if (${ReportDoBuffs} && ${Group.Member[${i}].ID}) {
 					/if (${ChatChannel.Equal[BC]}) {
 						/BC [+g+] Casting [+y+]${Line.Arg[3]} on [+m+]${Target.CleanName}
 						} else {
 						/${ChatChannel} Casting ${Line.Arg[3]} on ${Target.CleanName}
 						}
+					}
 				/if (${Me.Book[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" ${BuffGem} 10s
 				/if (${FindItem[${Line.Arg[3]}].ID}) /call Cast "${Line.Arg[3]}" item 10s
 				/if (${Me.AltAbilityReady[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" alt 10s
@@ -2696,18 +2694,20 @@ Sub Event_SetBuff(Line,LineArg)
 					/target targetable id ${Raid.Member[${i}].ID}
 					/delay 1s ${Target.ID}==${Raid.Member[${i}].ID}
 					/if (${Target.ID}!=${Raid.Member[${i}].ID}) /continue
-					/if (${ReportDoBuffs} && !${Raid.Member[${i}].ID}) 
+					/if (${ReportDoBuffs} && !${Raid.Member[${i}].ID}) {
 						/if (${ChatChannel.Equal[BC]}) {
 							/BC [+g+]Casting [+y+] ${Line.Arg[3]}
 							} else {
 							/${ChatChannel} Casting ${Line.Arg[3]}
 							}
+						}
 					/if (${ReportDoBuffs} && ${Raid.Member[${i}].ID}) {
 						/if (${ChatChannel.Equal[BC]}) {
 							/BC [+g+] Casting [+y+] ${Line.Arg[3]} [+g+] on [+m+] ${Target.CleanName}
 							} else {
 							/${ChatChannel} Casting ${Line.Arg[3]} on ${Target.CleanName}
 							}
+						}
 					/if (${Me.Book[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" ${BuffGem} 10s
 					/if (${FindItem[${Line.Arg[3]}].ID}) /call Cast "${Line.Arg[3]}" item 10s
 					/if (${Me.AltAbilityReady[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" alt 10s
@@ -2750,7 +2750,7 @@ Sub Event_SetBuff(Line,LineArg)
 			/call CheckDoBuffs "${Group.Member[${i}].Name}" "${Line.Arg[3]}"
 		/next i
 		/return
-	}
+		}
 	/if (${Line.Arg[4].Equal[raid]}) {
 		/declare i int local
 		/for i ${Raid.Members} downto 1
@@ -2759,11 +2759,11 @@ Sub Event_SetBuff(Line,LineArg)
 			/call CheckDoBuffs "${Raid.Member[${i}].Name}" "${Line.Arg[3]}"
 		/next i
 		/return
-	}
+		}
 	/if (${Line.Arg[4].Length} && ${Spawn[pc ${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[pc ${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
 	/if (${Line.Arg[4].Length} && ${Spawn[${Line.Arg[4]}].Type.NotEqual[npc]} && ${Spawn[${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
 	/return
-
+	
 Sub Event_SetMA1(Line,LineArg)
 	/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc ${LineArg}].CleanName}"
 	/return
