@@ -23,6 +23,7 @@
 #Event Experience     "#*#You gain party experience#*#"
 #Event Faded	      "#*#You escape from combat, hiding yourself from view."
 #Event ImHit          "#*#YOU for#*#points of damage."
+#Event ImHit    	  "#1#to#*#YOU, but #*#"
 #Event Invite         "#1# invites you to join a group."
 #Event IRC            "<#1#> #2#"
 #Event IRC            "[#1#(msg)] #2#"
@@ -67,9 +68,8 @@
 #Event ToggleAABuy    "[MQ2] ToggleAABuy"
 #Event TooFar         "Your target is too far away, get closer!"
 #Event WornOff        "#*#Your #1# spell has worn off of #2#."
-#Event EndMacro      "It will take about 25 more seconds to prepare your camp."
-#Event ImHit    	  "#1#to#*#YOU, but #*#"
 #Event MezBroke      "#1# has been awakened by #2#."
+
 Sub Main
 	/echo I come Optimus...
 	/declare AlertTimer      timer  outer
@@ -341,8 +341,10 @@ Sub ClickRods
    |My mana is below RodMana
    |I have a rod in inventory and it does not have a timer
    |Click a rod
-   /if (!${RDPause} && ${Me.PctMana}<${RodMana} && ((${FindItem[Large Modulation Shard].ID} && !${FindItem[Large Modulation Shard].TimerReady}) || (${FindItem[Medium Modulation Shard].ID} && !${FindItem[Medium Modulation Shard].TimerReady}) || (${FindItem[Small Modulation Shard].ID} && !${FindItem[Small Modulation Shard].TimerReady}) || (${FindItem[Rod of Arcane Transvergence].ID} && !${FindItem[Rod of Arcane Transvergence].TimerReady}) || (${FindItem[Rod of Spectral Transvergence].ID} && !${FindItem[Rod of Spectral Transvergence].TimerReady}) || (${FindItem[Rod of Ethereal Transvergence].ID} && !${FindItem[Rod of Ethereal Transvergence].TimerReady}) || (${FindItem[Rod of Prime Transvergence].ID} && !${FindItem[Rod of Prime Transvergence].TimerReady}) || (${FindItem[Wand of Elemental Transvergence].ID} && !${FindItem[Wand of Elemental Transvergence].TimerReady}) || (${FindItem[Rod of Mystical Transvergence].ID} && !${FindItem[Rod of Mystical Transvergence].TimerReady}) ||  (${FindItem[Wand of Temporal Mastery].ID} && !${FindItem[Wand of Temporal Mastery].TimerReady}) || (${FindItem[Rod of Mechamagical Mastery].ID} && !${FindItem[Rod of Mechamagical Mastery].TimerReady})  || (${FindItem[Summoned: Modulating Rod].ID} && !${FindItem[Summoned: Modulating Rod].TimerReady}) || (${FindItem[Rod of Mechamagical Mastery].ID} && !${FindItem[Rod of Mechamagical Mastery].TimerReady})|| (${FindItem[Wand of Temporal Mastery].ID} && !${FindItem[Wand of Temporal Mastery].TimerReady}))) {
-      /if (${FindItem[Summoned: Large Modulation Shard].ID}) {
+   /if (!${RDPause} && ${Me.PctMana}<${RodMana} && ((${FindItem[Wand of Pelagic Modulation].ID} && !${FindItem[Wand of Pelagic Modulation].TimerReady}) || (${FindItem[Large Modulation Shard].ID} && !${FindItem[Large Modulation Shard].TimerReady}) || (${FindItem[Medium Modulation Shard].ID} && !${FindItem[Medium Modulation Shard].TimerReady}) || (${FindItem[Small Modulation Shard].ID} && !${FindItem[Small Modulation Shard].TimerReady}) || (${FindItem[Rod of Arcane Transvergence].ID} && !${FindItem[Rod of Arcane Transvergence].TimerReady}) || (${FindItem[Rod of Spectral Transvergence].ID} && !${FindItem[Rod of Spectral Transvergence].TimerReady}) || (${FindItem[Rod of Ethereal Transvergence].ID} && !${FindItem[Rod of Ethereal Transvergence].TimerReady}) || (${FindItem[Rod of Prime Transvergence].ID} && !${FindItem[Rod of Prime Transvergence].TimerReady}) || (${FindItem[Wand of Elemental Transvergence].ID} && !${FindItem[Wand of Elemental Transvergence].TimerReady}) || (${FindItem[Rod of Mystical Transvergence].ID} && !${FindItem[Rod of Mystical Transvergence].TimerReady}) ||  (${FindItem[Wand of Temporal Mastery].ID} && !${FindItem[Wand of Temporal Mastery].TimerReady}) || (${FindItem[Rod of Mechamagical Mastery].ID} && !${FindItem[Rod of Mechamagical Mastery].TimerReady})  || (${FindItem[Summoned: Modulating Rod].ID} && !${FindItem[Summoned: Modulating Rod].TimerReady}) || (${FindItem[Rod of Mechamagical Mastery].ID} && !${FindItem[Rod of Mechamagical Mastery].TimerReady})|| (${FindItem[Wand of Temporal Mastery].ID} && !${FindItem[Wand of Temporal Mastery].TimerReady}))) {
+		/if (${FindItem[Wand of Pelagic Modulation].ID}) {
+         /call Cast "Wand of Pelagic Modulation" item 5s Check4Pad
+      } else /if (${FindItem[Summoned: Large Modulation Shard].ID}) {
          /call Cast "Summoned: Large Modulation Shard" item 5s Check4Pad
       } else /if (${FindItem[Summoned: Medium Modulation Shard].ID}) {
          /call Cast "Summoned: Medium Modulation Shard" item 5s Check4Pad
@@ -2185,6 +2187,7 @@ Sub CalmGroup(Puller)
 	/return
 
 Sub Event_Camp
+	/echo You forgot to end the macro, DOH!
 	/end
 	/return
 
@@ -2327,11 +2330,6 @@ Sub Event_ImHit(Line, MobName)
 	/varset SitTimer 10s
 	/doevents flush ImHit
 	/return
-	
-Sub Event_EndMacro
-	/echo You forgot to end the macro, DOH!
-	/end
-	/return	
 	
 Sub GoToCampfire
 	/if (!${RDPause} && !${Me.Invis}) /call cast  "Fellowship Registration Insignia" item
@@ -2633,6 +2631,7 @@ Sub Event_Rampage
 					} else {
 					/${ChatChannel} ${Spell[${FastHeal}].RankName} @ ${Target.CleanName} the Rampage Tank
 					}
+				}
 			/call Cast "${FastHeal}" ${FastHealGem} 3s CheckHP
 		}
 		/if (${Target.ID}!=${MATarget}) /call assistMA1
