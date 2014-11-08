@@ -1225,28 +1225,28 @@ Sub SummonStuff
    |I do not have a rod in inventory
    |I do not have something on cursor
    |Summon a rod
-	/if (!${RDPause} && ${Me.Class.ShortName.Equal[MAG]} && !${FindItem[Summoned: Large Modulation Shard].ItemSlot} && !${FindItem[Summoned: Medium Modulation Shard].ItemSlot} && !${FindItem[Summoned: Small Modulation Shard].ItemSlot} && !${FindItem[Want of Phantasmal Transvergence].ItemSlot} &&!${FindItem[Wand of Phantasmal Modulation].ItemSlot} && !${FindItem[Rod of Arcane Transvergence].ItemSlot} && !${FindItem[Rod of Spectral Transvergence].ItemSlot} && !${FindItem[Wand of Temporal Mastery].ItemSlot} && !${FindItem[Rod of Mechamagical Mastery].ItemSlot} && !${FindItem[Rod of Ethereal Transvergence].ItemSlot} && !${FindItem[Rod of Prime Transvergence].ItemSlot} && !${FindItem[Wand of Elemental Transvergence].ItemSlot} && !${FindItem[Rod of Mystical Transvergence].ItemSlot} && !${FindItem[Summoned: Modulating Rod].ItemSlot} && !${Cursor.ID}) {
+	/if (!${RDPause} && ${Me.Class.ShortName.Equal[MAG]} && !${FindItem[Wand of Pelagic Modulation].ItemSlot} && !${FindItem[Summoned: Large Modulation Shard].ItemSlot} && !${FindItem[Summoned: Medium Modulation Shard].ItemSlot} && !${FindItem[Summoned: Small Modulation Shard].ItemSlot} && !${FindItem[Want of Phantasmal Transvergence].ItemSlot} &&!${FindItem[Wand of Phantasmal Modulation].ItemSlot} && !${FindItem[Rod of Arcane Transvergence].ItemSlot} && !${FindItem[Rod of Spectral Transvergence].ItemSlot} && !${FindItem[Wand of Temporal Mastery].ItemSlot} && !${FindItem[Rod of Mechamagical Mastery].ItemSlot} && !${FindItem[Rod of Ethereal Transvergence].ItemSlot} && !${FindItem[Rod of Prime Transvergence].ItemSlot} && !${FindItem[Wand of Elemental Transvergence].ItemSlot} && !${FindItem[Rod of Mystical Transvergence].ItemSlot} && !${FindItem[Summoned: Modulating Rod].ItemSlot} && !${Cursor.ID}) {
 		/target myself
 		/call Cast "${RodSpell}" ${RodGem} 5s Check4Pad
 		/delay 2s ${Cursor.ID}
-		/delay 10s
 		/autoinv
 		}
-	|3426 = Rod of Mystical Transvergence
-	|6346 = Summoned: Modulating Rod
-	|18745 = Rod of Ethereal Transvergence
-	|52674 = Wand of Elemental Transvergence
-	|52709 = Rod of Prime Transvergence
-	|52803 = Rod of Mechamagical Mastery
-	|52888 = Wand of Temporal Mastery
-	|57264 = Rod of Spectral Transvergence
-	|64951 = Rod of Arcane Transvergence
-	|76502 = Wand of Phantasmal Modulation
-	|76503 = Wand of Phantasmal Transvergence
-	|79320 = Summoned: Small Modulation Shard
-	|79321 = Summoned: Medium Modulation Shard
+	|99782 = Wand of Pelagic Modulation
 	|79322 = Summoned: Large Modulation Shard
-	/if (${Select[${Cursor.ID},79322,79321,79320,76503,76502,64951,57264,52888,52803,52709,52674,18745,6346,3426]}) 	/autoinv
+	|79321 = Summoned: Medium Modulation Shard
+	|79320 = Summoned: Small Modulation Shard
+	|76503 = Wand of Phantasmal Transvergence
+	|76502 = Wand of Phantasmal Modulation
+	|64951 = Rod of Arcane Transvergence
+	|57264 = Rod of Spectral Transvergence
+	|52888 = Wand of Temporal Mastery
+	|52803 = Rod of Mechamagical Mastery
+	|52709 = Rod of Prime Transvergence
+	|52674 = Wand of Elemental Transvergence   
+	|18745 = Rod of Ethereal Transvergence
+	|6346 = Summoned: Modulating Rod   
+	|3426 = Rod of Mystical Transvergence
+	/if (${Select[${Cursor.ID},99782,79322,79321,79320,76503,76502,64951,57264,52888,52803,52709,52674,18745,6346,3426]}) /autoinv
 	/if (${UseAmmoClicky} && !${RDPause} && !${Me.Invis}) {
 			/if (!${FindItem[${AmmoItem}].ID} && ${FindItem[${AmmoClicky}].TimerReady}==0 && ${Me.FreeInventory}>1) {
 			/call Cast "${AmmoClicky}" ${AmmoGem} 7s Check4Pad
@@ -2478,7 +2478,7 @@ Sub Event_ListSpells
 	/next a
 	/return
 
-	Sub Event_LoadIni(Line,LineArg)
+Sub Event_LoadIni(Line,LineArg)
 	/call LoadIni "RD1_${Me.CleanName}${LineArg}.ini" LOAD
 	/return
 
