@@ -1,7 +1,9 @@
 |AUTOBOT XP AND RAIDING MACRO v4.22
 | Gomer and gSe7eN's edit of raid druid
 | Necrognomie flavored
-|
+|	Testing to use mercs as MA1
+|	Retort, QM, and Heal over Time support. Code from Nytemyst's AFCleric
+|	Auto change MA2 to MA1 if MA1 dies. Idea from Nytemyst's AFCleric
 |
 |
 #include AAPurchase.inc
@@ -11,64 +13,65 @@
 #include QuickBeg.inc
 #turbo 60
 #CHAT tell
-#Event AddCombatSong  "[MQ2] AddCombatSong #1#"
-#Event AddAlert       "[MQ2] AddAlert #1#"
-#Event AddAlertCommon "[MQ2] AddAlertCommon #1#"
-#Event AddRestSong    "[MQ2] AddRestSong #1#"
-#Event ShowDebuffs    "[MQ2] ShowDebuffs #1#"
-#Event Camp	      "It will take about 25 more seconds to prepare your camp"
-#Event Dead           "#*#You have been slain by#*#"
-#Event DelCombatSong  "[MQ2] DelCombatSong #1#"
-#Event DelRestSong    "[MQ2] DelRestSong #1#"
-#Event Experience     "#*#You gain party experience#*#"
-#Event Faded	      "#*#You escape from combat, hiding yourself from view."
-#Event ImHit          "#*#YOU for#*#points of damage."
-#Event ImHit    	  "#1#to#*#YOU, but #*#"
-#Event Invite         "#1# invites you to join a group."
-#Event IRC            "<#1#> #2#"
-#Event IRC            "[#1#(msg)] #2#"
-#Event IRCNoChan      "#*#You are not on any channels.#*#"
-#Event IRCNoChan      "#*#You are not connected. Please use /iconnect to establish a connection.#*#"
-#Event ListSongs      "[MQ2] ListSongs #1#"
-#Event ListSpells     "[MQ2] ListSpells#1#"
-#Event LoadAlert      "[MQ2] LoadAlert#1#"
-#Event LoadIni        "[MQ2] LoadIni #1#"
-#Event MakeStuff      "You are low on #1# and #2#."
-#Event MakeStuff      "You are out of #1# and #2#."
-#Event MakeStuff      "You are out of #1# and low on #2#."
-#Event MakeStuff      "You are low on #1#."
-#Event MakeStuff      "You are out of #1#."
-#Event MezIt          "#1# begins to cast a spell. <Complete Heal>"
-#Event MezIt          "#1# begins to cast the gate spell."
-#Event NeedStuff      "You are #1#."
-#Event NewZone        "You have entered#*#"
-#Event NoLuclin       "You must have both the Horse Models and your current Luclin Character Model enabled#*#"
-#Event NoLuclin       "You can not summon a mount in this form#*#"
-#Event PCDeath	      "#1# has been slain by #2#"
-#Event RaidExperience "#*#You gained raid experience#*#"
-#Event lootall        "#*#lootall#*#"
-#Event Rampage        "#*#goes on a RAMPAGE#*#"
-#Event Restricted     "This spell does not work here#*#"
-#Event Restricted     "You are missing some required comp#*#"
-#Event Restricted     "You can only cast this spell in the outdoors#*#"
-#Event Restricted     "You need to be in a more open area to summon a mount#*#"
-#Event Restricted     "A voice whispers in your mind, 'There are no heroes here#*#"
-#Event NoMount        "You can not summon a mount here#*#"
-#Event SaveIni        "[MQ2] SaveIni#1#"
-#Event SetBuff        "[MQ2] SetBuff#1#"
-#Event SetMA1         "[MQ2] SetMA1#1#"
-#Event SetMA2         "[MQ2] SetMA2#1#"
-#Event SetMA3         "[MQ2] SetMA3#1#"
-#Event SetRampTank    "[MQ2] SetRampTank#1#"
-#Event SongAlias      "[MQ2] SongAlias #1# #2#"
-#Event Stand          "You must be standing to attack!"
-#Event Stand	      "Auto attack is off."
-#Event ToggleString   "[MQ2] ToggleString #1#,#2#,#3#,#4#,#5#"
-#Event ToggleVar      "[MQ2] ToggleVar #1#,#2#,#3#,#4#,#5#"
-#Event ToggleAABuy    "[MQ2] ToggleAABuy"
-#Event TooFar         "Your target is too far away, get closer!"
-#Event WornOff        "#*#Your #1# spell has worn off of #2#."
-#Event MezBroke      "#1# has been awakened by #2#."
+#Event AddCombatSong  	"[MQ2] AddCombatSong #1#"
+#Event AddAlert       	"[MQ2] AddAlert #1#"
+#Event AddAlertCommon 	"[MQ2] AddAlertCommon #1#"
+#Event AddRestSong    	"[MQ2] AddRestSong #1#"
+#Event ShowDebuffs    	"[MQ2] ShowDebuffs #1#"
+#Event Camp	      		"It will take about 25 more seconds to prepare your camp"
+#Event ChangeTank		"change tank #1#"
+#Event Dead           	"#*#You have been slain by#*#"
+#Event DelCombatSong  	"[MQ2] DelCombatSong #1#"
+#Event DelRestSong    	"[MQ2] DelRestSong #1#"
+#Event Experience     	"#*#You gain party experience#*#"
+#Event Faded	      	"#*#You escape from combat, hiding yourself from view."
+#Event ImHit          	"#*#YOU for#*#points of damage."
+#Event ImHit    	  	"#1#to#*#YOU, but #*#"
+#Event Invite         	"#1# invites you to join a group."
+#Event IRC            	"<#1#> #2#"
+#Event IRC            	"[#1#(msg)] #2#"
+#Event IRCNoChan      	"#*#You are not on any channels.#*#"
+#Event IRCNoChan      	"#*#You are not connected. Please use /iconnect to establish a connection.#*#"
+#Event ListSongs      	"[MQ2] ListSongs #1#"
+#Event ListSpells     	"[MQ2] ListSpells#1#"
+#Event LoadAlert      	"[MQ2] LoadAlert#1#"
+#Event LoadIni        	"[MQ2] LoadIni #1#"
+#Event MakeStuff      	"You are low on #1# and #2#."
+#Event MakeStuff      	"You are out of #1# and #2#."
+#Event MakeStuff      	"You are out of #1# and low on #2#."
+#Event MakeStuff      	"You are low on #1#."
+#Event MakeStuff      	"You are out of #1#."
+#Event MezIt          	"#1# begins to cast a spell. <Complete Heal>"
+#Event MezIt          	"#1# begins to cast the gate spell."
+#Event NeedStuff      	"You are #1#."
+#Event NewZone        	"You have entered#*#"
+#Event NoLuclin       	"You must have both the Horse Models and your current Luclin Character Model enabled#*#"
+#Event NoLuclin       	"You can not summon a mount in this form#*#"
+#Event PCDeath	      	"#1# has been slain by #2#"
+#Event RaidExperience 	"#*#You gained raid experience#*#"
+#Event lootall        	"#*#lootall#*#"
+#Event Rampage        	"#*#goes on a RAMPAGE#*#"
+#Event Restricted     	"This spell does not work here#*#"
+#Event Restricted     	"You are missing some required comp#*#"
+#Event Restricted     	"You can only cast this spell in the outdoors#*#"
+#Event Restricted     	"You need to be in a more open area to summon a mount#*#"
+#Event Restricted     	"A voice whispers in your mind, 'There are no heroes here#*#"
+#Event NoMount        	"You can not summon a mount here#*#"
+#Event SaveIni        	"[MQ2] SaveIni#1#"
+#Event SetBuff        	"[MQ2] SetBuff#1#"
+#Event SetMA1         	"[MQ2] SetMA1#1#"
+#Event SetMA2         	"[MQ2] SetMA2#1#"
+#Event SetMA3         	"[MQ2] SetMA3#1#"
+#Event SetRampTank    	"[MQ2] SetRampTank#1#"
+#Event SongAlias      	"[MQ2] SongAlias #1# #2#"
+#Event Stand          	"You must be standing to attack!"
+#Event Stand	      	"Auto attack is off."
+#Event ToggleString   	"[MQ2] ToggleString #1#,#2#,#3#,#4#,#5#"
+#Event ToggleVar      	"[MQ2] ToggleVar #1#,#2#,#3#,#4#,#5#"
+#Event ToggleAABuy    	"[MQ2] ToggleAABuy"
+#Event TooFar         	"Your target is too far away, get closer!"
+#Event WornOff        	"#*#Your #1# spell has worn off of #2#."
+#Event MezBroke      	"#1# has been awakened by #2#."
 
 Sub Main
 	/echo I come Optimus...
@@ -121,6 +124,7 @@ Sub Main
 		/squelch /alias /buff             /echo SetBuff
 		/squelch /alias /cancelpct        /echo ToggleString Cancel Percent,CancelPct,HealStuff,CancelPct,
 		/squelch /alias /charm            /echo ToggleVar Auto Charm,DoCharm,DebuffStuff,DoCharm,
+		/squelch /alias /changetank 	  /echo ToggleVar Change MA1 on call or death,ChangeTank,GeneralStuff,ChangeTank,
 		/squelch /alias /chatchannel      /echo ToggleString Chat Channel,ChatChannel,GeneralStuff,ChatChannel,
 		/squelch /alias /checkgroup       /echo ToggleString check Group Interval,CheckGroupInterval,HealStuff,CheckGroupInterval,
 		/squelch /alias /debuff           /echo ToggleVar Auto Debuffing,DoDebuffs,DebuffStuff,DoDebuffs,
@@ -137,7 +141,8 @@ Sub Main
 		/squelch /alias /doports          /echo ToggleVar Auto Ports,DoPorts,GeneralStuff,DoPorts,
 		/squelch /alias /domelee          /echo ToggleVar Auto Melee,DoMelee,MeleeStuff,DoMelee,
 		/squelch /alias /dopettoys	  /echo ToggleVar Auto Summoning pettoys,DoPetToys,SummonStuff,DoPetToys,
-		/squelch /alias /dorest           /echo ToggleVar Rest Scripts,DoRestStuff,RestStuff,DoRestStuff,	
+		/squelch /alias /dorest           /echo ToggleVar Rest Scripts,DoRestStuff,RestStuff,DoRestStuff,
+		/squelch /alias /doretort        /echo ToggleVar Using Retort on MA1,DoRetort,HealStuff,DoRetort,
 		/squelch /alias /doshrink	  /echo ToggleVar DoShrink,DoShrink,Settings,DoShrink,
 		/squelch /alias /dot              /echo ToggleVar Auto DoTing,DoDoTs,DebuffStuff,DoDoTs,
 		/squelch /alias /doyaulp          /echo ToggleVar Auto Yaulping in combat,DoYaulp,GeneralStuff,DoYaulp,	
@@ -211,6 +216,7 @@ Sub Main
 		/squelch /alias /usedelayed       /echo ToggleVar Delayed Heal of MA1,UseDelayedHeal,HealStuff,UseDelayedHeal,
 		/squelch /alias /usedivarb        /echo ToggleVar Auto Divine Arbitration,UseDivArb,HealStuff,UseDivArb,
 		/squelch /alias /useepic          /echo ToggleString Mobs for use epic,UseEpic,GeneralStuff,UseEpic,
+		/squelch /alias /usetankhot       /echo ToggleVar Useage of Heal over Time on MA1,UseTankHoT,HealStuff,UseTankHoT,
 		/squelch /alias /useirc           /echo ToggleVar Using the IRC Plugin,UseIRC,Settings,UseIRC,
 		/squelch /alias /usegroupassist   /echo ToggleVar Use Grouprole Main Assist as MA1,UseGroupMA,GeneralStuff,UseGroupMA,
 		/squelch /alias /usegroupma 	  /echo ToggleVar Use Grouprole Main Assist as MA1,UseGroupMA,GeneralStuff,UseGroupMA,
@@ -249,6 +255,7 @@ Sub Main
 		/if (!${RDpause} && !${Me.Moving}) /call SummonStuff
 		/if (${Debuff}) /call MeBegCure
 		/if (${UseRods}) /call ClickRods
+		/if (${QM}) /call QuietMiracle
 		/if (!${CheckGroupTimer}) /call CheckGroup
 		/if (${DoShrink} && !${RDPause} && !${Me.Moving} && !${Me.Invis} && !${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]}) /call ShrinkStuff
 		/if (!${RDPause} && ${QueueCount} && !${Me.Moving} && ${DoBuffs} && (${BattleBuffFlag} || !${SpawnCount[npc targetable radius ${NPCRadChk} zradius 100 noalert 1]}) && ${Me.PctMana}>=${DoBuffLowest}) /call DoBuffEvents
@@ -267,7 +274,8 @@ Sub Main
 			/if ((${DoDebuffs} || ${DoDoTs} || ${DoManaTaps}) && ${Me.PctMana}>=${DebuffLowest}) /call DebuffIt
 			/if (!${NukeTimer} && ${DoNukes} && ${Me.PctMana}>=${NukeLowest}) /call Nukeit
 			/if (${DoCombatStuff} && ${Me.CombatState.Equal[COMBAT]} && !${CombatStuffTimer}) /call DoStuff Combat
-			
+			/if (${DoRetort}) /call Retort
+			/if (${UseTankHoT}) /call HealOverTime
 		}
 	}
 	/call MoveStuff
@@ -515,7 +523,7 @@ Sub CheckHP
 		}
 	|	/if (${HealFD} && ${Target.State.Equal["FEIGN"]} && ${Select[${Target.Class.ShortName},MNK,NEC,SHD]}) /call DoInterrupt
 		/call ${EvaluateFunction}
-		/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[pc ${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
+		/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[pc Mercenary ${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
 			/call CheckPPS
 	|		/if (${Target.PctHPs}>${TankHealPct} && ${TankTTL}>250 && ${castEndTime}<40) /call Interrupt
 			/if (${castEndTime}>=${TankTTL}+50) /call DoHeal ${Target.ID} Fast
@@ -561,7 +569,7 @@ Sub EvaluateGroup
 	/for i 0 to ${Group}
 		/if ( ${Group.Member[${i}].Type.Equal[Corpse]} ) /goto :NextEvaluateGroup
 		/if (!${RDPause} && ${UseDivArb} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))&& ${Spawn[pc ${Group.Member[${i}]}].ID} && ${Spawn[pc ${Group.Member[${i}]}].Distance}<${Spell[Divine Arbitration].MyRange}) /call DoDivArb
-		/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA3}].ID}) {
+		/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA3}].ID}) {
 			/if (${Me.Casting.ID}) /call DoInterrupt
 			/target targetable id ${Group.Member[${i}].ID}
 			/delay 1s ${Target.ID}==${Group.Member[${i}].ID}
@@ -578,9 +586,9 @@ Sub EvaluateGroup
 			/varset DAArray[${Math.Calc[${i}+1]},1] 0
 			/varset DAArray[${Math.Calc[${i}+1]},2] 0
 		}
-		/if ((${HealFD} && ${Group.Member[${i}].State.NotEqual["FEIGN"]} && ${Select[${Group.Member[${i}].Class.ShortName},MNK,NEC,SHD]}) || ((${UseCH} || ${Group.Member[${i}].PctHPs}>${TankHealPct}) && ${Group.Member[${i}].ID}==${Spawn[pc ${MA1}].ID})) /goto :NextEvaluateGroup
+		/if ((${HealFD} && ${Group.Member[${i}].State.NotEqual["FEIGN"]} && ${Select[${Group.Member[${i}].Class.ShortName},MNK,NEC,SHD]}) || ((${UseCH} || ${Group.Member[${i}].PctHPs}>${TankHealPct}) && ${Group.Member[${i}].ID}==${Spawn[pc Mercenary ${MA1}].ID})) /goto :NextEvaluateGroup
 			| don't do fast heals on MA1 unless TankHealPct not set
-		/if (${Group.Member[${i}].PctHPs}<=${WorstHPs} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance}<${Spell[${FastHealID}].MyRange} && (${Group.Member[${i}].ID}!=${Spawn[pc ${MA1}].ID} || !${TankHealPct})) {
+		/if (${Group.Member[${i}].PctHPs}<=${WorstHPs} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance}<${Spell[${FastHealID}].MyRange} && (${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA1}].ID} || !${TankHealPct})) {
 			/varset WorstHPs ${Group.Member[${i}].PctHPs}
 			/varset WorstID ${Group.Member[${i}].ID}
 			/varcalc WorstMember ${i}+1
@@ -601,7 +609,7 @@ Sub EvaluateGroupNet
 	/declare fd string local
 	/if (${HealFD}) /varset fd fd
 	/if (!${RDPause} && ${UseDivArb} && ${NetWorst.Request[radius${Int[${Spell[Divine Arbitration].MyRange}]} pc group all hp${DivArbHPs}]} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))) /call DoDivArb
-	/if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[pc group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA3}].ID}) {
+	/if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[pc group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[pc Mercenary ${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc Mercenary ${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc Mercenary ${MA3}].ID}) {
 		/if (${Me.Casting.ID}) /call DoInterrupt
 		/target targetable id ${NetHeal.ID[1]}
 		/delay 1s ${Target.ID}==${NetHeal.ID[1]}
@@ -615,8 +623,8 @@ Sub EvaluateGroupNet
 	}
 	/if (!${RDPause} && ${NetWorst.Request[radius${Int[${Spell[${FastHealID}].MyRange}]} pc all hp${HealPct} ${fd}]}) {
 		/varset i 1
-		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc ${MA1}].ID} && ${NetWorst.Counter}==1) /goto :EndCheck
-		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc ${MA1}].ID} && ${NetWorst.Counter}>1) /varset i 2
+		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc Mercenary ${MA1}].ID} && ${NetWorst.Counter}==1) /goto :EndCheck
+		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc Mercenary ${MA1}].ID} && ${NetWorst.Counter}>1) /varset i 2
 		/varset WorstHPs ${NetHeal.PctHPs[${i}]}
 		/varset WorstID ${NetHeal.ID[${i}]}
 	}
@@ -641,9 +649,9 @@ Sub EvaluatePets
 
 Sub CheckGroup
 	:StayOnHeal
-	/if (!${RDPause} && ${UseDelayedHeal} && ${Spawn[pc ${MA1}].ID} && ${Spawn[pc ${MA1}].PctHPs}<${DelayedHealPct} && ((${NetBots[${MA1}].ID} && ${NetBots[${MA1}].Stacks[${DelayedHealID}]}) || (!${NetBots[${MA1}].ID} && !${DoDelayedTimer})) && (!${Me.Gem[${DelayedHeal}]} || ${Me.SpellReady[${DelayedHeal}]}) && ${Spawn[pc ${MA1}].Distance}<${Int[${Spell[${DelayedHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${DelayedHealID}].Mana}) {
-		/target targetable id ${Spawn[pc ${MA1}].ID}
-		/delay 1s ${Target.ID}==${Spawn[pc ${MA1}].ID}
+	/if (!${RDPause} && ${UseDelayedHeal} && ${Spawn[pc Mercenary ${MA1}].ID} && ${Spawn[pc ${MA1}].PctHPs}<${DelayedHealPct} && ((${NetBots[${MA1}].ID} && ${NetBots[${MA1}].Stacks[${DelayedHealID}]}) || (!${NetBots[${MA1}].ID} && !${DoDelayedTimer})) && (!${Me.Gem[${DelayedHeal}]} || ${Me.SpellReady[${DelayedHeal}]}) && ${Spawn[pc Mercenary ${MA1}].Distance}<${Int[${Spell[${DelayedHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${DelayedHealID}].Mana}) {
+		/target targetable id ${Spawn[pc Mercenary ${MA1}].ID}
+		/delay 1s ${Target.ID}==${Spawn[pc Mercenary ${MA1}].ID}
 		/delay 1s ${Target.Buff[${DelayedHeal}].Duration}
 		/if (!${Target.Buff[${DelayedHeal}].ID}) {
 			/call Cast "${DelayedHeal}" ${DelayedHealGem} 2s CheckHP
@@ -653,9 +661,9 @@ Sub CheckGroup
 			/varcalc DoDelayedTimer 2+10*${Target.BuffDuration[${DelayedHeal}].TotalSeconds}
 		}
 	}
-	/if (!${RDPause} && ${UseCH} && ${Spawn[pc ${MA1}].ID} && (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${TankHeal}]})) {
+	/if (!${RDPause} && ${UseCH} && ${Spawn[pc Mercenary ${MA1}].ID} && (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${TankHeal}]})) {
 		/call CheckPPS
-		/if ((${TankTTL}<200 || ${Spawn[pc ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc ${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc ${MA1}].ID} Tank
+		/if ((${TankTTL}<200 || ${Spawn[pc Mercenary ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc Mercenary ${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc Mercenary ${MA1}].ID} Tank
 	}
 	/if (!${RDPause} && ${HealGroup}) {
 		/call ${EvaluateFunction}
@@ -745,11 +753,12 @@ Sub DoSotWNet
 	/return
 
 Sub Check4Pad(int spellID)
+	/if (${Cursor.ID}) /autoinventory
 	/doevents MezIt
 	/if (!${RDPause} && ${Stop4Pad}) {
-		/if (${UseCH} && ${Spawn[pc ${MA1}].ID}) {
+		/if (${UseCH} && ${Spawn[pc Mercenary ${MA1}].ID}) {
 			/call CheckPPS
-			/if ((${TankTTL}<150 || ${Spawn[pc ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc ${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc ${MA1}].ID} Tank
+			/if ((${TankTTL}<150 || ${Spawn[pc Mercenary ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc Mercenary${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc Mercenary ${MA1}].ID} Tank
 		}
 		/if (${HealGroup}) {
 			/call ${EvaluateFunction}
@@ -769,24 +778,24 @@ Sub CheckPPS
 	| keep 3 around
 	/declare tmpTarget int local 0
 	/declare wegothit int local 0
-	/if (${Target.ID}!=${Spawn[pc ${MA1}].ID} && !${Spawn[pc group ${MA1}].ID}) {
+	/if (${Target.ID}!=${Spawn[pc Mercenary ${MA1}].ID} && !${Spawn[pc Mercenary group ${MA1}].ID}) {
 		/varset tmpTarget ${Target.ID}
-		/target targetable id ${Spawn[pc ${MA1}].ID}
-		/delay 1s ${Target.ID}==${Spawn[pc ${MA1}].ID}
+		/target targetable id ${Spawn[pc Mercenary ${MA1}].ID}
+		/delay 1s ${Target.ID}==${Spawn[pc Mercenary ${MA1}].ID}
 	}
 	| if he's not in our group
 	| and is pct went down 
 	| and it wasn't a complete heal
-	/if (!${Spawn[pc group ${MA1}].ID} && ${TankLastPct}>${Target.PctHPs} && ${Target.PctHPs}!=100) {
+	/if (!${Spawn[pc Mercenary group ${MA1}].ID} && ${TankLastPct}>${Target.PctHPs} && ${Target.PctHPs}!=100) {
 		| he got hit by something (bad assumption of complete heal)
 		| /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Target.PctHPs})
 		/varset wegothit ${Target.PctHPs}
 	} else {
 		| if (tank in group) && (hp went down) && (hp != 100)
 		| tothits = tothits+deltahp
-		/if (${Spawn[pc group ${MA1}].ID} && ${TankLastPct}>${Spawn[pc group ${MA1}].PctHPs}) {
-			| /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Spawn[pc group ${MA1}].PctHPs})
-			/varset wegothit ${Spawn[pc group ${MA1}].PctHPs}
+		/if (${Spawn[pc Mercenary group ${MA1}].ID} && ${TankLastPct}>${Spawn[pc Mercenary group ${MA1}].PctHPs}) {
+			| /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Spawn[pc Mercenary group ${MA1}].PctHPs})
+			/varset wegothit ${Spawn[pc Mercenary group ${MA1}].PctHPs}
 		}
 	}
 
@@ -811,7 +820,7 @@ Sub CheckPPS
 	/if (!${TankPPS}) {
 			 /varset TankTTL 3000
 	} else {
-			 /varcalc TankTTL (${Spawn[pc ${MA1}].PctHPs}*10)/${TankPPS}
+			 /varcalc TankTTL (${Spawn[pc Mercenary ${MA1}].PctHPs}*10)/${TankPPS}
 	}
 
 	|/if (${SpawnCount[npc radius 200]} && ${TankTTL}!=3000) {
@@ -819,7 +828,7 @@ Sub CheckPPS
 	|/echo TotalTankTime ${TotalTankTime} TotalTankHits ${TotalTankHits}
 	|}
 
-	/varset TankLastPct ${Spawn[pc ${MA1}].PctHPs}
+	/varset TankLastPct ${Spawn[pc Mercenary ${MA1}].PctHPs}
 	/if (${tmpTarget}) {
 		/target targetable id ${tmpTarget}
 		/delay 1
@@ -867,7 +876,7 @@ Sub AssistLoop
 		/return
 	}
 	/for i 1 to 3
-		/if (${Spawn[pc ${MA${i}} radius 150 zradius 100].ID}) {
+		/if (${Spawn[pc Mercenary ${MA${i}} radius 150 zradius 100].ID}) {
 			/if (${Me.CleanName.NotEqual[${MA${i}}]}) /call AssistStuff ${i}
 			/if ((${Target.Type.Equal[NPC]} || ${Target.Master.Type.Equal[npc]}) && ${Target.ID}!=${MATarget} && ${Target.Type.NotEqual[corpse]}) {
 				/varset MATarget ${Target.ID}
@@ -886,12 +895,13 @@ Sub AssistStuff(int i)
 	/if (${Target.ID} && (!${Melee.Combat} || ${Target.ID}!=${MATarget})) {
 		/varset OldTarget NULL
 		/squelch /target clear
-	}
+		}
 	/delay 1s !${Target.ID} || ${Melee.Combat}
 	/assist ${Spawn[${MA${i}}].CleanName}
 	/delay 1s ${Target.ID}!=${OldTarget}
 	/return
-
+		
+	
 Sub PopulateNPCs
 	/varset LastSpawnCount ${SpawnCount[npc targetable radius ${NPCRadius} zradius ${NPCZRadius} noalert 1]}
 	/if (${Me.Pet.ID} && ${PetID}!=${Me.Pet.ID}) /varset PetID ${Me.Pet.ID}
@@ -1066,6 +1076,7 @@ Sub DebuffCommon(int a, int i)
 	/return
 
 Sub DebuffStuff(int a,int i)
+	/if (${Cursor.ID}) /autoinventory
 	/declare x int local
 	/declare DebuffDuration int local
 	/declare DOTBurnDurationPenalty int local
@@ -1137,6 +1148,7 @@ Sub DebuffStuff(int a,int i)
 	/return
 
 Sub Nukeit
+	/if (${Cursor.ID}) /autoinventory
 	/declare i int local
 	/for i 1 to ${NukeTotal}
 		/if (${DoDebuffs} || ${DoDoTs} || ${DoManaTaps} || ${DoMez}) /call DebuffIt
@@ -1341,6 +1353,7 @@ Sub PortUs(Line)
     /if (${Me.Book[${PortSpell}]}) {
         /docommand /${ChatChannel} Porting with ${PortSpell}
         /target id ${Me.ID}
+		/if (${Cursor.ID}) /autoinventory
         /call Cast "${PortSpell}" ${PortGem} 25s
     } else {
         /if (TRUE) /${ChatChannel} I do not have a port for ${Line}
@@ -1348,6 +1361,7 @@ Sub PortUs(Line)
 /return
 
 Sub CheckBuffs
+	/if (${Cursor.ID}) /autoinventory
 	/if (!${RDPause}) {
 	/declare i int local
 	/declare a int local
@@ -1397,7 +1411,7 @@ Sub CheckBuffs
 	/call MoveStuff
 	/return
 
-	Sub AutoSit
+Sub AutoSit
 	/declare i int local
 	/declare TempGuy int local
 	/if (!${RDPause}) {
@@ -1485,6 +1499,7 @@ Sub RemoveFromQueue(int Buffee,int BuffNumber)
 	/return
 
 Sub DoBuffEvents
+	/if (${Cursor.ID}) /autoinventory
 	/declare a       int local
 	/declare TempVar int local ${Math.Calc[${DoBuffTotal}+1]}
 	/declare TempGuy int local 0
@@ -2764,19 +2779,19 @@ Sub Event_SetBuff(Line,LineArg)
 	/return
 	
 Sub Event_SetMA1(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
 	/return
 
 Sub Event_SetMA2(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[pc ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
 	/return
 
 Sub Event_SetMA3(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${Spawn[pc ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
 	/return
 
 Sub Event_SetRampTank(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${Spawn[pc ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
 	/return
 
 Sub Event_SongAlias(Line,AliasName,FullName)
@@ -2887,11 +2902,75 @@ Sub Event_AddAlertCommon(line,MobName)
 
 
 Sub Event_LoadAlert
-		/call RefreshAlerts
+	/call RefreshAlerts
 	/return
 
 Sub Event_Stand
-	  /if (!${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
+	/if (!${Me.Standing} && ${Me.State.NotEqual[FEIGN]}) /stand
+	/return
+
+Sub MA1Dead
+	/if (${Spawn[${MA1}].Type.Equal[Corpse]}) {
+		/if (${ChatChannel.Equal[BC]}) {
+			/BC [+r+]MA1 DEAD!! OMG!!
+			} else {
+			/${ChatChannel} MA1 DEAD!! OMG!!
+			}
+		/if (${ChangeTank}==TRUE && ${UseGroupMA}==FALSE) {
+			/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc Mercenary ${MA2}].CleanName}"
+			/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[pc Mercenary ${MA3}].CleanName}"
+			}
+		}
+	/return
+
+Sub Event_ChangeTank(Line,NewTank)
+	/if (${ChangeTank}==TRUE && ${UseGroupMA}==FALSE) {
+		/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${NewTank}"
+		/if (${ChatChannel.Equal[BC]}) {
+			/BC [+g+] Changing Tank to [+m+]${NewTank}
+			} else {
+			/${ChatChannel} Changing Tank to ${NewTank}
+			}
+		}
+	/return
+
+Sub QuietMiracle
+	/declare i int local
+	/if (${Group} && ${Me.AltAbilityReady[Quiet Miracle]}) {
+		 /for i 1 to ${Group}
+			/if (${Group.Member[${i}].Type.NotEqual[corpse]} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance} < 100 && ${Group.Member[${i}].CurrentMana} <40 && ${CanCast.Find[${Group.Member[${i}].Class}]}) {
+				/target id ${Group.Member[${i}].ID}
+				/delay 3 ${Target.ID}==${Group.Member[${i}].ID}
+				/if (${Target.Buff[Shroud of the Miracle].ID}) {
+					/call CreateTimer QM${Target.ID} 1m
+				}
+				/call cast "Quiet Miracle" alt 0
+				/return
+			}
+		/next i
+	}
+	/return
+
+Sub Retort
+	/if (${Me.SpellReady[${RetortSpell}]} && !${RetortTimer} && ${Spawn[${MA1}].Distance} <= 200 && ${Spawn[${MA1}].ID} && ${DoRetort}) {
+		/call Cast "${RetortSpell}" ${RetortSpellGem} ${MA1}
+		/call CreateTimer RetortTimer
+		/if (${castReturn.Equal[CAST_SUCCESS]}) /varset RetortTimer 90s
+		/if (${castReturn.Equal[CAST_NOTHOLD]}) /varset RetortTimer 30s	
+		}
+	/return
+	
+Sub HealOverTime	
+	/if (!${HotTimer} && ${Spawn[${MA1}].Distance}<=${Spell[${HotSpell}].MyRange} && ${Spawn[${MA1}].PctHPs} >=80 && ${Spawn[${MA1}].PctHPs}>=${defaultstophealpoint}*.5 && ${UseTankHoT} && ${SpawnCount[npc los Range 5 110 radius 50 zradius 50 targetable]} ) {
+		/call Cast "${HotSpell}" ${HotSpellGem} ${MA1} 
+		/call CreateTimer HotTimer
+		/if (${castReturn.Equal[CAST_SUCCESS]}) /varset HotTimer 60s
+		} 
+	/return
+	
+Sub CreateTimer(MyTimer,MyLength)
+	/if (!${Defined[${MyTimer}]} ) /declare ${MyTimer} timer outer
+	/if (${MyLength.NotEqual[NULL]}) /varset ${MyTimer} ${MyLength}
 	/return
 
 Sub LoadIni(MyIni,Function)
@@ -2961,6 +3040,7 @@ Sub LoadIni(MyIni,Function)
 	/call LoadVar GeneralStuff ReportToggles FALSE ReportToggles "${MyIni}" ${Function} bool
 	/call LoadVar GeneralStuff RelayTells FALSE RelayTells "${MyIni}" ${Function} bool
 	/call LoadVar GeneralStuff UseGroupMA TRUE UseGroupMA "${MyIni}" ${Function} bool
+	/call LoadVar GeneralStuff ChangeTank TRUE ChangeTank "${MyIni}" ${Function} bool
 	/if (${Select[${Me.Class.ShortName},DRU,WIZ]}) {
 		/call LoadVar GeneralStuff DoPorts FALSE DoPorts "${MyIni}" ${Function} bool
 		/call LoadVar GeneralStuff PortGem "gem12, change for your tastes" PortGem "${MyIni}" ${Function} string
@@ -3234,6 +3314,7 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar HealStuff ReportSotW FALSE ReportSotW "${MyIni}" ${Function} bool
 		/call LoadVar HealStuff SotWAA "Put the name of your AE Healing AA here" SotWAA "${MyIni}" ${Function} string
 		/call LoadVar HealStuff SotWPct 75 SotWPct "${MyIni}" ${Function} int
+		/call LoadVar HealStuff QM FALSE QM "${MyIni}" ${Function} bool
 	}
 	/if (${Select[${Me.Class.ShortName},WIZ,SHM,NEC,MAG,ENC]}) {
 		/call LoadVar GeneralStuff CanniTotal 1 CanniTotal "${MyIni}" ${Function} int
@@ -3262,11 +3343,18 @@ Sub LoadIni(MyIni,Function)
 	/if (${Select[${Me.Class.ShortName},CLR,SHM]}) {
 		/call LoadVar HealStuff UseDivArb FALSE UseDivArb "${MyIni}" ${Function} bool
 		/call LoadVar HealStuff DivArbHPs 20 DivArbHPs "${MyIni}" ${Function} int
+		/call LoadVar HealStuff UseTankHoT FALSE UseTankHoT "${MyIni}" ${Function} bool
+		/call LoadVar HealStuff HotSpell "Put the name of your Heal over Time Spell here" HotSpell "${MyIni}" ${Function} string
+		/call LoadVar HealStuff HotSpellGem "Put the name of the Spell Gem you want to cast your Heal over Time Spell from here" HotSpellGem "${MyIni}" ${Function} string
+		/if (!${Defined[HotSpellID]})  /declare DelayedHealID int outer ${Me.Book[${Me.Book[${Spell[${HotSpell}].RankName}]}].ID}
 	}
 	/if (${Me.Class.ShortName.Equal[CLR]}) {
+		/call LoadVar HealStuff DoRetort FALSE DoRetort "${MyIni}" ${Function} bool
+		/call LoadVar HealStuff RetortSpell "Put the name of your Retort Spell here" RetortSpell "${MyIni}" ${Function} string
+		/call LoadVar HealStuff RetortGem "Put the name of the Spell Gem you want to cast your Retort Spell from here" RetortGem "${MyIni}" ${Function} string
 		/call LoadVar HealStuff DivArbSpell "Divine Arbitration" DivArbSpell "${MyIni}" ${Function} string
 		/call LoadVar HealStuff DivArbGem "alt" DivArbGem "${MyIni}" ${Function} string
-		/if (!${Defined[DivArbSpellID]})  /declare DivArbSpellID int outer ${Me.Book[${Me.Book[${Spell[${DivArbSpell}].RankName}]}].ID}
+		/if (!${Defined[RetortSpellID]})  /declare RetortSpellID int outer ${Me.Book[${Me.Book[${Spell[${RetortSpell}].RankName}]}].ID}
 	}
 	/if (${Me.Class.ShortName.Equal[SHM]}) {
 		/call LoadVar HealStuff DivArbSpell "Put the name of your divine arbitration spell or item" DivArbSpell "${MyIni}" ${Function} string
