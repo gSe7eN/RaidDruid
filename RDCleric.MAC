@@ -1946,7 +1946,13 @@ Sub PetToys(int ThePetID)
 		/return
         }
 	/if (!${InvSlot[pack${BagNum}].Item.Container} && !${Me.FreeInventory}) {
-		/if (${ReportPetToys}==TRUE) /docommand /${PetToysChannel} Inventory is full
+		/if (${ReportPetToys}==TRUE) {
+	 		/if (${PetToysChannel.Equal[BC]}) {
+					/BC [+g+]Inventory is [+r+]full
+					} else {
+					/docommand /${PetToysChannel} Inventory is full
+					}
+				}
 		/varset DoPetToys 0
 		/return
         }
@@ -1978,7 +1984,13 @@ Sub PetToys(int ThePetID)
 			/varset PetToysTemp ${Ini[${IniFileName},Pet,PetToysGave]}
 			}
 		/if (${Macro.Return.Equal[CAST_SUCCESS]}) {
-			/if (${ReportPetToys}==TRUE) /docommand /${PetToysChannel} Casting pet toy spell >> ${PetToySpell} <<
+			/if (${ReportPetToys}==TRUE) {
+	 			/if (${PetToysChannel.Equal[BC]}) {
+					/BC [+g+]Casting pet toy spell >> [+y+]${PetToySpell}[+g+] <<
+					} else {
+					/docommand /${PetToysChannel} Casting pet toy spell >> ${PetToySpell} <<
+					}
+				}
 			}
 		/delay 100 ${Me.SpellReady[${Spell[${PetToySpell}].RankName}]}
 		/delay 5s ${Cursor.ID}
@@ -1995,7 +2007,13 @@ Sub PetToys(int ThePetID)
 | If folded pack right click to convert to phantom satchel
 			/if (${InvSlot[pack${BagNum}].Item.Name.Find[folded]}) {
 				/nomodkey /itemnotify pack${BagNum} rightmouseup
-				/if (${ReportPetToys}==TRUE) /docommand /${PetToysChannel} Opening ${InvSlot[pack${BagNum}].Item.Name}
+				/if (${ReportPetToys}==TRUE) {
+					/if (${PetToysChannel.Equal[BC]}) {
+						/BC [+g+]Opening ${InvSlot[pack${BagNum}].Item.Name}
+						} else {
+						/docommand /${PetToysChannel} Opening ${InvSlot[pack${BagNum}].Item.Name}
+						}
+					}
 				/delay 3s
 | Return to top to drop bag into inventory
 				/goto :Unfolded
@@ -2079,7 +2097,13 @@ Sub DestroyBag
 	/if (${InvSlot[pack${BagNum}].Item.Items}) {
 		/for j 0 to ${InvSlot[pack${BagNum}].Item.Container}
 		/if (!${InvSlot[pack${BagNum}].Item.Item[${j}].NoRent} && ${InvSlot[pack${BagNum}].Item.Item[${j}].Name.Length}) {
-			/if (${ReportPetToys}==TRUE) /docommand /${PetToysChannel} Bag has non summoned item(s) in it. Aborting delete. Pet Toys Off
+			/if (${ReportPetToys}==TRUE) {
+	 			/if (${PetToysChannel.Equal[BC]}) {
+					/BC [+g+]Bag has non summoned item(s) in it. Aborting delete. Pet Toys Off
+					} else {
+					/${PetToysChannel} Bag has non summoned item(s) in it. Aborting delete. Pet Toys Off
+					}
+				}
 			/varset DoPetToys 0
 			/return
 			}
@@ -2122,10 +2146,22 @@ Sub DestroyBag
 		/delay 10
 		/if (${ItemSummoned}) {
 			/notify GiveWnd GVW_Give_Button leftmouseup
-            /if (${ReportPetToys}==TRUE) /docommand /${PetToysChannel} Giving ${GItem} to ${Target.CleanName}
+            /if (${ReportPetToys}==TRUE) {
+	 			/if (${PetToysChannel.Equal[BC]}) {
+					/BC [+g+]Giving [+o+]${GItem} [+g+]to [+m+]${Target.CleanName}
+					} else {
+					/docommand /${PetToysChannel} Giving ${GItem} to ${Target.CleanName}
+					}
+				}
 			} else {
-            /if (${ReportPetToys}==TRUE) /docommand /${PetToysChannel} Item is NOT SUMMONED canceling trade
-            /notify GiveWnd GVW_Cancel_Button leftmouseup
+            /if (${ReportPetToys}==TRUE) {
+				/if (${PetToysChannel.Equal[BC]}) {
+					/BC [+g+]Item is [+r+]NOT SUMMONED [+g+]canceling trade
+					} else {
+					/docommand /${PetToysChannel} Item is NOT SUMMONED canceling trade
+					}
+				}
+			            /notify GiveWnd GVW_Cancel_Button leftmouseup
 			}
         /delay 200 !${Window[GiveWnd].Open}
     /return
