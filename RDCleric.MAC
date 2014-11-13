@@ -51,7 +51,6 @@
 #Event NewZone        	"You have entered#*#"
 #Event NoLuclin       	"You must have both the Horse Models and your current Luclin Character Model enabled#*#"
 #Event NoLuclin       	"You can not summon a mount in this form#*#"
-#Event PCDeath	      	"#1# has been slain by #2#"
 #Event RaidExperience 	"#*#You gained raid experience#*#"
 #Event lootall        	"#*#lootall#*#"
 #Event Rampage        	"#*#goes on a RAMPAGE#*#"
@@ -679,7 +678,7 @@ Sub CheckGroup
 			/varcalc DoDelayedTimer 2+10*${Target.BuffDuration[${DelayedHeal}].TotalSeconds}
 			}
 		}
-	/if (!${RDPause} && ${UseCH} && (${Spawn[pc ${MA1}].ID} || ${Spawn[Mercenary ${MA1}].ID})&& (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${Spell[${TankHeal}].RankName}]})) {
+	/if (!${RDPause} && ${UseCH} && (${Spawn[pc ${MA1}].ID} || ${Spawn[Mercenary ${MA1}].ID}) && (!${Me.Gem[${TankHeal}]}) && ${Me.SpellReady[${Spell[${TankHeal}].RankName}]}) {
 		/call CheckPPS
 		/if ((${TankTTL}<200 || ${Spawn[${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[${MA1}].ID} Tank
 	}
@@ -724,10 +723,10 @@ Sub CureMe
 	/return
 
 Sub DoHeal(int HealGuy,HealType)
-	|/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Me.Casting.ID}!=${GroupHealID}) {
-	|	/call DoInterrupt
-	|	/delay 2s !${Me.Casting.ID}
-	|}
+	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Me.Casting.ID}!=${GroupHealID} && ${Me.Casting.ID}!=${Spell[${FastHealID}]} && ${Me.Casting.ID}!=${TankHealID} && ${Me.Casting.ID}!=${DelayedHealID} && ${Me.Casting.ID}!=${PetHealID} && ${Me.Casting.ID}!=${HotSpellID} && ${Me.Casting.ID}!=${RetortSpellID}) {
+		/call DoInterrupt
+		/delay 2s !${Me.Casting.ID}
+		}
 	/if (${Target.ID}!=${HealGuy}) /target targetable id ${HealGuy}
 	/delay 1s ${Target.ID}==${HealGuy}
 	/if (${HealType.Equal[Fast]}) /varset StartHPs ${Target.PctHPs}
@@ -1925,10 +1924,6 @@ Sub ShrinkStuff
 	/next i
 	/return
 
-| ----------------------------------------------------------------------------
-| SUB: Check PetToys - Based on code from el_nene's autobot. Used with permission.
-| Autobot is available at www.macroquest2.com VIP macro section.
-| ----------------------------------------------------------------------------
 Sub PetToys(int ThePetID)
 	/declare Debug local FALSE
 	/declare i int local
@@ -1964,7 +1959,9 @@ Sub PetToys(int ThePetID)
 		/echo 3: ${PetToys${i}.Equal[Null]} || ${PetToysTemp.Find[${Me.Pet.CleanName}]} && ${PetToysTemp.Find[${PetToys${i}}]})
 		}
 	/if (${PetToys${i}.Equal[Null]} || ${PetToysTemp.Find[${Me.Pet.CleanName}]} && ${PetToysTemp.Find[${PetToys${i}}]}) /goto :SkipPetToy
+|========================================
 | Are we handing weapons to the pet
+|========================================
 	/if (${PetToys${i}.Arg[2,|].Length}) {
 		/varset FullText ${PetToys${i}}
 		/varset PetToySpell ${PetToys${i}.Arg[1,|]}
@@ -1974,7 +1971,9 @@ Sub PetToys(int ThePetID)
 		/varset PetToySpell ${PetToys${i}}
 		}
 	/if (${2ndPart.Length} && ${PetToysTemp.Find[${2ndPart}1]} || ${3rdPart.Length} && ${PetToysTemp.Find[${3rdPart}2]}) /goto :SkipPetToy
+|========================================
 | Check for pet toy spells in book to prevent double casting of items
+|========================================
 	/if (${Spell[${PetToySpell}].RankName.ID}) {
 		/target ${Me}
 		/delay 1s
@@ -1995,16 +1994,24 @@ Sub PetToys(int ThePetID)
 		/delay 100 ${Me.SpellReady[${Spell[${PetToySpell}].RankName}]}
 		/delay 5s ${Cursor.ID}
 		/if (!${Cursor.ID}) /return
+|========================================
 | Check if spell has summoned a bag or folded pack
+|========================================
 		/if (${Cursor.Container} || ${Cursor.Name.Find[Folded]}) {
+|========================================
 | If item is in Inv Slot exchange it with bag on cursor
+|========================================
 			/if (${InvSlot[pack${i}].Item.ID}) /nomodkey /itemnotify pack${BagNum} leftmouseup
 	:Unfolded
 			/delay 2s ${Cursor.ID}
+|========================================
 | Drop exchanged item into inventory
+|========================================
 			/autoinventory
 			/delay 1s
+|========================================
 | If folded pack right click to convert to phantom satchel
+|========================================
 			/if (${InvSlot[pack${BagNum}].Item.Name.Find[folded]}) {
 				/nomodkey /itemnotify pack${BagNum} rightmouseup
 				/if (${ReportPetToys}==TRUE) {
@@ -2015,7 +2022,9 @@ Sub PetToys(int ThePetID)
 						}
 					}
 				/delay 3s
+|========================================
 | Return to top to drop bag into inventory
+|========================================
 				/goto :Unfolded
 				}
 			}
@@ -2056,7 +2065,9 @@ Sub PetToys(int ThePetID)
 		/goto :SkipPetToy
 		}
 :SkipPetToy
+|========================================
 | Reset spell vars
+|========================================
 	/if (${FullText.Arg[2,|].Length}) {
 		/varset FullText
 		/varset 2ndPart
@@ -2075,7 +2086,9 @@ Sub OpenInvSlot
 	/for i 1 to 10
 	/if (${InvSlot[pack${i}].Item.Container}) /goto :NextSlot
 	/if (!${InvSlot[pack${i}].Item.Container} || ${InvSlot[pack${i}].Item.ID}==0) {
+|========================================	
 | Must have at least 2 inv slots open in order to swap bags and items
+|========================================
 		/if (${Me.FreeInventory}>=2) /varset BagNum ${i}
 		|/if (${InvSlot[pack${i}].Item.ID}==0) /varset BagNum ${i}
 		}    
@@ -2087,13 +2100,12 @@ Sub OpenInvSlot
 	:NextSlot
         /next i
     /return
-| ----------------------------------------------------------------------------
-| SUB: Check DestroyBag - Based on code from el_nene's autobot. Used with permission.
-| Autobot is available at www.macroquest2.com VIP macro section.
-| ----------------------------------------------------------------------------
+
 Sub DestroyBag
 	/declare j int local
-	| Make sure bag has no items other than summoned in it before deleting.
+|========================================	
+| Make sure bag has no items other than summoned in it before deleting.
+|========================================
 	/if (${InvSlot[pack${BagNum}].Item.Items}) {
 		/for j 0 to ${InvSlot[pack${BagNum}].Item.Container}
 		/if (!${InvSlot[pack${BagNum}].Item.Item[${j}].NoRent} && ${InvSlot[pack${BagNum}].Item.Item[${j}].Name.Length}) {
@@ -2116,10 +2128,7 @@ Sub DestroyBag
 		/delay 20 !${Cursor.ID}
         }
     /return
-| ----------------------------------------------------------------------------
-| SUB: Check GiveTo - Based on code from el_nene's autobot. Used with permission.
-| Autobot is available at www.macroquest2.com VIP macro section.
-| ----------------------------------------------------------------------------
+
  Sub GiveTo(string GItem, int GTarget)
 	/declare ItemSummoned int local 0
 	/if (${Target.ID}!=${GTarget}) {
@@ -2695,43 +2704,6 @@ Sub Event_NoLuclin
 	/varset UseMount 0
 	/return
 
-Sub Event_PCDeath(DeadPlayer)
-	| If I'm a cleric and a player has died, I should rez them if set to auto-rez.
-	/if (!${Me.Class.ShortName.Equal[CLR]}) /return
-	/echo I saw a death!
-	/if (TRUE && !${RDPause} && !${Me.Invis}) {
-	|change TRUE to ${AutoRez} later #DEBUG
-	   /if (${Spawn[${DeadPlayer}].Type.Equal[pc]} && ${Spawn[${DeadPlayer}].Type.Find[corpse]}) {
-		/bc [+G+] I saw the death Event and it's a player!!
-		/if (${DoBuffTells} && !${SpamTimer}) /tell ${DeadPlayer} Rezz inc!
-		/squelch /target ${DeadPlayer}'s Corpse
-		/if (${Target.ID} && ${Target.Distance}>20) /corpse
-		/if (!${Target.ID} && ${ReportHeals}) {
-			/if (${HealChannel.Equal[BC]}) {
-				/BC [+r+]I can't target [+g+]${DeadPlayer}'s [+r+]corpse
-				} else {
-				/${HealChannel} I can't target ${DeadPlayer}'s corpse
-				}
-			}
-		/if (!${Target.ID} && ${DoBuffTells} && !${SpamTimer}) /tell ${DeadPlayer} I can't target your corpse
-		/if (${Target.Type.Equal[Corpse]}) {
-			/if (${ReportHeals}){
-				/if (${HealChannel.Equal[BC]}) {
-					/BC [+g+]I am attempting to resurrect [+g+]${DeadPlayer}
-					} else {
-					 /${HealChannel} I am attempting to resurrect ${DeadPlayer}
-					}
-				}
-			/if (${Me.AltAbility[Blessing of Resurrection]} && ${Me.AltAbilityReady[Blessing of Resurrection]}) {
-			/call Cast "Blessing of Resurrection" alt 10s
-			} else {
-			/call Cast "Reviviscence" ${BuffGem} 3s
-			}
-		}
-	   }
-	}
-	/return
-
 Sub Event_RaidExperience
 	/call XPCommon
 	/return
@@ -2881,20 +2853,37 @@ Sub Event_SetBuff(Line,LineArg)
 	/return
 	
 Sub Event_SetMA1(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${LineArg}"
-	/return
+	/if (${Spawn[${LineArg}].Type.Equal[pc]} || ${Spawn[${LineArg}].Type.Equal[Mercenary]}) {
+		/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${LineArg}"
+		/return
+		} else {
+		/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "NULL"
+		/return
+		}
 
 Sub Event_SetMA2(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${LineArg}"
-	/return
+	/if (${Spawn[${LineArg}].Type.Equal[pc]} || ${Spawn[${LineArg}].Type.Equal[Mercenary]}) {
+		/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${LineArg}"
+		/return
+		} else {
+		/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "NULL"
+		}
 
 Sub Event_SetMA3(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${LineArg}"
-	/return
+	/if (${Spawn[${LineArg}].Type.Equal[pc]} || ${Spawn[${LineArg}].Type.Equal[Mercenary]}) {
+		/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${LineArg}"
+		/return
+		} else {
+		/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "NULL"
+		}
 
 Sub Event_SetRampTank(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${LineArg}"
-	/return
+	/if (${Spawn[${LineArg}].Type.Equal[pc]} || ${Spawn[${LineArg}].Type.Equal[Mercenary]}) {
+		/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${LineArg}"
+		/return
+		} else {
+		/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "NULL"
+		}
 
 Sub Event_SongAlias(Line,AliasName,FullName)
 	/ini ${RDIni} "Bard-Aliases" "${AliasName}" "${FullName}"
@@ -3012,6 +3001,9 @@ Sub Event_Stand
 	/return
 
 Sub MA1Dead
+|========================================
+|Idea based on Nytemyst's AFCleric
+|========================================
 	/if (${Spawn[${MA1}].Type.Equal[Corpse]}) {
 		/if (${ChatChannel.Equal[BC]}) {
 			/BC [+r+]MA1 DEAD!! OMG!!
@@ -3026,6 +3018,9 @@ Sub MA1Dead
 	/return
 
 Sub Event_ChangeTank(Line,NewTank)
+|========================================
+|Idea based on Nytemyst's AFCleric
+|========================================
 	/if (${ChangeTank}==TRUE && ${UseGroupMA}==FALSE) {
 		/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${NewTank}"
 		/if (${ChatChannel.Equal[BC]}) {
@@ -3037,6 +3032,9 @@ Sub Event_ChangeTank(Line,NewTank)
 	/return
 
 Sub QuietMiracle
+|========================================
+|code based on Nytemyst's AFCleric
+|========================================
 	/declare i int local
 	/if (${Group} && ${Me.AltAbilityReady[Quiet Miracle]}) {
 		 /for i 1 to ${Group}
@@ -3061,6 +3059,9 @@ Sub QuietMiracle
 	/return
 
 Sub Retort
+|========================================
+|code based on Nytemyst's AFCleric
+|========================================
 	/if (${Me.SpellReady[${Spell[${RetortSpell}].RankName}]} && !${RetortTimer} && ${Spawn[${MA1}].Distance} <= 200 && ${Spawn[${MA1}].ID} && ${DoRetort} && ${Me.CombatState.Equal[COMBAT]} && !${Target.Buff[${Spell[${RetortSpell}].RankName}].ID}) {
 		/if (${Debug}) /echo casting ${RetortSpell} from Gem ${RetortSpellGem} at ${Target.CleanName}
 		/if (${Target.ID}!=${Spawn[${MA1}].ID}) /target ${MA1}
@@ -3079,7 +3080,10 @@ Sub Retort
 		}
 	/return
 	
-Sub HealOverTime	
+Sub HealOverTime
+|========================================
+|code based on Nytemyst's AFCleric
+|========================================	
 	/if (!${HotTimer} && ${Spawn[${MA1}].Distance}<=${Spell[${HotSpell}].MyRange} && ${Spawn[${MA1}].PctHPs} >=80 && ${Spawn[${MA1}].PctHPs}>=${defaultstophealpoint}*.5 && ${UseTankHoT} && ${SpawnCount[npc los Range 5 110 radius 50 zradius 50 targetable]} && ${Me.CombatState.Equal[COMBAT]}) {
 		/if (${Target.ID}!=${Spawn[${MA1}].ID}) /target ${MA1}
 		/call Cast "${HotSpell}" ${HotSpellGem} 1s 
@@ -3099,11 +3103,17 @@ Sub HealOverTime
 	/return
 	
 Sub CreateTimer(MyTimer,MyLength)
+|========================================
+|code based on Nytemyst's AFCleric
+|========================================
 	/if (!${Defined[${MyTimer}]} ) /declare ${MyTimer} timer outer
 	/if (${MyLength.NotEqual[NULL]}) /varset ${MyTimer} ${MyLength}
 	/return
 
 Sub HealXTarget
+|========================================
+|code based on Nytemyst's AFCleric
+|========================================
 	/declare X int local 
 	/declare i int local 1
 |--------Loops Through extended target window For Pets and Players to heal.
@@ -3460,7 +3470,7 @@ Sub LoadIni(MyIni,Function)
 		/call LoadVar HealStuff SotWPct 75 SotWPct "${MyIni}" ${Function} int
 		/call LoadVar HealStuff QM FALSE QM "${MyIni}" ${Function} bool
 	}
-	/if (${Select[${Me.Class.ShortName},WIZ,SHM,NEC,MAG,ENC]}) {
+	/if (${Select[${Me.Class.ShortName},WIZ,SHM,NEC,MAG,ENC,CLR]}) {
 		/call LoadVar GeneralStuff CanniTotal 1 CanniTotal "${MyIni}" ${Function} int
 		/if (${CanniTotal}) {
 			/call LoadVar GeneralStuff DoCanni FALSE DoCanni "${MyIni}" ${Function} bool
