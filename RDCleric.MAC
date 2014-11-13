@@ -723,7 +723,7 @@ Sub CureMe
 	/return
 
 Sub DoHeal(int HealGuy,HealType)
-	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Me.Casting.ID}!=${GroupHealID} && ${Me.Casting.ID}!=${Spell[${FastHealID}]} && ${Me.Casting.ID}!=${TankHealID} && ${Me.Casting.ID}!=${DelayedHealID} && ${Me.Casting.ID}!=${PetHealID} && ${Me.Casting.ID}!=${HotSpellID} && ${Me.Casting.ID}!=${RetortSpellID}) {
+	/if (${Me.Casting.ID} && ${Me.Casting.ID}!=${DivArbSpellID} && ${Me.Casting.ID}!=${GroupHealID} && ${Me.Casting.ID}!=${FastHealID} && ${Me.Casting.ID}!=${TankHealID} && ${Me.Casting.ID}!=${DelayedHealID} && ${Me.Casting.ID}!=${PetHealID} && ${Me.Casting.ID}!=${HotSpellID} && ${Me.Casting.ID}!=${RetortSpellID}) {
 		/call DoInterrupt
 		/delay 2s !${Me.Casting.ID}
 		}
