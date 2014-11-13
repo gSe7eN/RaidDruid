@@ -538,7 +538,7 @@ Sub CheckHP
 		}
 	|	/if (${HealFD} && ${Target.State.Equal["FEIGN"]} && ${Select[${Target.Class.ShortName},MNK,NEC,SHD]}) /call DoInterrupt
 		/call ${EvaluateFunction}
-		/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && ${Target.ID}==${Spawn[pc Mercenary ${MA1}].ID} && ${FastHealID}!=${TankHealID}) {
+		/if (${UseCH} && ${Me.Casting.ID}==${TankHealID} && (${Target.ID}==${Spawn[pc ${MA1}].ID} || ${Target.ID}==${Spawn[Mercenary ${MA1}].ID}) && ${FastHealID}!=${TankHealID}) {
 			/call CheckPPS
 	|		/if (${Target.PctHPs}>${TankHealPct} && ${TankTTL}>250 && ${castEndTime}<40) /call Interrupt
 			/if (${castEndTime}>=${TankTTL}+50) /call DoHeal ${Target.ID} Fast
@@ -584,7 +584,7 @@ Sub EvaluateGroup
 	/for i 0 to ${Group}
 		/if ( ${Group.Member[${i}].Type.Equal[Corpse]} ) /goto :NextEvaluateGroup
 		/if (!${RDPause} && ${UseDivArb} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))&& ${Spawn[pc ${Group.Member[${i}]}].ID} && ${Spawn[pc ${Group.Member[${i}]}].Distance}<${Spell[Divine Arbitration].MyRange}) /call DoDivArb
-		/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA3}].ID}) {
+		/if (!${RDPause} && ${UseBDA} && ${Group.Member[${i}].PctHPs}<=${DivArbHPs} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA1}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA2}].ID} && ${Group.Member[${i}].ID}!=${Spawn[pc ${MA3}].ID}) {
 			/if (${Me.Casting.ID}) /call DoInterrupt
 			/target targetable id ${Group.Member[${i}].ID}
 			/delay 1s ${Target.ID}==${Group.Member[${i}].ID}
@@ -601,9 +601,9 @@ Sub EvaluateGroup
 			/varset DAArray[${Math.Calc[${i}+1]},1] 0
 			/varset DAArray[${Math.Calc[${i}+1]},2] 0
 		}
-		/if ((${HealFD} && ${Group.Member[${i}].State.NotEqual["FEIGN"]} && ${Select[${Group.Member[${i}].Class.ShortName},MNK,NEC,SHD]}) || ((${UseCH} || ${Group.Member[${i}].PctHPs}>${TankHealPct}) && ${Group.Member[${i}].ID}==${Spawn[pc Mercenary ${MA1}].ID})) /goto :NextEvaluateGroup
+		/if ((${HealFD} && ${Group.Member[${i}].State.NotEqual["FEIGN"]} && ${Select[${Group.Member[${i}].Class.ShortName},MNK,NEC,SHD]}) || ((${UseCH} || ${Group.Member[${i}].PctHPs}>${TankHealPct}) && ${Group.Member[${i}].ID}==${Spawn[pc ${MA1}].ID})) /goto :NextEvaluateGroup
 			| don't do fast heals on MA1 unless TankHealPct not set
-		/if (${Group.Member[${i}].PctHPs}<=${WorstHPs} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance}<${Spell[${FastHealID}].MyRange} && (${Group.Member[${i}].ID}!=${Spawn[pc Mercenary ${MA1}].ID} || !${TankHealPct})) {
+		/if (${Group.Member[${i}].PctHPs}<=${WorstHPs} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance}<${Spell[${FastHealID}].MyRange} && (${Group.Member[${i}].ID}!=${Spawn[${MA1}].ID} || !${TankHealPct})) {
 			/varset WorstHPs ${Group.Member[${i}].PctHPs}
 			/varset WorstID ${Group.Member[${i}].ID}
 			/varcalc WorstMember ${i}+1
@@ -624,7 +624,7 @@ Sub EvaluateGroupNet
 	/declare fd string local
 	/if (${HealFD}) /varset fd fd
 	/if (!${RDPause} && ${UseDivArb} && ${NetWorst.Request[radius${Int[${Spell[Divine Arbitration].MyRange}]} pc group all hp${DivArbHPs}]} && (((${DivArbGem.Equal[alt]} && ${Me.AltAbilityReady[${DivArbSpell}]}) || (${DivArbGem.Equal[item]} && ${FindItem[${DivArbSpell}].TimerReady}) || (!${Select[${DivArbGem},alt,item]} && (${Me.SpellReady[${DivArbSpell}]} || !${DivArbTimer}))) || (!${FindItem[Harmony of the Soul].Timer} && ${FindItem[Harmony of the Soul].ID}) || (!${FindItem[Aegis of Superior Divinity].Timer} && ${FindItem[Aegis of Superior Divinity].ID}))) /call DoDivArb
-	/if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[pc group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[pc Mercenary ${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc Mercenary ${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc Mercenary ${MA3}].ID}) {
+	/if (!${RDPause} && ${UseBDA} && ${NetWorst.Request[pc group all hp${DivArbHPs} self]} && ${Me.AltAbilityReady[Bestow Divine Aura]} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA1}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA2}].ID} && ${NetHeal.ID[1]}!=${Spawn[pc ${MA3}].ID}) {
 		/if (${Me.Casting.ID}) /call DoInterrupt
 		/target targetable id ${NetHeal.ID[1]}
 		/delay 1s ${Target.ID}==${NetHeal.ID[1]}
@@ -638,8 +638,8 @@ Sub EvaluateGroupNet
 		}
 	/if (!${RDPause} && ${NetWorst.Request[radius${Int[${Spell[${FastHealID}].MyRange}]} pc all hp${HealPct} ${fd}]}) {
 		/varset i 1
-		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc Mercenary ${MA1}].ID} && ${NetWorst.Counter}==1) /goto :EndCheck
-		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc Mercenary ${MA1}].ID} && ${NetWorst.Counter}>1) /varset i 2
+		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc ${MA1}].ID} && ${NetWorst.Counter}==1) /goto :EndCheck
+		/if (${TankHealPct} && ${NetHeal.ID[1]}==${Spawn[pc ${MA1}].ID} && ${NetWorst.Counter}>1) /varset i 2
 		/varset WorstHPs ${NetHeal.PctHPs[${i}]}
 		/varset WorstID ${NetHeal.ID[${i}]}
 		}
@@ -667,9 +667,9 @@ Sub EvaluatePets
 
 Sub CheckGroup
 	:StayOnHeal
-	/if (!${RDPause} && ${UseDelayedHeal} && ${Spawn[pc Mercenary ${MA1}].ID} && ${Spawn[pc ${MA1}].PctHPs}<${DelayedHealPct} && ((${NetBots[${MA1}].ID} && ${NetBots[${MA1}].Stacks[${DelayedHealID}]}) || (!${NetBots[${MA1}].ID} && !${DoDelayedTimer})) && (!${Me.Gem[${DelayedHeal}]} || ${Me.SpellReady[${Spell[${DelayedHeal}].RankName}]}) && ${Spawn[pc Mercenary ${MA1}].Distance}<${Int[${Spell[${DelayedHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${DelayedHealID}].Mana}) {
-		/target targetable id ${Spawn[pc Mercenary ${MA1}].ID}
-		/delay 1s ${Target.ID}==${Spawn[pc Mercenary ${MA1}].ID}
+	/if (!${RDPause} && ${UseDelayedHeal} && (${Spawn[pc ${MA1}].ID} || ${Spawn[Mercenary ${MA1}].ID}) && ${Spawn[${MA1}].PctHPs}<${DelayedHealPct} && ((${NetBots[${MA1}].ID} && ${NetBots[${MA1}].Stacks[${DelayedHealID}]}) || (!${NetBots[${MA1}].ID} && !${DoDelayedTimer})) && (!${Me.Gem[${DelayedHeal}]} || ${Me.SpellReady[${Spell[${DelayedHeal}].RankName}]}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${DelayedHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${DelayedHealID}].Mana}) {
+		/target targetable id ${Spawn[${MA1}].ID}
+		/delay 1s (${Target.ID}==${Spawn[pc ${MA1}].ID} || ${Target.ID}==${Spawn[Mercenary ${MA1}].ID})
 		/delay 1s ${Target.Buff[${DelayedHeal}].Duration}
 		/if (!${Target.Buff[${DelayedHeal}].ID} && ${Me.CombatState.Equal[COMBAT]}) {
 			/call Cast "${DelayedHeal}" ${DelayedHealGem} 2s CheckHP
@@ -679,9 +679,9 @@ Sub CheckGroup
 			/varcalc DoDelayedTimer 2+10*${Target.BuffDuration[${DelayedHeal}].TotalSeconds}
 			}
 		}
-	/if (!${RDPause} && ${UseCH} && ${Spawn[pc Mercenary ${MA1}].ID} && (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${Spell[${TankHeal}].RankName}]})) {
+	/if (!${RDPause} && ${UseCH} && (${Spawn[pc ${MA1}].ID} || ${Spawn[Mercenary ${MA1}].ID})&& (!${Me.Gem[${TankHeal}]} || ${Me.SpellReady[${Spell[${TankHeal}].RankName}]})) {
 		/call CheckPPS
-		/if ((${TankTTL}<200 || ${Spawn[pc Mercenary ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc Mercenary ${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc Mercenary ${MA1}].ID} Tank
+		/if ((${TankTTL}<200 || ${Spawn[${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[${MA1}].ID} Tank
 	}
 	/if (!${RDPause} && ${HealGroup}) {
 		/call ${EvaluateFunction}
@@ -795,9 +795,9 @@ Sub Check4Pad(int spellID)
 	/if (${Cursor.ID}) /autoinventory
 	/doevents MezIt
 	/if (!${RDPause} && ${Stop4Pad}) {
-		/if (${UseCH} && ${Spawn[pc Mercenary ${MA1}].ID}) {
+		/if (${UseCH} && (${Spawn[pc ${MA1}].ID} || ${Spawn[Mercenary ${MA1}].ID})) {
 			/call CheckPPS
-			/if ((${TankTTL}<150 || ${Spawn[pc Mercenary ${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[pc Mercenary${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[pc Mercenary ${MA1}].ID} Tank
+			/if ((${TankTTL}<150 || ${Spawn[${MA1}].PctHPs}<${TankHealPct}) && ${Spawn[${MA1}].Distance}<${Int[${Spell[${TankHealID}].MyRange}]} && ${Me.CurrentMana}>${Spell[${TankHealID}].Mana}) /call DoHeal ${Spawn[${MA1}].ID} Tank
 			}
 		/if (${HealGroup}) {
 			/call ${EvaluateFunction}
@@ -819,24 +819,24 @@ Sub CheckPPS
 	| keep 3 around
 	/declare tmpTarget int local 0
 	/declare wegothit int local 0
-	/if (${Target.ID}!=${Spawn[pc Mercenary ${MA1}].ID} && !${Spawn[pc Mercenary group ${MA1}].ID}) {
+	/if (${Target.ID}!=${Spawn[${MA1}].ID} && !${Spawn[group ${MA1}].ID}) {
 		/varset tmpTarget ${Target.ID}
-		/target targetable id ${Spawn[pc Mercenary ${MA1}].ID}
-		/delay 1s ${Target.ID}==${Spawn[pc Mercenary ${MA1}].ID}
+		/target targetable id ${Spawn[${MA1}].ID}
+		/delay 1s (${Target.ID}==${Spawn[pc ${MA1}].ID} || ${Target.ID}==${Spawn[Mercenary ${MA1}].ID})
 	}
 	| if he's not in our group
 	| and is pct went down 
 	| and it wasn't a complete heal
-	/if (!${Spawn[pc Mercenary group ${MA1}].ID} && ${TankLastPct}>${Target.PctHPs} && ${Target.PctHPs}!=100) {
+	/if (!${Spawn[${MA1}].ID} && ${TankLastPct}>${Target.PctHPs} && ${Target.PctHPs}!=100) {
 		| he got hit by something (bad assumption of complete heal)
 		| /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Target.PctHPs})
 		/varset wegothit ${Target.PctHPs}
 	} else {
 		| if (tank in group) && (hp went down) && (hp != 100)
 		| tothits = tothits+deltahp
-		/if (${Spawn[pc Mercenary group ${MA1}].ID} && ${TankLastPct}>${Spawn[pc Mercenary group ${MA1}].PctHPs}) {
-			| /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Spawn[pc Mercenary group ${MA1}].PctHPs})
-			/varset wegothit ${Spawn[pc Mercenary group ${MA1}].PctHPs}
+		/if (${Spawn[group ${MA1}].ID} && ${TankLastPct}>${Spawn[group ${MA1}].PctHPs}) {
+			| /varcalc TotalTankHits ${TotalTankHits}+(${TankLastPct}-${Spawn[group ${MA1}].PctHPs})
+			/varset wegothit ${Spawn[group ${MA1}].PctHPs}
 		}
 	}
 
@@ -861,7 +861,7 @@ Sub CheckPPS
 	/if (!${TankPPS}) {
 			 /varset TankTTL 3000
 	} else {
-			 /varcalc TankTTL (${Spawn[pc Mercenary ${MA1}].PctHPs}*10)/${TankPPS}
+			 /varcalc TankTTL (${Spawn[${MA1}].PctHPs}*10)/${TankPPS}
 	}
 
 	|/if (${SpawnCount[npc radius 200]} && ${TankTTL}!=3000) {
@@ -869,7 +869,7 @@ Sub CheckPPS
 	|/echo TotalTankTime ${TotalTankTime} TotalTankHits ${TotalTankHits}
 	|}
 
-	/varset TankLastPct ${Spawn[pc Mercenary ${MA1}].PctHPs}
+	/varset TankLastPct ${Spawn[${MA1}].PctHPs}
 	/if (${tmpTarget}) {
 		/target targetable id ${tmpTarget}
 		/delay 1
@@ -917,7 +917,7 @@ Sub AssistLoop
 		/return
 	}
 	/for i 1 to 3
-		/if (${Spawn[pc Mercenary ${MA${i}} radius 150 zradius 50].ID}) {
+		/if (${Spawn[${MA${i}} radius 150 zradius 50].ID}) {
 			/if (${Me.CleanName.NotEqual[${MA${i}}]}) /call AssistStuff ${i}
 			/if ((${Target.Type.Equal[NPC]} || ${Target.Master.Type.Equal[npc]}) && ${Target.ID}!=${MATarget} && ${Target.Type.NotEqual[corpse]}) {
 				/varset MATarget ${Target.ID}
@@ -1795,7 +1795,7 @@ Sub HolyShit(MobName)
 Sub HolyShitRun(AggroMob)
 	/declare i int local
 	/for i 1 to 3
-		/if (!${RDPause} && ${Spawn[pc ${MA${i}}].ID}) {
+		/if (!${RDPause} && ${Spawn[${MA${i}}].ID}) {
 		/squelch /face fast nolook id ${NearestSpawn[pc ${MA${i}}].ID}
 			/keypress forward hold
 			/delay 1s ${Spawn[npc targetable id ${AggroMob}].Distance}>${Spawn[npc targetable id ${AggroMob}].MaxRange}+10
@@ -2830,7 +2830,7 @@ Sub Event_SetBuff(Line,LineArg)
 				/next i
 				/return
 			}
-			/if (${Spawn[pc Mercenary ${Line.Arg[4]}].ID}) {
+			/if (${Spawn[pc ${Line.Arg[4]}].ID}) {
 				/target targetable id ${Spawn[pc ${Line.Arg[4]}].ID}
 				/delay 1s ${Target.ID}==${Spawn[pc ${Line.Arg[4]}].ID}
 			} else {
@@ -2876,24 +2876,24 @@ Sub Event_SetBuff(Line,LineArg)
 		/next i
 		/return
 		}
-	/if (${Line.Arg[4].Length} && ${Spawn[pc Mercenary${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[pc ${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
+	/if (${Line.Arg[4].Length} && ${Spawn[pc ${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[pc ${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
 	/if (${Line.Arg[4].Length} && ${Spawn[${Line.Arg[4]}].Type.NotEqual[npc]} && ${Spawn[${Line.Arg[4]}].ID}) /call CheckDoBuffs "${Spawn[${Line.Arg[4]}].CleanName}" "${Line.Arg[3]}"
 	/return
 	
 Sub Event_SetMA1(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${LineArg}"
 	/return
 
 Sub Event_SetMA2(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${LineArg}"
 	/return
 
 Sub Event_SetMA3(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Main Assist #3" "MA3" "GeneralStuff" "MA3" "${LineArg}"
 	/return
 
 Sub Event_SetRampTank(Line,LineArg)
-	/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${Spawn[pc Mercenary ${LineArg}].CleanName}"
+	/call Event_ToggleString "Stuff" "Rampage Tank" "RampTank" "HealStuff" "RampTank" "${LineArg}"
 	/return
 
 Sub Event_SongAlias(Line,AliasName,FullName)
@@ -3019,8 +3019,8 @@ Sub MA1Dead
 			/${ChatChannel} MA1 DEAD!! OMG!!
 			}
 		/if (${ChangeTank}==TRUE && ${UseGroupMA}==FALSE) {
-			/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[pc Mercenary ${MA2}].CleanName}"
-			/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[pc Mercenary ${MA3}].CleanName}"
+			/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[${MA2}].CleanName}"
+			/call Event_ToggleString "Stuff" "Main Assist #2" "MA2" "GeneralStuff" "MA2" "${Spawn[${MA3}].CleanName}"
 			}
 		}
 	/return
