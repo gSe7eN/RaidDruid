@@ -1,6 +1,7 @@
 |AUTOBOT XP AND RAIDING MACRO v4.22
 | Gomer and gSe7eN's edit of raid druid
 | Necrognomie flavored
+|	Added Mezbroke
 |	Adjusted to use mercs as MA1
 |	Retort, QM, and Heal over Time support. Code from Nytemyst's AFCleric
 |	Auto change MA2 to MA1 if MA1 dies. Idea from Nytemyst's AFCleric change tank
@@ -280,7 +281,7 @@ Sub Main
 			/if (${DoCombatStuff} && ${Me.CombatState.Equal[COMBAT]} && !${CombatStuffTimer}) /call DoStuff Combat
 			/if (${DoRetort}) /call Retort
 			/if (${UseTankHoT}) /call HealOverTime
-			/if (${QM}) /call QuietMiracle
+			/if (${Me.Class.ShortName.Equal[CLR]} && ${QM}) /call QuietMiracle
 		}
 	}
 	/call MoveStuff
@@ -707,7 +708,7 @@ Sub CheckGroup
 Sub CureMe
 	/declare i int local
 	/for i 1 to ${CureTotal}
-		/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${Spell[${CureSpell${i}}].RankName}]} || (${Me.Gem[${CureSpell${i}}]} && ${Me.Book[${Me.Book[${Spell[${CureSpell${i}}].RankName}]}]})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
+		/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${Spell[${CureSpell${i}}].RankName}]} || (${CureSpell${i}}]} && ${Me.Book[${Me.Book[${Spell[${CureSpell${i}}].RankName}]}]})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
 			/target targetable id ${Me.ID}
 			/delay 1s ${Target.ID}==${Me.ID}
 			/if (${ReportCures}){
@@ -3039,8 +3040,23 @@ Sub QuietMiracle
 	/if (${Group} && ${Me.AltAbilityReady[Quiet Miracle]}) {
 		 /for i 1 to ${Group}
 			/if (${Group.Member[${i}].Type.NotEqual[corpse]} && ${Group.Member[${i}].ID} && ${Group.Member[${i}].Distance} < 100 && ${Group.Member[${i}].CurrentMana} <40 && ${CanCast.Find[${Group.Member[${i}].Class}]}) {
-				/target id ${Group.Member[${i}].ID}
+				/target ${Group.Member[${i}].ID}
+				/if (${ReportHeals}) {
+					/if (${HealChannel.Equal[BC]}) {
+					/BC [+g+]Targeting [+m+]${Target.CleanName} for [+y+] QM
+					} else {
+					/${HealChannel} Targeting ${Target.CleanName} for QM
+					}
+				}
 				/delay 3 ${Target.ID}==${Group.Member[${i}].ID}
+				/if (${Target.ID}!=${Group.Member[${i}].ID}) {
+				/if (${ReportHeals}) {
+					/if (${HealChannel.Equal[BC]}) {
+					/BC [+r+]Failed [+g+]to target [+m+]${Group.Member[${i}].ID}
+					} else {
+					/${HealChannel} Failed to target ${Group.Member[${i}].ID}
+					}
+				
 				/if (${Target.Buff[Shroud of the Miracle].ID}) {
 					/call CreateTimer QM${Target.ID} 1m
 				}
@@ -3118,7 +3134,7 @@ Sub HealXTarget
 	/declare i int local 1
 |--------Loops Through extended target window For Pets and Players to heal.
 	/for X 1 to ${Me.XTarget}
-	/if (${Spawn[${Me.XTarget[${X}].ID}].ID} && (${Spawn[${Me.XTarget[${X}].ID}].Type.Equal[PC]} || )) {
+	/if (${Spawn[${Me.XTarget[${X}].ID}].ID} && ${Spawn[${Me.XTarget[${X}].ID}].Type.NotEqual[NPC]}) {
 		/if (${Spawn[${Me.XTarget[${X}].ID}].PctHPs} <= ${TankHealPct} && ${Spawn[${Me.XTarget[${X}].ID}].Distance}<=200 && ${Spawn[${Me.XTarget[${X}].ID}].Type.Equal[PET]}) /call DoHeal ${Spawn[${Me.XTarget[${X}].ID}]} Pet
 		/if (${Spawn[${Me.XTarget[${X}].ID}].Type.NotEqual[Corpse]} && ${Spawn[${Me.XTarget[${X}].ID}].PctHPs} <= ${TankHealPct} && ${Spawn[${Me.XTarget[${X}].ID}].Distance}<=200 && ${Spawn[${Me.XTarget[${X}].ID}].Type.Equal[PC]} && ${Select[${Me.XTarget[${X}].Class.ShortName},WAR,PAL,SHD]}) /call DoHeal ${Spawn[${Me.XTarget[${X}].ID}]} Tank
 		/if (${Spawn[${Me.XTarget[${X}].ID}].Type.NotEqual[Corpse]} && ${Spawn[${Me.XTarget[${X}].ID}].PctHPs} <= ${TankHealPct} && ${Spawn[${Me.XTarget[${X}].ID}].Distance}<=200 && ${Spawn[${Me.XTarget[${X}].ID}].Type.Equal[PC]} && ${Select[${Me.XTarget[${X}].Class.ShortName},MNK,NEC,BRD,WIZ,ENC,CLR,DRU,MAG,SHM,ROG,BST,BER,RNG]}) /call DoHeal ${Spawn[${Me.XTarget[${X}].ID}]} Fast
