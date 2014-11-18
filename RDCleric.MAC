@@ -2748,7 +2748,7 @@ Sub Event_SaveIni(Line,LineArg)
 	/return
 
 Sub Event_SetBuff(Line,LineArg)
-	/if (${Me.Book[${Line.Arg[3]}].Rankname} || (${Line.Arg[3].Equal[${FindItem[${Line.Arg[3]}]}]} && ${FindItem[${Line.Arg[3]}].ID}) || ${Me.AltAbilityReady[${Line.Arg[3]}]}) {
+	/if (${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}].ID} || (${Line.Arg[3].Equal[${FindItem[${Line.Arg[3]}]}]} && ${FindItem[${Line.Arg[3]}].ID}) || ${Me.AltAbilityReady[${Line.Arg[3]}]}) {
 		/if (${Line.Arg[4].Equal[group]}) {
 			/declare i int local
 			/for i ${Group} downto 0 
@@ -2769,7 +2769,7 @@ Sub Event_SetBuff(Line,LineArg)
 						/${ChatChannel} Casting ${Line.Arg[3]} on ${Target.CleanName}
 						}
 					}
-				/if (${Me.Book[${Line.Arg[3]}].RankName}) /call Cast "${Line.Arg[3]}" ${BuffGem} 10s
+				/if (${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}].ID}) /call Cast "${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}]}" ${BuffGem} 10s
 				/if (${FindItem[${Line.Arg[3]}].ID}) /call Cast "${Line.Arg[3]}" item 10s
 				/if (${Me.AltAbilityReady[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" alt 10s
 			/next i
@@ -2797,7 +2797,7 @@ Sub Event_SetBuff(Line,LineArg)
 							/${ChatChannel} Casting ${Line.Arg[3]} on ${Target.CleanName}
 							}
 						}
-					/if (${Me.Book[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" ${BuffGem} 10s
+					/if (${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}].ID}) /call Cast "${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}]}" ${BuffGem} 10s
 					/if (${FindItem[${Line.Arg[3]}].ID}) /call Cast "${Line.Arg[3]}" item 10s
 					/if (${Me.AltAbilityReady[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" alt 10s
 				/next i
@@ -2827,7 +2827,7 @@ Sub Event_SetBuff(Line,LineArg)
 				}
 			}
 		/if (${Me.Class.ShortName.Equal[BRD]}) /squelch /twist stop
-		/if (${Me.Book[${Line.Arg[3]}]}.RankName) /call Cast "${Line.Arg[3]}" ${BuffGem} 10s
+		/if (${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}].ID}) /call Cast "${Me.Book[${Me.Book[${Spell[${Line.Arg[3]}].RankName}]}]}" ${BuffGem} 10s
 		/if (${FindItem[${Line.Arg[3]}].ID}) /call Cast "${Line.Arg[3]}" item 10s
 		/if (${Me.AltAbilityReady[${Line.Arg[3]}]}) /call Cast "${Line.Arg[3]}" alt 10s
 		/if (${Me.Class.ShortName.Equal[BRD]} && !${Me.Invis} && !${TwistTimer}) /call SingSongs
@@ -3082,7 +3082,7 @@ Sub Retort
 	/if (${Me.SpellReady[${Spell[${RetortSpell}].RankName}]} && !${RetortTimer} && ${Spawn[${MA1}].Distance} <= 200 && ${Spawn[${MA1}].ID} && ${DoRetort} && ${Me.CombatState.Equal[COMBAT]} && !${Target.Buff[${Spell[${RetortSpell}].RankName}].ID}) {
 		/if (${Debug}) /echo casting ${RetortSpell} from Gem ${RetortSpellGem} at ${Target.CleanName}
 		/if (${Target.ID}!=${Spawn[${MA1}].ID}) /target ${MA1}
-		/call Cast "${Spell[${RetortSpell}].RankName}" ${RetortSpellGem} 1s
+		/call Cast "${Spell[${RetortSpell}].RankName}" ${RetortSpellGem} 1s Check4Pad
 		/if (${ReportHeals}) {
 			/if (${HealChannel.Equal[BC]}) {
 				/BC [+t+]${Spell[${RetortSpell}].RankName} [+g+] incoming to [+m+]${Target.CleanName}
@@ -3103,7 +3103,7 @@ Sub HealOverTime
 |========================================	
 	/if (!${HotTimer} && ${Spawn[${MA1}].Distance}<=${Spell[${HotSpell}].MyRange} && ${Spawn[${MA1}].PctHPs} >=80 && ${Spawn[${MA1}].PctHPs}>=${defaultstophealpoint}*.5 && ${UseTankHoT} && ${SpawnCount[npc los Range 5 110 radius 50 zradius 50 targetable]} && ${Me.CombatState.Equal[COMBAT]}) {
 		/if (${Target.ID}!=${Spawn[${MA1}].ID}) /target ${MA1}
-		/call Cast "${HotSpell}" ${HotSpellGem} 1s 
+		/call Cast "${HotSpell}" ${HotSpellGem} 1s Check4Pad
 		/if (${Debug}) /echo casting ${HotSpell} from Gem ${HotSpellGem} on ${Target.CleanName}
 		/if (${ReportHeals}) {
 				/if (${HealChannel.Equal[BC]}) {
