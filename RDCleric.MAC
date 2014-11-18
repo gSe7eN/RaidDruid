@@ -23,7 +23,7 @@
 #Event AddAlertCommon 	"[MQ2] AddAlertCommon #1#"
 #Event AddRestSong    	"[MQ2] AddRestSong #1#"
 #Event ShowDebuffs    	"[MQ2] ShowDebuffs #1#"
-#Event Camp	      		"It will take about 25 more seconds to prepare your camp"
+#Event Campout			"It will take about 25 more seconds to prepare your camp"
 #Event ChangeTank		"change tank #1#"
 #Event Dead           	"#*#You have been slain by#*#"
 #Event DelCombatSong  	"[MQ2] DelCombatSong #1#"
@@ -708,7 +708,7 @@ Sub CheckGroup
 Sub CureMe
 	/declare i int local
 	/for i 1 to ${CureTotal}
-		/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${Spell[${CureSpell${i}}].RankName}]} || (${CureSpell${i}}]} && ${Me.Book[${Me.Book[${Spell[${CureSpell${i}}].RankName}]}]})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
+		/if ((!${RDPause} && ((${Debuff.Cursed} && ${Debuff.Cursed}<=${CurseCounters${i}}) || (${Debuff.Diseased} && ${Debuff.Diseased}<=${DiseaseCounters${i}}) || (${Debuff.Poisoned} && ${Debuff.Poisoned}<=${PoisonCounters${i}}))) && ((${Me.SpellReady[${Spell[${CureSpell${i}}].RankName}]} || (${CureSpell${i}} && ${Me.Book[${Me.Book[${Spell[${CureSpell${i}}].RankName}]}]})) || ${Me.AltAbilityReady[${CureSpell${i}}]} || (${CureGem${i}.Equal[item]} && !${FindItem[${CureSpell${i}}].Timer}))) {
 			/target targetable id ${Me.ID}
 			/delay 1s ${Target.ID}==${Me.ID}
 			/if (${ReportCures}){
@@ -2289,7 +2289,7 @@ Sub CalmGroup(Puller)
 	}
 	/return
 
-Sub Event_Camp
+Sub Event_Campout
 	/echo You forgot to end the macro, DOH!
 	/end
 	/return
@@ -3007,9 +3007,9 @@ Sub MA1Dead
 |========================================
 	/if (${Spawn[${MA1}].Type.Equal[Corpse]}) {
 		/if (${ChatChannel.Equal[BC]}) {
-			/BC [+r+]MA1 DEAD!! OMG!!
+			/BC [+r+]MA1 DEAD!! OMG!! [+m+]${MA2} [+g+]time to step up!
 			} else {
-			/${ChatChannel} MA1 DEAD!! OMG!!
+			/${ChatChannel} MA1 DEAD!! OMG!! ${MA2} time to step up!
 			}
 		/if (${ChangeTank}==TRUE && ${UseGroupMA}==FALSE) {
 			/call Event_ToggleString "Stuff" "Main Assist #1" "MA1" "GeneralStuff" "MA1" "${Spawn[${MA2}].CleanName}"
@@ -3050,25 +3050,26 @@ Sub QuietMiracle
 				}
 				/delay 3 ${Target.ID}==${Group.Member[${i}].ID}
 				/if (${Target.ID}!=${Group.Member[${i}].ID}) {
-				/if (${ReportHeals}) {
-					/if (${HealChannel.Equal[BC]}) {
-					/BC [+r+]Failed [+g+]to target [+m+]${Group.Member[${i}].ID}
-					} else {
-					/${HealChannel} Failed to target ${Group.Member[${i}].ID}
+					/if (${ReportHeals}) {
+						/if (${HealChannel.Equal[BC]}) {
+						/BC [+r+]Failed [+g+]to target [+m+]${Group.Member[${i}].ID}
+						} else {
+						/${HealChannel} Failed to target ${Group.Member[${i}].ID}
+						}
 					}
-				
-				/if (${Target.Buff[Shroud of the Miracle].ID}) {
-					/call CreateTimer QM${Target.ID} 1m
-				}
-				/call cast "Quiet Miracle" alt 0
-				/if (${ReportHeals}) {
-					/if (${HealChannel.Equal[BC]}) {
-					/BC [+t+]Quiet Miracle [+g+] incoming to [+m+]${Target.CleanName}
-					} else {
-					/${HealChannel} Quiet Miracle incoming to ${Target.CleanName}
+					/if (${Target.Buff[Shroud of the Miracle].ID}) {
+						/call CreateTimer QM${Target.ID} 1m
 					}
+					/call cast "Quiet Miracle" alt 0
+					/if (${ReportHeals}) {
+						/if (${HealChannel.Equal[BC]}) {
+						/BC [+t+]Quiet Miracle [+g+] incoming to [+m+]${Target.CleanName}
+						} else {
+						/${HealChannel} Quiet Miracle incoming to ${Target.CleanName}
+						}
+					}
+					/return
 				}
-				/return
 			}
 		/next i
 	}
